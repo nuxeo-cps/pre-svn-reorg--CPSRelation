@@ -1,4 +1,6 @@
 # $Id$
 
+# Only to be able to use RDF graphs
 Zope >= 2.8.1
+rdflib >= 2.1.3
 
