@@ -24,37 +24,51 @@
 from Testing import ZopeTestCase
 from Products.ExternalMethod.ExternalMethod import ExternalMethod
 from Products.CMFCore.utils import getToolByName
-from Products.CPSDefault.tests import CPSTestCase
+from Products.CMFDefault.Portal import manage_addCMFSite
 
+ZopeTestCase.installProduct('CMFCore')
+ZopeTestCase.installProduct('CMFDefault')
+ZopeTestCase.installProduct('MailHost')
 ZopeTestCase.installProduct('CPSRelation')
 
-class CPSRelationInstaller(CPSTestCase.CPSInstaller):
-    """CPSRelation tests installer"""
+portal_name = 'portal'
 
-    def addPortal(self, id):
-        """Override the Default addPortal method installing a Default CPS Site.
+class CPSRelationTestCase(ZopeTestCase.PortalTestCase):
+    """CPSRelation test case"""
 
-        Will launch the CPSRelation installer external method too.
-        """
+    def getPortal(self):
+        if not hasattr(self.app, portal_name):
+            manage_addCMFSite(self.app,
+                              portal_name)
+        return self.app[portal_name]
 
-        # CPS Default Site
-        CPSTestCase.CPSInstaller.addPortal(self, id)
-        portal = getattr(self.app, id)
+    def afterSetUp(self):
+        # Set portal
+        self.portal = self.getPortal()
 
-        # Install the Messager product family
+        try:
+            self.login('manager')
+        except AttributeError:
+            uf = self.portal.acl_users
+            uf._doAddUser('manager', '', ['Manager'], [])
+            self.login('manager')
+
+        self._setupCPSRelation()
+        self._setupTestRelations()
+
+    def beforeTearDown(self):
+        self.logout()
+
+    def _setupCPSRelation(self):
+        # Launch the CPSRelation installer
         cpsrelation_installer = ExternalMethod('cpsrelation_installer',
                                                '',
                                                'CPSRelation.install',
                                                'install')
-        portal._setObject('cpsrelation_installer', cpsrelation_installer)
-        portal.cpsrelation_installer()
+        self.portal._setObject('cpsrelation_installer', cpsrelation_installer)
+        self.portal.cpsrelation_installer()
 
-
-class CPSRelationTestCase(CPSTestCase.CPSTestCase):
-    """CPSRelation test case"""
-
-    def afterSetUp(self):
-        self.login('manager')
+    def _setupTestRelations(self):
         self.rtool = getToolByName(self.portal, 'portal_relations')
 
         # set relations
@@ -73,11 +87,3 @@ class CPSRelationTestCase(CPSTestCase.CPSTestCase):
         self.rtool.addRelationFor(2, 'hasPart', 10)
         self.rtool.addRelationFor(2, 'hasPart', 23)
         self.rtool.addRelationFor(2, 'hasPart', 25)
-
-
-    def beforeTearDown(self):
-        self.logout()
-
-
-# setup the portal
-CPSTestCase.setupPortal(PortalInstaller=CPSRelationInstaller)

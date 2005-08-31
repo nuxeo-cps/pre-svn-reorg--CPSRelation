@@ -181,7 +181,8 @@ class Relation(SimpleItemWithProperties):
     def getRelationFor(self, uid):
         """Get relation for the given object uid
         """
-        return self._getRelationFor(uid)
+        res = self._getRelationFor(uid)
+        return res
 
     security.declarePublic('addRelationFor')
     def addRelationFor(self, uid, related_uid):

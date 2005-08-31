@@ -34,18 +34,18 @@ class TestRelationsTool(CPSRelationTestCase.CPSRelationTestCase):
     def test_tool_presence(self):
         self.assertNotEqual(self.rtool, None)
 
-    def test_getRelations(self):
+    def test__getRelations(self):
         portal_relations_list = self.rtool._getRelations()
         self.assertEquals(len(portal_relations_list), 2)
 
-    def test_getRelation(self):
+    def test__getRelation(self):
         self.assertNotEqual(self.rtool._getRelation('hasPart'), None)
         self.assertNotEqual(self.rtool._getRelation('isPartOf'), None)
         self.assertRaises(AttributeError,
                           self.rtool._getRelation,
                           'dummy')
 
-    def test_getRelationIds(self):
+    def test__getRelationIds(self):
         relations_list = ['isPartOf', 'hasPart']
         relations_list.sort()
         portal_relations_list = self.rtool._getRelationIds()
@@ -68,6 +68,11 @@ class TestRelationsTool(CPSRelationTestCase.CPSRelationTestCase):
                                inverse_id='',
                                title='dummy relation')
         self.assertEqual(self.rtool.hasRelation('dummy'), True)
+
+    def test_delRelation(self):
+        self.assertEqual(self.rtool.hasRelation('hasPart'), True)
+        self.rtool.deleteRelation('hasPart')
+        self.assertEqual(self.rtool.hasRelation('hasPart'), False)
 
     def test_hasRelationFor(self):
         self.assertEqual(self.rtool.hasRelationFor(1, 'hasPart'), True)
@@ -96,6 +101,23 @@ class TestRelationsTool(CPSRelationTestCase.CPSRelationTestCase):
         self.assertEqual(self.rtool.getRelationFor(10, 'isPartOf'), (2,))
         self.assertEqual(self.rtool.getRelationFor(23, 'isPartOf'), (2,))
         self.assertEqual(self.rtool.getRelationFor(25, 'isPartOf'), (2,))
+
+    def test_removeRelationFor(self):
+        self.assertEqual(self.rtool.getRelationFor(2, 'hasPart'), (10, 23, 25))
+        self.rtool.removeRelationFor(2, 'hasPart')
+        self.assertEqual(self.rtool.getRelationFor(2, 'hasPart'), ())
+
+    def test_removeAllRelationsFor(self):
+        self.rtool.addRelationFor(2, 'isPartOf', 3)
+        self.assertEqual(self.rtool.getRelationFor(2, 'hasPart'), (10, 23, 25))
+        self.assertEqual(self.rtool.getRelationFor(2, 'isPartOf'), (3,))
+        self.assertEqual(self.rtool.getRelationFor(10, 'isPartOf'), (1, 2))
+
+        self.rtool.removeAllRelationsFor(2)
+
+        self.assertEqual(self.rtool.getRelationFor(2, 'hasPart'), ())
+        self.assertEqual(self.rtool.getRelationFor(2, 'isPartOf'), ())
+        self.assertEqual(self.rtool.getRelationFor(10, 'isPartOf'), (1,))
 
 def test_suite():
     suite = unittest.TestSuite()

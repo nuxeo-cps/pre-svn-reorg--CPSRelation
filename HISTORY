@@ -1,4 +1,21 @@
 *******************************************
+** CPSRelation V1.1.0 [R1 build 2005/03/24-19:33 by anahide]
+
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- adding method to remove a given uid from all the relations (useful when
+  deleting an object for instance)
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- adding a zmi template to view relations held in a given relation
+
+*******************************************
 ** CPSRelation V1.0.1 [R1 build 2005/01/31-10:23 by anahide]
 
 Requires:

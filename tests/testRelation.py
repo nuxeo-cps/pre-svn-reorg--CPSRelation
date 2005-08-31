@@ -41,7 +41,7 @@ class TestRelation(CPSRelationTestCase.CPSRelationTestCase):
         self.assertEqual(dummy.title_or_id(), 'Dummy relation')
         self.assertEqual(dummy._getInverseRelationId(), 'inverse_dummy')
 
-    def test_getInverseRelationId(self):
+    def test__getInverseRelationId(self):
         self.assertEqual(self.hasPart._getInverseRelationId(), 'isPartOf')
         self.assertEqual(self.isPartOf._getInverseRelationId(), 'hasPart')
         self.rtool.addRelation('dummy',
@@ -50,7 +50,7 @@ class TestRelation(CPSRelationTestCase.CPSRelationTestCase):
         dummy = self.rtool._getRelation('dummy')
         self.assertRaises(ValueError, dummy._getInverseRelationId)
 
-    def test_getInverseRelation(self):
+    def test__getInverseRelation(self):
         self.assertEqual(self.hasPart._getInverseRelation(), self.isPartOf)
         self.assertEqual(self.isPartOf._getInverseRelation(), self.hasPart)
         self.rtool.addRelation('dummy',
@@ -125,6 +125,16 @@ class TestRelation(CPSRelationTestCase.CPSRelationTestCase):
         self.assertEqual(self.isPartOf.hasRelationFor(10), True)
         self.assertEqual(self.isPartOf.hasRelationFor(23), True)
         self.assertEqual(self.isPartOf.hasRelationFor(25), True)
+
+    def test_listRelations(self):
+        self.assertEqual(tuple(self.hasPart.listRelations(2)),
+                         ((2, (10, 23, 25)),))
+        self.assertEqual(tuple(self.isPartOf.listRelations(10)),
+                         ((10, (1, 2)),))
+        self.assertEqual(tuple(self.hasPart.listRelations()),
+                         ((1, (10,)), (2, (10, 23, 25))))
+        self.assertEqual(tuple(self.isPartOf.listRelations()),
+                         ((10, (1, 2)), (23, (2,)), (25, (2,))))
 
 
 def test_suite():

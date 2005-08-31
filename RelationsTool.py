@@ -143,7 +143,7 @@ class RelationsTool(UniqueObject, PortalFolder):
         if self.hasRelation(id):
             self._delObject(id)
 
-    security.declarePublic('hasRelation')
+    security.declareProtected(ManagePortal, 'hasRelation')
     def hasRelation(self, id):
         """Does the tool have a relation for the given id?
         """
@@ -157,30 +157,38 @@ class RelationsTool(UniqueObject, PortalFolder):
     # Given relations management
     #
 
-    # XXX Security settings will have to be changed
-
-    security.declarePublic('getRelationFor')
+    security.declarePrivate('getRelationFor')
     def getRelationFor(self, uid, relation_id):
         """Get relation for the given object uid and the given relation type
         """
         relation = self._getRelation(relation_id)
         return relation.getRelationFor(uid)
 
-    security.declarePublic('addRelationFor')
+    security.declarePrivate('addRelationFor')
     def addRelationFor(self, uid, relation_id, related_uid):
         """Add relation to the given object uid for the given relation type
         """
         relation = self._getRelation(relation_id)
         relation.addRelationFor(uid, related_uid)
 
-    security.declarePublic('removeRelationFor')
+    security.declarePrivate('removeAllRelationsFor')
+    def removeAllRelationsFor(self, uid):
+        """Remove all relations for the given object uid
+
+        This is useful when deleting an object, for instance.
+        """
+        relations = self._getRelations()
+        for relation in relations:
+            relation.removeRelationFor(uid)
+
+    security.declarePrivate('removeRelationFor')
     def removeRelationFor(self, uid, relation_id):
         """Remove relation for the given object uid and the given relation type
         """
         relation = self._getRelation(relation_id)
         relation.removeRelationFor(uid)
 
-    security.declarePublic('deleteRelationFor')
+    security.declarePrivate('deleteRelationFor')
     def deleteRelationFor(self, uid, relation_id, related_uid):
         """Delete relation for the given object uids and the given relation
         type
@@ -188,7 +196,7 @@ class RelationsTool(UniqueObject, PortalFolder):
         relation = self._getRelation(relation_id)
         relation.deleteRelationFor(uid, related_uid)
 
-    security.declarePublic('hasRelationFor')
+    security.declarePrivate('hasRelationFor')
     def hasRelationFor(self, uid, relation_id):
         """Does the relation have a relation for the given object uid and the
         given relation type?
