@@ -61,7 +61,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         self.id = id
         self.rdf_store = ZODBBackend.ZODB()
         self.rdf_graph = rdflibGraph(self.rdf_store)
-        for k, v in bindings:
+        for k, v in bindings.items():
             self.rdf_graph.bind(k, v)
 
         # Use this code if you want to use a BDB backend instead of the ZODB

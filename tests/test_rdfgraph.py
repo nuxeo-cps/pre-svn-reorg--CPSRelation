@@ -48,7 +48,11 @@ class TestRDFGraph(RDFGraphTestCase):
         verifyClass(IGraph, RDFGraph)
 
     def test_creation(self):
-        dummy = RDFGraph('dummy')
+        bindings = {
+            "dc": "http://purl.org/dc/elements/1.1/",
+            "dc2": "http://purl.org/dc/elements/1.1/",
+            }
+        dummy = RDFGraph('dummy', bindings=bindings)
         self.assertEqual(dummy.getId(), 'dummy')
         self.assertEqual(dummy.meta_type, 'RDF Graph')
 
