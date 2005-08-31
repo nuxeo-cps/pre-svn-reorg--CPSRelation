@@ -3,16 +3,16 @@
 <dtml-var manage_tabs>
 </dtml-let>
 
-<form action="&dtml-URL1;" method="POST">
+<form action="&dtml-URL1;" method="post">
 
 <br />
 
 <dtml-let keys=objectIds>
 <dtml-if keys>
-<table cellspacing="0" cellpadding="2" border="0" width="100%">
+<table cellspacing="0" cellpadding="2" width="100%">
   <tr class="list-header">
     <td align="left" valign="top">
-      &nbsp;
+      Selection
     </td>
     <td align="left" valign="top">
       <div class="form-label">Relation Id</div>
@@ -55,6 +55,7 @@
   <tr>
     <td align="left" colspan="3">
       <input type="submit" name="manage_delRelations:method" value=" Delete " />
+      <input type="submit" name="manage_delAllRelations:method" value=" Delete All " />
     </td>
   </tr>
 </table>
@@ -65,11 +66,10 @@
 </p>
 </dtml-if>
 </dtml-let>
-
 <br />
 
-<form action="&dtml-URL1;" method="POST">
-<table cellspacing="0" cellpadding="2" border="0" width="100%">
+<form action="&dtml-URL1;" method="post">
+<table cellspacing="0" cellpadding="2" width="100%">
 <tr class="list-header">
   <td align="left" valign="top" colspan="2">
     <div class="form-label">Add a new relation</div>

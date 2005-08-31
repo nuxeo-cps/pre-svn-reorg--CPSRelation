@@ -1,5 +1,6 @@
-# -*- coding: iso-8859-15 -*-
-# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2004-2005 Nuxeo SARL <http://nuxeo.com>
+# Authors:
+# - Anahide Tchertchian <at@nuxeo.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -37,20 +38,19 @@ Howto use the CPSRelation installer :
 from zLOG import LOG, INFO, DEBUG
 
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
-from Products.CMFCore.utils import getToolByName
 
 class CPSRelationInstaller(CPSInstaller):
 
     def install(self):
         self.log("### Starting CPSRelation install ###")
-        self.setupRelationsTool()
+        self.setupRelationTool()
         self.log("### End of specific CPSRelation install ###")
 
-    def setupRelationsTool(self):
-        self.log("Checking Relations Tool")
+    def setupRelationTool(self):
+        self.log("Checking Relation Tool")
         self.verifyTool('portal_relations',
                         'CPSRelation',
-                        'Relations Tool')
+                        'Relation Tool')
 
 
 def install(self):

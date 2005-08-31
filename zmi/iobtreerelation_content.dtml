@@ -4,15 +4,17 @@
 <dtml-let display_results="REQUEST.has_key('uid')"
           uid="REQUEST.get('uid') or None"
           quid="uid or ''"
-          allitems="listRelations(uid=uid)">
+          allitems="listRelationsFor(uid=uid)">
 
 <dtml-if uid>
   <p class="form-text">
-    There are <dtml-var allitems fmt=collection-length thousands_commas> uids related to uid &dtml-uid;.
+    There are <dtml-var allitems fmt=collection-length thousands_commas>
+    uid(s) related to uid &dtml-uid;.
   </p>
 <dtml-elif display_results>
   <p class="form-text">
-    This relation type contains <dtml-var allitems fmt=collection-length thousands_commas> relation(s).
+    This relation type contains <dtml-var allitems fmt=collection-length
+    thousands_commas> relation(s).
   </p>
 </dtml-if>
 
@@ -36,7 +38,7 @@
   </form>
 </p>
 
-<dtml-if display_results>
+<dtml-if "allitems and display_results">
 
 <div class="form-text">
   <dtml-in allitems previous size=20 start=query_start>
@@ -53,8 +55,12 @@
   </dtml-in>
 </div>
 
+<form action="&dtml-URL1;" method="post">
 <table width="100%" cellspacing="0" cellpadding="2" border="0">
 <tr class="list-header">
+  <td width="15%" align="left">
+    <div class="list-item">Selection</div>
+  </td>
   <td width="15%" align="left">
     <div class="list-item">Uid</div>
   </td>
@@ -70,23 +76,69 @@
 <dtml-else>
   <tr class="row-hilite">
 </dtml-if>
-  <td align="left">
-    <div class="list-item">
-      &dtml-uid;
-    </div>
-  </td>
-  <td align="left">
-    <div class="list-item">
-      &dtml-related_uids;
-    </div>
-  </td>
+    <td align="left">
+      <input type="checkbox" name="uids:int:list" value="&dtml-uid;">
+    </td>
+    <td align="left">
+      <div class="list-item">
+        &dtml-uid;
+      </div>
+    </td>
+    <td align="left">
+      <div class="list-item">
+        &dtml-related_uids;
+      </div>
+    </td>
   </tr>
 </dtml-let>
 </dtml-in>
+  <tr>
+    <td align="left" colspan="3">
+      <input type="submit" name="manage_delRelationsFor:method" value=" Delete " />
+    </td>
+  </tr>
 </table>
+</form>
 
 </dtml-if>
 
 </dtml-let>
+
+<br />
+
+<form action="&dtml-URL1;" method="post">
+<table cellspacing="0" cellpadding="2" width="100%">
+<tr class="list-header">
+  <td align="left" valign="top" colspan="2">
+    <div class="form-label">Add a new relation</div>
+  </td>
+</tr>
+<tr>
+  <td align="left">
+    <div class="form-label">
+      Uid<span class="required" style="color: #ff0000;">*</span>
+    </div>
+  </td>
+  <td align="left">
+    <div class="form-item"><input type="text" name="uid:int" size="40" /></div>
+  </td>
+</tr>
+<tr>
+  <td align="left">
+    <div class="form-label">
+      Related Uid<span class="required" style="color: #ff0000;">*</span>
+    </div>
+  </td>
+  <td align="left">
+    <div class="form-item"><input type="text" name="related_uid:int" size="40" /></div>
+  </td>
+</tr>
+<tr>
+  <td>&nbsp;</td>
+  <td align="left">
+    <input type="submit" name="manage_addRelationFor:method" value=" Add ">
+  </td>
+</tr>
+</table>
 
 <dtml-var manage_page_footer>

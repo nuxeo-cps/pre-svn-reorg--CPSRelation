@@ -3,10 +3,12 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Evolution of CPSRelation so that it can support relations in RDF too, while
+  keeping the existing relation mechanism. Relations cretaed useing the old
+  code will be broken as no compatibility could be kept.
 Bug fixes:
 ~~~~~~~~~~
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- 

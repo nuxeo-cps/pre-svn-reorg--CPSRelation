@@ -1,5 +1,7 @@
-# -*- coding: iso-8859-15 -*-
-# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2004-2005 Nuxeo SARL <http://nuxeo.com>
+# Authors:
+# - Anahide Tchertchian <at@nuxeo.com>
+# - M.-A. Darche
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -30,20 +32,23 @@ from Globals import InitializeClass, DTMLFile
 from Acquisition import aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo
 
-from types import IntType, TupleType
 from BTrees.IOBTree import IOBTree
 
 from Products.CMFCore.utils import SimpleItemWithProperties
 from Products.CMFCore.permissions import ManagePortal
 
-class Relation(SimpleItemWithProperties):
+from Products.CPSRelation.interfaces.IRelation import IRelation
+
+class IOBTreeRelation(SimpleItemWithProperties):
     """Relation
 
-    A relation holds a BTree with object uids as keys and tuples of related object
-    uids as values. It also stores the id of its inverse relation.
+    A relation holds a BTree with object uids as keys and tuples of related
+    object uids as values. It also stores the id of its inverse relation.
     """
 
-    meta_type = 'Relation'
+    meta_type = 'IOBTree Relation'
+
+    __implements__ = (IRelation,)
 
     security = ClassSecurityInfo()
 
@@ -54,28 +59,9 @@ class Relation(SimpleItemWithProperties):
          'label': 'Inverse relation id'},
         )
 
-    ###################################################
-    # ZMI
-    ###################################################
-
-    manage_options = (SimpleItemWithProperties.manage_options[0],) + (
-        {'label': "Contents",
-         'action': 'contents'
-         },
-        {'label': "Overview",
-         'action': 'overview'
-         },
-        ) + SimpleItemWithProperties.manage_options[1:]
-
-    security.declareProtected(ManagePortal, 'contents')
-    contents = DTMLFile('zmi/relation_contents', globals())
-
-    security.declareProtected(ManagePortal, 'overview')
-    overview = DTMLFile('zmi/explainRelation', globals())
-
-    ###################################################
-    # RELATIONS TOOL API
-    ###################################################
+    #
+    # API
+    #
 
     def __init__(self, id, inverse_id='', title=''):
         """Initialization
@@ -84,6 +70,15 @@ class Relation(SimpleItemWithProperties):
         self.inverse_id = inverse_id
         self.title = title
         self.relations = IOBTree()
+
+    def __cmp__(self, other):
+        """Compare method
+        """
+        try:
+            other_id = other.getId()
+        except AttributeError:
+            other_id = None
+        return cmp(self.getId(), other_id)
 
     #
     # Private API
@@ -112,12 +107,6 @@ class Relation(SimpleItemWithProperties):
         else:
             return inverse_rel
 
-    security.declarePrivate('_getRelationFor')
-    def _getRelationFor(self, uid):
-        """Get relation for the given object uid
-        """
-        return self.relations.get(uid, ())
-
     security.declarePrivate('_addRelationFor')
     def _addRelationFor(self, uid, related_uid):
         """Add relation for the given object uids
@@ -125,10 +114,10 @@ class Relation(SimpleItemWithProperties):
         If a relation is already set for the given uid, the tuple of related
         uids is updated.
         """
-        if not isinstance(related_uid, IntType):
+        if not isinstance(related_uid, int):
             raise TypeError("Related uid is not an integer")
         else:
-            related = list(self._getRelationFor(uid))
+            related = list(self._getRelationsFor(uid))
             if related_uid not in related:
                 related.append(related_uid)
             if related:
@@ -142,11 +131,17 @@ class Relation(SimpleItemWithProperties):
 
         The related uids is a tuple of object uids.
         """
-        if not isinstance(related_uids, TupleType):
+        if not isinstance(related_uids, tuple):
             raise TypeError("Related uids is not a tuple")
         else:
             self._removeRelationFor(uid)
             self.relations.insert(uid, related_uids)
+
+    security.declarePrivate('_getRelationsFor')
+    def _getRelationsFor(self, uid):
+        """Get relation for the given object uid
+        """
+        return self.relations.get(uid, ())
 
     security.declarePrivate('_removeRelationFor')
     def _removeRelationFor(self, uid):
@@ -159,10 +154,10 @@ class Relation(SimpleItemWithProperties):
     def _deleteRelationFor(self, uid, related_uid):
         """Delete the relation for the given object uids
         """
-        if not isinstance(related_uid, IntType):
+        if not isinstance(related_uid, int):
             raise TypeError("Related uid is not an integer")
         else:
-            related = list(self._getRelationFor(uid))
+            related = list(self._getRelationsFor(uid))
             if related_uid in related:
                 related.remove(related_uid)
             if related:
@@ -170,61 +165,8 @@ class Relation(SimpleItemWithProperties):
             else:
                 self._removeRelationFor(uid)
 
-
-    #
-    # Public/protected API
-    #
-
-    # XXX Security settings will have to be changed
-
-    security.declarePublic('getRelationFor')
-    def getRelationFor(self, uid):
-        """Get relation for the given object uid
-        """
-        res = self._getRelationFor(uid)
-        return res
-
-    security.declarePublic('addRelationFor')
-    def addRelationFor(self, uid, related_uid):
-        """Add relation for the given object uids and update the inverse
-        relation
-        """
-        self._addRelationFor(uid, related_uid)
-        inverse_relation = self._getInverseRelation()
-        inverse_relation._addRelationFor(related_uid, uid)
-
-    security.declarePublic('removeRelationFor')
-    def removeRelationFor(self, uid):
-        """Remove relation for the given object uid and update the inverse
-        relation
-        """
-        related = self._getRelationFor(uid)
-        self._removeRelationFor(uid)
-        inverse_relation = self._getInverseRelation()
-        for related_uid in related:
-            inverse_relation._deleteRelationFor(related_uid, uid)
-
-    security.declarePublic('deleteRelationFor')
-    def deleteRelationFor(self, uid, related_uid):
-        """Delete relation for the given object uids and update the inverse
-        relation
-        """
-        self._deleteRelationFor(uid, related_uid)
-        inverse_relation = self._getInverseRelation()
-        inverse_relation._deleteRelationFor(related_uid, uid)
-
-    security.declarePublic('hasRelationFor')
-    def hasRelationFor(self, uid):
-        """Does the given object uid have a relation?
-        """
-        related = self.getRelationFor(uid)
-        if related:
-            return 1
-        else:
-            return 0
-
     security.declarePrivate('listRelations')
-    def listRelations(self, uid=None):
+    def listRelationsFor(self, uid=None):
         """List all relations.
 
         If uid is not None, keep only relation for this uid.
@@ -235,11 +177,109 @@ class Relation(SimpleItemWithProperties):
             all = self.relations.items()
         else:
             uid = int(uid)
-            related_uids = self.getRelationFor(uid)
+            related_uids = self.getRelationsFor(uid)
             if related_uids:
                 all = ((uid, related_uids),)
             else:
                 all = ()
         return all
 
-InitializeClass(Relation)
+    #
+    # Public/protected API
+    #
+
+    # XXX Security settings will have to be changed
+
+    security.declarePublic('hasRelationFor')
+    def hasRelationFor(self, uid):
+        """Does the given object uid have a relation?
+        """
+        related = self.getRelationsFor(uid)
+        if related:
+            return 1
+        else:
+            return 0
+
+    security.declarePublic('addRelationFor')
+    def addRelationFor(self, uid, related_uid):
+        """Add relation for the given object uids and update the inverse
+        relation
+        """
+        self._addRelationFor(uid, related_uid)
+        inverse_relation = self._getInverseRelation()
+        inverse_relation._addRelationFor(related_uid, uid)
+
+    security.declarePublic('getRelationsFor')
+    def getRelationsFor(self, uid):
+        """Get relation for the given object uid
+        """
+        res = self._getRelationsFor(uid)
+        return res
+
+    security.declarePublic('getInverseRelationsFor')
+    def getInverseRelationsFor(self, uid):
+        """Get relation for the given object uid
+        """
+        inverse_relation = self._getInverseRelation()
+        res = inverse_relation.getRelationsFor(uid)
+        return res
+
+    security.declarePublic('deleteRelationFor')
+    def deleteRelationFor(self, uid, related_uid):
+        """Delete relation for the given object uids and update the inverse
+        relation
+        """
+        self._deleteRelationFor(uid, related_uid)
+        inverse_relation = self._getInverseRelation()
+        inverse_relation._deleteRelationFor(related_uid, uid)
+
+    security.declarePublic('removeAllRelationsFor')
+    def removeAllRelationsFor(self, uid):
+        """Remove relation for the given object uid and update the inverse
+        relation
+        """
+        related = self._getRelationsFor(uid)
+        self._removeRelationFor(uid)
+        inverse_relation = self._getInverseRelation()
+        for related_uid in related:
+            inverse_relation._deleteRelationFor(related_uid, uid)
+
+    #
+    # ZMI
+    #
+
+    manage_options = (SimpleItemWithProperties.manage_options[0],) + (
+        {'label': "Contents",
+         'action': 'contents'
+         },
+        {'label': "Overview",
+         'action': 'overview'
+         },
+        ) + SimpleItemWithProperties.manage_options[1:]
+
+    security.declareProtected(ManagePortal, 'contents')
+    contents = DTMLFile('zmi/iobtreerelation_content', globals())
+
+    security.declareProtected(ManagePortal, 'overview')
+    overview = DTMLFile('zmi/iobtreerelation_overview', globals())
+
+    security.declareProtected(ManagePortal, 'manage_delRelationsFor')
+    def manage_addRelationFor(self, uid, related_uid, REQUEST=None):
+        """Add relation TTW."""
+        self.addRelationFor(uid, related_uid)
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(
+                self.absolute_url()+'/contents'
+                '?manage_tabs_message=Added.')
+
+    security.declareProtected(ManagePortal, 'manage_delRelationsFor')
+    def manage_delRelationsFor(self, uids, REQUEST=None):
+        """Delete relations for given uid TTW."""
+        for uid in uids:
+            self.removeAllRelationsFor(uid)
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(
+                self.absolute_url()+'/contents'
+                '?manage_tabs_message=Deleted.')
+
+InitializeClass(IOBTreeRelation)

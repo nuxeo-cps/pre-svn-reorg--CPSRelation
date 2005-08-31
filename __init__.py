@@ -1,5 +1,7 @@
-# -*- coding: iso-8859-15 -*-
-# Copyright (c) 2004 Nuxeo SARL <http://nuxeo.com>
+# Copyright (c) 2004-2005 Nuxeo SARL <http://nuxeo.com>
+# Authors:
+# - Anahide Tchertchian <at@nuxeo.com>
+# - M.-A. Darche
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License version 2 as published
@@ -15,31 +17,54 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
-#-------------------------------------------------------------------------------
 # $Id$
 
 """ CPS Relation Init
 """
 
+from zLOG import LOG, INFO
+
 from Products.CMFCore.utils import ToolInit
 from Products.CMFCore.permissions import AddPortalContent
 
-import RelationsTool
-import Relation
+from Products.CPSRelation import relationtool
+from Products.CPSRelation import graphregistry
+
+from Products.CPSRelation import iobtreegraph
+from Products.CPSRelation import iobtreerelation
+
+# XXX check that rdflib is installed before importing
+try:
+    from Products.CPSRelation import rdfgraph
+except ImportError, err:
+    LOG("CPSRelation", INFO,
+        "rdflib is not installed, no RDF feature will be available")
+    print "WARNING: rdflib is not installed, no RDF feature will be available"
+    if str(err) != 'No module named rdflib':
+        raise
 
 def initialize(registrar):
     """Initalization of Relations tool and Relation content
     """
     ToolInit(
-        'Relations Tool',
-        tools=(RelationsTool.RelationsTool,),
-        product_name='CPSRelation',
+        'Relation Tool',
+        tools=(relationtool.RelationTool,),
         icon='tool.png'
-    ).initialize(registrar)
-    registrar.registerClass(
-        Relation.Relation,
-        permission=AddPortalContent,
-        constructors=(
-            RelationsTool.RelationsTool.manage_addRelation,
-            )
-        )
+        ).initialize(registrar)
+
+    #registrar.registerClass(
+    #    relationtool.RelationTool,
+    #    permission='AddPortalContent',
+    #    constructors=(
+    #    RelationTool.manage_addRelationTool,
+    #    #RelationTool.manage_addRelationToolForm,
+    #    ),
+    #    )
+    #
+    #registrar.registerClass(
+    #    Relation.Relation,
+    #    permission=AddPortalContent,
+    #    constructors=(
+    #        RelationTool.RelationTool.manage_addRelation,
+    #        )
+    #    )
