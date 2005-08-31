@@ -27,14 +27,14 @@ uids as values. It also stores the id of its inverse relation.
 from zLOG import LOG, DEBUG, INFO
 
 from Globals import InitializeClass, DTMLFile
-from AccessControl import ClassSecurityInfo
 from Acquisition import aq_parent, aq_inner
+from AccessControl import ClassSecurityInfo
 
 from types import IntType, TupleType
 from BTrees.IOBTree import IOBTree
-from Products.CMFCore.utils import SimpleItemWithProperties
 
-from Products.CMFCore.CMFCorePermissions import ManagePortal
+from Products.CMFCore.utils import SimpleItemWithProperties
+from Products.CMFCore.permissions import ManagePortal
 
 class Relation(SimpleItemWithProperties):
     """Relation
@@ -58,11 +58,17 @@ class Relation(SimpleItemWithProperties):
     # ZMI
     ###################################################
 
-    manage_options = SimpleItemWithProperties.manage_options + (
+    manage_options = (SimpleItemWithProperties.manage_options[0],) + (
+        {'label': "Contents",
+         'action': 'contents'
+         },
         {'label': "Overview",
          'action': 'overview'
          },
-        )
+        ) + SimpleItemWithProperties.manage_options[1:]
+
+    security.declareProtected(ManagePortal, 'contents')
+    contents = DTMLFile('zmi/relation_contents', globals())
 
     security.declareProtected(ManagePortal, 'overview')
     overview = DTMLFile('zmi/explainRelation', globals())
@@ -71,7 +77,7 @@ class Relation(SimpleItemWithProperties):
     # RELATIONS TOOL API
     ###################################################
 
-    def __init__(self, id, inverse_id, title=''):
+    def __init__(self, id, inverse_id='', title=''):
         """Initialization
         """
         self.id = id
@@ -215,5 +221,24 @@ class Relation(SimpleItemWithProperties):
             return 1
         else:
             return 0
+
+    security.declarePrivate('listRelations')
+    def listRelations(self, uid=None):
+        """List all relations.
+
+        If uid is not None, keep only relation for this uid.
+
+        Returns a sequence of (uid, (related_uids)).
+        """
+        if uid is None:
+            all = self.relations.items()
+        else:
+            uid = int(uid)
+            related_uids = self.getRelationFor(uid)
+            if related_uids:
+                all = ((uid, related_uids),)
+            else:
+                all = ()
+        return all
 
 InitializeClass(Relation)

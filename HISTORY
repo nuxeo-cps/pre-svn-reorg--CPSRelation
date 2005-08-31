@@ -1,4 +1,20 @@
 *******************************************
+** CPSRelation V1.0.1 [R1 build 2005/01/31-10:23 by anahide]
+
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- inverse id was required
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSRelation V1.0.0 [R1 build 2005/01/06-18:09 by anahide]
 
 Requires:

@@ -21,8 +21,8 @@
 """ CPS Relation Init
 """
 
-from Products.CMFCore.utils import ToolInit, ContentInit
-from Products.CMFCore.CMFCorePermissions import AddPortalContent
+from Products.CMFCore.utils import ToolInit
+from Products.CMFCore.permissions import AddPortalContent
 
 import RelationsTool
 import Relation
@@ -36,9 +36,10 @@ def initialize(registrar):
         product_name='CPSRelation',
         icon='tool.png'
     ).initialize(registrar)
-    ContentInit(
-        'Relation',
-        content_types=(Relation.Relation,),
+    registrar.registerClass(
+        Relation.Relation,
         permission=AddPortalContent,
-        extra_constructors=(),
-    ).initialize(registrar)
+        constructors=(
+            RelationsTool.RelationsTool.manage_addRelation,
+            )
+        )

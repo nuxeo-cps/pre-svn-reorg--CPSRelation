@@ -28,7 +28,7 @@ if __name__ == '__main__':
 import unittest
 import CPSRelationTestCase
 
-from Relation import Relation
+from Products.CPSRelation.Relation import Relation
 
 class TestRelation(CPSRelationTestCase.CPSRelationTestCase):
     """Test Relation"""

@@ -30,7 +30,7 @@ from AccessControl import ClassSecurityInfo
 
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
-from Products.CMFCore.CMFCorePermissions import ManagePortal
+from Products.CMFCore.permissions import ManagePortal
 
 from Relation import Relation
 
@@ -52,13 +52,39 @@ class RelationsTool(UniqueObject, PortalFolder):
     ###################################################
 
     manage_options = (
+        {'label': "Relations",
+         'action': 'manage_editRelations'
+         },
         {'label': "Overview",
          'action': 'overview'
          },
-        ) + PortalFolder.manage_options
+        ) + PortalFolder.manage_options[1:]
 
     security.declareProtected(ManagePortal, 'overview')
     overview = DTMLFile('zmi/explainRelationsTool', globals())
+
+    security.declareProtected(ManagePortal, 'manage_editRelations')
+    manage_editRelations = DTMLFile('zmi/relations_editForm', globals())
+
+    security.declareProtected(ManagePortal, 'manage_addRelation')
+    def manage_addRelation(self, id, inverse_id, title='', REQUEST=None):
+        """Add a relation TTW."""
+        relation = self.addRelation(id, inverse_id, title)
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_editRelations'
+                                      '?manage_tabs_message=Added.')
+        else:
+            return relation
+
+    security.declareProtected(ManagePortal, 'manage_delRelations')
+    def manage_delRelations(self, ids, REQUEST=None):
+        """Delete relations TTW."""
+        for id in ids:
+            self.deleteRelation(id)
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_editRelations'
+                                      '?manage_tabs_message=Deleted.')
+
 
     ###################################################
     # RELATIONS TOOL API
@@ -108,6 +134,7 @@ class RelationsTool(UniqueObject, PortalFolder):
                                 inverse_id=inverse_id,
                                 )
             self._setObject(id, relation)
+            return self._getOb(id)
 
     security.declareProtected(ManagePortal, 'deleteRelation')
     def deleteRelation(self, id):
@@ -116,7 +143,7 @@ class RelationsTool(UniqueObject, PortalFolder):
         if self.hasRelation(id):
             self._delObject(id)
 
-    security.declareProtected(ManagePortal, 'hasRelation')
+    security.declarePublic('hasRelation')
     def hasRelation(self, id):
         """Does the tool have a relation for the given id?
         """
