@@ -64,8 +64,83 @@ class TestRDFGraph(RDFGraphTestCase):
                      u'http://cps-project.org/2005/data/hasPart')
         self.assert_(self.isPartOf_ns,
                      u'http://cps-project.org/2005/data/isPartOf')
+
     def test__getRDFGraph(self):
         self.assert_(isinstance(self.graph._getRDFGraph(), rdflibGraph))
+
+    def test_parse_file(self):
+        test_graph = RDFGraph('dummy')
+        from Products.CPSRelation import tests as here_tests
+        input_source = os.path.join(here_tests.__path__[0],
+                                    'test_files/rdf_graph.xml')
+        test_graph.parse(input_source, publicID='Dummy publicID')
+        all_relations = [
+            (URIRef('1'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('23')),
+            (URIRef('2'), self.hasPart_ns, URIRef('25')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            ]
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_parse_string(self):
+        test_graph = RDFGraph('dummy')
+        input_source = """<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:_3="http://cps-project.org/2005/data/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+>
+  <rdf:Description rdf:about="2">
+    <_3:hasPart rdf:resource="25"/>
+    <_3:hasPart rdf:resource="23"/>
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="25">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="23">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <_3:isPartOf rdf:resource="2"/>
+    <_3:isPartOf rdf:resource="1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="1">
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+</rdf:RDF>
+"""
+        test_graph.parse(input_source)
+        all_relations = [
+            (URIRef('1'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('23')),
+            (URIRef('2'), self.hasPart_ns, URIRef('25')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            ]
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_serialize(self):
+        serialized = self.graph.serialize()
+        # not possible to test xml rendering, it changes every time...
+        start = """<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:_3="http://cps-project.org/2005/data/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+>"""
+        self.assert_(serialized.startswith(start))
+        end = "</rdf:RDF>\n"
+        self.assert_(serialized.endswith(end))
 
     def test_listRelationIds(self):
         self.assertEqual(self.graph.listRelationIds(),

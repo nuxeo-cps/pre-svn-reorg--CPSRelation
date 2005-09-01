@@ -109,6 +109,21 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         """
         return CMFBTreeFolder._getOb(self, graph_id)
 
+
+
+    security.declareProtected(ManagePortal, 'parseGraph')
+    def parseGraph(self, graph_id, source, publicID=None, format="xml"):
+        """Parse source into the given graph.
+
+        source can either be a string, location, sml.sax.xmlreader.InputSource
+        instance.
+        Format defaults to xml (AKA rdf/xml).
+        The publicID argument is for specifying the logical URI for the case
+        that it's different from the physical source URI.
+        """
+        graph = self.getGraph(graph_id)
+        return graph.parse(source, publicID, format)
+
     security.declareProtected(ManagePortal, 'serializeGraph')
     def serializeGraph(self, graph_id, destination=None,
                        format='xml', base=None):

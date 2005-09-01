@@ -27,6 +27,18 @@ class IGraph(Interface.Base):
     """Interface for graphs dealing with several labeled relations
     """
 
+    # I/O
+
+    def parse(source, publicID=None, format="xml"):
+        """Parse source into the graph.
+
+        source can either be a string, location, sml.sax.xmlreader.InputSource
+        instance.
+        Format defaults to xml (AKA rdf/xml).
+        The publicID argument is for specifying the logical URI for the case
+        that it's different from the physical source URI.
+        """
+
     def serialize(destination=None, format='xml', base=None):
         """Serialize the graph to destination
 

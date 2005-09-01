@@ -96,6 +96,12 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(test_graph.getId(), 'iobtreegraph')
         self.assertEqual(test_graph.meta_type, 'IOBTree Graph')
 
+    def test_parseGraph(self):
+        self.assertRaises(NotImplementedError,
+                          self.rtool.parseGraph,
+                          'iobtreegraph',
+                          'source')
+
     def test_serializeGraph(self):
         self.assertRaises(NotImplementedError,
                           self.rtool.serializeGraph,
@@ -324,6 +330,26 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
         self.assertEqual(test_graph, self.graph)
         self.assertEqual(test_graph.getId(), 'rdfgraph')
         self.assertEqual(test_graph.meta_type, 'RDF Graph')
+
+    def test_parseGraph_file(self):
+        self.rtool.addGraph('test_graph', 'RDF Graph')
+        from Products.CPSRelation import tests as here_tests
+        input_source = os.path.join(here_tests.__path__[0],
+                                    'test_files/rdf_graph.xml')
+        self.rtool.parseGraph('test_graph', input_source,
+                              publicID='Dummy publicID')
+        all_relations = [
+            (URIRef('1'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('10')),
+            (URIRef('2'), self.hasPart_ns, URIRef('23')),
+            (URIRef('2'), self.hasPart_ns, URIRef('25')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
+            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            ]
+        test_graph = self.rtool.getGraph('test_graph')
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
 
     def test_serializeGraph(self):
         serialized = self.rtool.serializeGraph('rdfgraph')

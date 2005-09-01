@@ -33,8 +33,6 @@ from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
 
 from rdflib import Graph as rdflibGraph
-from rdflib.backends import ZODB as ZODBBackend
-from rdflib.backends import Sleepycat as SleepycatBackend
 from rdflib.exceptions import UniquenessError
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
@@ -53,41 +51,72 @@ class RDFGraph(UniqueObject, PortalFolder):
     # API
     #
 
-    def __init__(self, id, bindings={}, **kw):
+    def __init__(self, id, bindings={}, backend='ZODB', path='', **kw):
         """Initialization
 
         kw are passed to be able to set the backend and other parameters
         """
         self.id = id
-        self.rdf_store = ZODBBackend.ZODB()
-        self.rdf_graph = rdflibGraph(self.rdf_store)
-        for k, v in bindings.items():
-            self.rdf_graph.bind(k, v)
+        self.backend = backend
+        if backend == 'SleepyCat':
+            # path is the path towards the directory where BDB files will be
+            # kept in the var directory of the Zope instance
+            if not path:
+                raise ValueError("Graph %s cannot be created with SleepyCat "
+                                 "backend if no path is specified" %(id,))
+            else:
+                self.path = path
+        elif backend == 'ZODB':
+            self.rdf_graph = rdflibGraph(self.backend)
+            for k, v in bindings.items():
+                self.rdf_graph.bind(k, v)
+        else:
+            raise ValueError("Backend %s not supported "
+                             "for graph %s" %(backend, id))
 
-        # Use this code if you want to use a BDB backend instead of the ZODB
-        # backend.
-        #
-        # XXX: Note that if you want to use the BDB backend you should modify
-        # this code so that the rdf_store is not persisted in the ZODB because:
-        # 1. The Berkeley DB object cannot be persisted
-        # 2. It would be stupid to persist the Berkeley DB object since all its
-        #    information are already stored on the disk.
-        #
-        # Make sure that both rdf_store and rdf_graph are transient
-        #self._v_rdf_graph = None
-        #self._v_rdf_store = SleepycatBackend.Sleepycat()
-        # You should create an "rdflib_db" directory in the "var" directory of
-        # your Zope instance. This is where the BDB files will be stored.
-        #bdb_dir_path = os.path.join(CLIENT_HOME, 'rdflib_db')
-        #self._v_rdf_store.open(bdb_dir_path)
+        # bindings
+        graph = self._getRDFGraph()
+        for k, v in bindings.items():
+            graph.bind(k, v)
 
     security.declarePrivate('_getRDFGraph')
     def _getRDFGraph(self):
         """Get the RDF graph
         """
-        if self.rdf_graph is None:
-            self.rdf_graph = rdflibGraph(self.rdf_store)
-        return self.rdf_graph
+        if self.backend == 'SleepyCat':
+            # XXX AT: check behaviour with multiple access to BDB
+            graph = rdflibGraph(backend=self.backend)
+            dir_path = os.path.join(CLIENT_HOME, self.path)
+            graph.open(dir_path)
+        else:
+            graph = self.rdf_graph
+        return graph
+
+    security.declareProtected(ManagePortal, 'parse')
+    def parse(self, source, publicID=None, format="xml"):
+        """Parse source into Graph.
+
+        source can either be a string, location, sml.sax.xmlreader.InputSource
+        instance.
+        Format defaults to xml (AKA rdf/xml).
+        The publicID argument is for specifying the logical URI for the case
+        that it's different from the physical source URI.
+        """
+        rdf_graph = self._getRDFGraph()
+        # XXX AT: waiting for rdflib to handle the string case
+        if (isinstance(source, str)
+            and source.startswith("<?xml")):
+            from rdflib import plugin
+            from rdflib.syntax.parser import Parser
+            from rdflib.StringInputSource import StringInputSource
+            parser = plugin.get(format, Parser)(self)
+            input_source = StringInputSource(source)
+            if publicID:
+                input_source.setPublicId(publicID)
+            res = parser.store.parse(input_source)
+        else:
+            res = rdf_graph.parse(source, publicID, format)
+        return res
 
     security.declareProtected(View, 'serialize')
     def serialize(self, destination=None, format='xml', base=None):

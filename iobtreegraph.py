@@ -78,6 +78,18 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         else:
             return relation
 
+    security.declareProtected(ManagePortal, 'parse')
+    def parse(self, source, publicID=None, format="xml"):
+        """Parse source into Graph.
+
+        source can either be a string, location, sml.sax.xmlreader.InputSource
+        instance.
+        Format defaults to xml (AKA rdf/xml).
+        The publicID argument is for specifying the logical URI for the case
+        that it's different from the physical source URI.
+        """
+        raise NotImplementedError
+
     security.declareProtected(ManagePortal, 'serialize')
     def serialize(self, destination=None, format='xml', base=None):
         """Serialize the graph to destination

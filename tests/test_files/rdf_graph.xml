@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:_3="http://cps-project.org/2005/data/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+>
+  <rdf:Description rdf:about="2">
+    <_3:hasPart rdf:resource="25"/>
+    <_3:hasPart rdf:resource="23"/>
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="25">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="23">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <_3:isPartOf rdf:resource="2"/>
+    <_3:isPartOf rdf:resource="1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="1">
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+</rdf:RDF>
