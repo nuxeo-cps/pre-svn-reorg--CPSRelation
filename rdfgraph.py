@@ -104,9 +104,17 @@ class RDFGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getRDFGraph()
         items = {}
-        for item in rdf_graph.predicates():
-            items[item] = None
-        return items.keys()
+        # XXX AT: this is not uneffecient, optimization required...
+        #for item in rdf_graph.predicates():
+        #    items[item] = None
+        #return items.keys()
+        # Is it more efficient???
+        try:
+            set
+        except NameError:
+            from sets import Set as set
+        predicates = set(rdf_graph.predicates())
+        return list(predicates)
 
     security.declareProtected(ManagePortal, 'deleteAllRelations')
     def deleteAllRelations(self):
