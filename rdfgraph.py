@@ -307,7 +307,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         self.deleteAllRelations()
         if REQUEST:
             REQUEST.RESPONSE.redirect(self.absolute_url()
-                                      + '/manage_editRelationInstances'
+                                      + '/manage_editRelations'
                                       '?manage_tabs_message=Deleted.')
 
 
