@@ -102,6 +102,8 @@ class RDFGraph(UniqueObject, PortalFolder):
         The publicID argument is for specifying the logical URI for the case
         that it's different from the physical source URI.
         """
+        # XXX AT: make sure this will not add duplicate relations in the graph,
+        # or find a way to make it optional
         rdf_graph = self._getRDFGraph()
         # XXX AT: waiting for rdflib to handle the string case
         if (isinstance(source, str)
