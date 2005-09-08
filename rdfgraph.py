@@ -19,7 +19,7 @@
 #
 # $Id$
 
-"""Graph.
+"""Graph using rdflib RDF Application framework
 """
 
 from zLOG import LOG, DEBUG, INFO
@@ -61,6 +61,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """
         self.id = id
         self.backend = backend
+        self.bindings = bindings
         if backend == 'SleepyCat':
             # path is the path towards the directory where BDB files will be
             # kept in the var directory of the Zope instance
@@ -71,8 +72,6 @@ class RDFGraph(UniqueObject, PortalFolder):
                 self.path = path
         elif backend == 'ZODB':
             self.rdf_graph = rdflibGraph(self.backend)
-            for k, v in bindings.items():
-                self.rdf_graph.bind(k, v)
         else:
             raise ValueError("Backend %s not supported "
                              "for graph %s" %(backend, id))
