@@ -34,6 +34,9 @@ from Products.CMFCore.PortalFolder import PortalFolder
 
 from rdflib import Graph as rdflibGraph
 from rdflib.exceptions import UniquenessError
+# rdflib imports, unused here but placed here to provide compatible
+# imports. other imports may be needed and added here
+from rdflib import Namespace, RDF, URIRef, Literal
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry

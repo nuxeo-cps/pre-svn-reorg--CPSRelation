@@ -28,9 +28,9 @@ USE_RDF = 0
 
 # XXX check that rdflib is installed before importing
 try:
-    from rdflib import Namespace, URIRef
+    from Products.CPSRelation.rdfgraph import Namespace, URIRef
 except ImportError, err:
-    if str(err) != 'No module named rdflib':
+    if str(err) != 'cannot import name Namespace':
         raise
 else:
     USE_RDF = 1

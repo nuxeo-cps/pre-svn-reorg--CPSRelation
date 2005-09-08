@@ -32,7 +32,7 @@ from Interface.Verify import verifyClass
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDF
 
 if USE_RDF:
-    from rdflib import URIRef
+    from Products.CPSRelation.rdfgraph import URIRef
 
 from Products.CPSRelation.relationtool import RelationTool
 from Products.CPSRelation.interfaces.IRelationTool import IRelationTool

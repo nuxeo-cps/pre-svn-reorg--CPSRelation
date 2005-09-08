@@ -32,10 +32,9 @@ import unittest
 from Interface.Verify import verifyClass
 
 if USE_RDF:
-    from rdflib import Graph as rdflibGraph
-    from rdflib import URIRef
     from Products.CPSRelation.interfaces.IGraph import IGraph
-    from Products.CPSRelation.rdfgraph import RDFGraph
+    from Products.CPSRelation.rdfgraph import RDFGraph, rdflibGraph
+    from Products.CPSRelation.rdfgraph import URIRef
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import RDF_NAMESPACE
 else:
