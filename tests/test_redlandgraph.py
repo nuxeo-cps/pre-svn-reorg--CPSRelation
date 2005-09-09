@@ -333,6 +333,49 @@ class TestRedlandGraph(RedlandGraphTestCase):
             self.graph.getRelationsFor(Node(Uri('10')), self.hasPart),
             ())
 
+    def test_query(self):
+        # add other relations for tests
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart, Node(Uri('totoro')))
+        self.graph.addRelationFor(Node(Uri(('2'))), self.hasPart, Node(Uri(('toto'))))
+        self.graph.addRelationFor(Node(Uri(('10'))), self.hasPart, Node(Uri(('tota'))))
+        self.graph.addRelationFor(Node(Uri(('toto'))), self.hasPart, Node(Uri(('totoro'))))
+
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj, ?obj
+WHERE {
+  ?subj cps:hasPart ?obj .
+  FILTER REGEX(?obj, "^[0-9]+")
+}
+"""
+        results = self.graph.query(query, query_language='sparql')
+        results = [(str(x['subj']), str(x['obj'])) for x in results]
+        expected = [
+            ('[1]', '[10]'),
+            ('[2]', '[10]'),
+            ('[2]', '[23]'),
+            ('[2]', '[25]'),
+            ]
+        self.assertEqual(results, expected)
+
+        # change filter
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj, ?obj
+WHERE {
+  ?subj cps:hasPart ?obj .
+  FILTER REGEX(?obj, "^toto.*")
+}
+"""
+        results = self.graph.query(query, query_language='sparql')
+        results = [(str(x['subj']), str(x['obj'])) for x in results]
+        expected = [
+            ('[1]', '[totoro]'),
+            ('[2]', '[toto]'),
+            ('[toto]', '[totoro]'),
+            ]
+        self.assertEqual(results, expected)
+
 def test_suite():
     suite = unittest.TestSuite()
     if USE_REDLAND:

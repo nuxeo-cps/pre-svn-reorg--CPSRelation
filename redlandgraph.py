@@ -35,7 +35,7 @@ from RDF import Storage, HashStorage, Model, Statement
 # RDF imports, unused here but placed here to provide compatible
 # imports. other imports may be needed and added here
 from RDF import Uri, Node, NS
-from RDF import Parser, Serializer
+from RDF import Parser, Serializer, Query
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
@@ -351,6 +351,16 @@ class RedlandGraph(UniqueObject, PortalFolder):
         while not related_iter.end():
             rdf_graph.remove_statement(related_iter.current())
             related_iter.next()
+
+    security.declareProtected(View, 'query')
+    def query(self, query_string, base_uri=None,
+              query_language='rdql', query_uri=None):
+        """Query the graph
+        """
+        rdf_graph = self._getGraph()
+        query = Query(query_string, base_uri, query_language, query_uri)
+        results = list(rdf_graph.execute(query))
+        return results
 
     #
     # ZMI
