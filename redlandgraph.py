@@ -65,7 +65,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
             # path is the path towards the directory where BDB files will be
             # kept in the var directory of the Zope instance
             if not path:
-                raise ValueError("Graph %s cannot be created with SleepyCat "
+                raise ValueError("Graph %s cannot be created with bdb "
                                  "backend if no path is specified" %(id,))
             else:
                 # path is the path towards the directory where BDB files will be
@@ -354,8 +354,10 @@ class RedlandGraph(UniqueObject, PortalFolder):
 
     security.declareProtected(View, 'query')
     def query(self, query_string, base_uri=None,
-              query_language='rdql', query_uri=None):
+              query_language='rdql', query_uri=None, **kw):
         """Query the graph
+
+        query_language can either be rdql or sparql
         """
         rdf_graph = self._getGraph()
         query = Query(query_string, base_uri, query_language, query_uri)

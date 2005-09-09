@@ -122,3 +122,10 @@ class IGraph(Interface.Base):
 
         This is useful when deleting an object, for instance.
         """
+
+    def query(query_string, **kw):
+        """Query the graph
+
+        Specific arguments can be passed to the graph query method (like
+        language used, bindings to apply...
+        """

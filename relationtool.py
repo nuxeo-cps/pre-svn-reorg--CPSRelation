@@ -251,6 +251,15 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         graph = self.getGraph(graph_id)
         return graph.removeAllRelationsFor(uid)
 
+    def queryGraph(self, graph_id, query_string, **kw):
+        """Query the given grah
+
+        Specific arguments can be passed to the graph query method (like
+        language used, bindings to apply...
+        """
+        graph = self.getGraph(graph_id)
+        return graph.query(query_string, **kw)
+
     #
     # ZMI
     #

@@ -146,3 +146,10 @@ class IRelationTool(Interface.Base):
 
         This is useful when deleting an object, for instance.
         """
+
+    def queryGraph(graph_id, query_string, **kw):
+        """Query the given graph
+
+        Specific arguments can be passed to the graph query method (like
+        language used, bindings to apply...
+        """

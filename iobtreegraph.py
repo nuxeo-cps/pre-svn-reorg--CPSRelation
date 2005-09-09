@@ -255,6 +255,12 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         for relation in relations:
             relation.removeAllRelationsFor(uid)
 
+    security.declareProtected(View, 'query')
+    def query(self, query_string, **kw):
+        """Query the graph
+        """
+        raise NotImplementedError
+
     #
     # ZMI
     #

@@ -200,6 +200,11 @@ class TestIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(self.graph.getRelationsFor(10, 'hasPart'),
                          ())
 
+    def test_query(self):
+        self.assertRaises(NotImplementedError,
+                          self.graph.query,
+                          'query :)')
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestIOBTreeGraph))

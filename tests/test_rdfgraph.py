@@ -336,6 +336,11 @@ class TestRDFGraph(RDFGraphTestCase):
             self.graph.getRelationsFor(URIRef('10'), self.hasPart),
             ())
 
+    def test_query(self):
+        self.assertRaises(NotImplementedError,
+                          self.graph.query,
+                          'query :)')
+
 def test_suite():
     suite = unittest.TestSuite()
     if USE_RDFLIB:

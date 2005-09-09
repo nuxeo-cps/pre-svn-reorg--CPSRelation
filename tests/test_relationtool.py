@@ -278,6 +278,12 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
             self.rtool.getRelationsFor('iobtreegraph', 10, 'isPartOf'),
             (1,))
 
+    def test_queryGraph(self):
+        self.assertRaises(NotImplementedError,
+                          self.rtool.queryGraph,
+                          'iobtreegraph',
+                          'query :)')
+
 
 class TestRelationToolRDFGraph(RDFGraphTestCase):
     """Test Relations Tool"""
@@ -581,6 +587,12 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
             self.rtool.getRelationsFor('rdfgraph',
                                        URIRef('10'), self.isPartOf),
             (URIRef('1'),))
+
+    def test_queryGraph(self):
+        self.assertRaises(NotImplementedError,
+                          self.rtool.queryGraph,
+                          'rdfgraph',
+                          'query :)')
 
 
 def test_suite():

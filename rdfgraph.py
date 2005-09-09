@@ -283,6 +283,12 @@ class RDFGraph(UniqueObject, PortalFolder):
         for (subject, predicate) in tuple(rdf_graph.subject_predicates(uid)):
             rdf_graph.remove((subject, predicate, uid))
 
+    security.declareProtected(View, 'query')
+    def query(self, query_string, **kw):
+        """Query the graph
+        """
+        raise NotImplementedError
+
     #
     # ZMI
     #
