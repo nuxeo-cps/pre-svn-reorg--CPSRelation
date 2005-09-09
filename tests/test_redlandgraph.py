@@ -1,0 +1,343 @@
+#!/usr/bin/python
+# Copyright (c) 2004-2005 Nuxeo SARL <http://nuxeo.com>
+# Authors:
+# - Anahide Tchertchian <at@nuxeo.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License version 2 as published
+# by the Free Software Foundation.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
+# 02111-1307, USA.
+#
+#-------------------------------------------------------------------------------
+# $Id$
+"""Test RDF Graph
+"""
+
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
+
+import os, sys
+if __name__ == '__main__' and USE_REDLAND:
+    execfile(os.path.join(sys.path[0], 'framework.py'))
+
+import unittest
+from Interface.Verify import verifyClass
+
+if USE_REDLAND:
+    from Products.CPSRelation.interfaces.IGraph import IGraph
+    from Products.CPSRelation.redlandgraph import RedlandGraph, Model
+    from Products.CPSRelation.redlandgraph import Node, Uri
+    from Products.CPSRelation.tests.CPSRelationTestCase import RedlandGraphTestCase
+    from Products.CPSRelation.tests.CPSRelationTestCase import REDLAND_NAMESPACE
+else:
+    class RedlandGraphTestCase:
+        pass
+
+class TestRedlandGraph(RedlandGraphTestCase):
+
+    def makeStringTuple(self, sequence):
+        res = tuple([str(x) for x in sequence])
+        return res
+
+    def test_interface(self):
+        verifyClass(IGraph, RedlandGraph)
+
+    def test_creation(self):
+        dummy = RedlandGraph('dummy', backend='memory')
+        self.assertEqual(dummy.getId(), 'dummy')
+        self.assertEqual(dummy.meta_type, 'Redland Graph')
+
+    def test_test_case_graph(self):
+        self.assertEqual(self.graph.getId(), 'rdfgraph')
+        self.assertEqual(self.graph.meta_type, 'Redland Graph')
+        self.assert_(isinstance(self.graph, RedlandGraph))
+        self.assert_(self.hasPart,
+                     u'http://cps-project.org/2005/data/hasPart')
+        self.assert_(self.isPartOf,
+                     u'http://cps-project.org/2005/data/isPartOf')
+
+    def test__getGraph(self):
+        self.assert_(isinstance(self.graph._getGraph(), Model))
+
+    def test_parse_file(self):
+        test_graph = RedlandGraph('dummy', backend='memory')
+        from Products.CPSRelation import tests as here_tests
+        input_source = os.path.join(here_tests.__path__[0],
+                                    'test_files/rdf_graph.xml')
+        test_graph.parse('file:'+input_source, publicID=Uri('y'))
+        all_relations = [
+            ('[y1]', str(self.hasPart), '[y10]'),
+            ('[y2]', str(self.hasPart), '[y10]'),
+            ('[y2]', str(self.hasPart), '[y23]'),
+            ('[y2]', str(self.hasPart), '[y25]'),
+            ('[y10]', str(self.isPartOf), '[y1]'),
+            ('[y10]', str(self.isPartOf), '[y2]'),
+            ('[y23]', str(self.isPartOf), '[y2]'),
+            ('[y25]', str(self.isPartOf), '[y2]'),
+            ]
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_parse_string(self):
+        test_graph = RedlandGraph('dummy', backend='memory')
+        input_source = """<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:_3="http://cps-project.org/2005/data/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+>
+  <rdf:Description rdf:about="2">
+    <_3:hasPart rdf:resource="25"/>
+    <_3:hasPart rdf:resource="23"/>
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="25">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="23">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <_3:isPartOf rdf:resource="2"/>
+    <_3:isPartOf rdf:resource="1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="1">
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+</rdf:RDF>
+"""
+        test_graph.parse(input_source,
+                         publicID=Uri('x'))
+        all_relations = [
+            ('[x1]', str(self.hasPart), '[x10]'),
+            ('[x2]', str(self.hasPart), '[x10]'),
+            ('[x2]', str(self.hasPart), '[x23]'),
+            ('[x2]', str(self.hasPart), '[x25]'),
+            ('[x10]', str(self.isPartOf), '[x1]'),
+            ('[x10]', str(self.isPartOf), '[x2]'),
+            ('[x23]', str(self.isPartOf), '[x2]'),
+            ('[x25]', str(self.isPartOf), '[x2]'),
+            ]
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_serialize(self):
+        serialized = self.graph.serialize()
+        # not possible to test xml rendering, it changes every time...
+        start = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
+        self.assert_(serialized.startswith(start))
+        end = "</rdf:RDF>\n"
+        self.assert_(serialized.endswith(end))
+
+    def test_listRelationIds(self):
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart)])
+
+    def test_deleteAllRelations(self):
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart)])
+        self.graph.deleteAllRelations()
+        self.assertEqual(self.graph.listRelationIds(), [])
+
+    def test_hasRelation(self):
+        self.assertEqual(self.graph.hasRelation(self.isPartOf),
+                         True)
+
+
+        self.assertEqual(self.graph.hasRelation(REDLAND_NAMESPACE['isPartOfEuh']),
+                         False)
+
+    def test_addRelation(self):
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart)])
+        new_relation = REDLAND_NAMESPACE['dummy']
+        self.graph.addRelation(new_relation)
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart)])
+        # XXX AT: in RDF graph, relation is added only if a relation instance
+        # is added...
+        self.graph.addRelationFor(Node(Uri('25')), new_relation, Node(Uri('2')))
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart),
+                          str(new_relation)])
+
+    def test_deleteRelation(self):
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.isPartOf), str(self.hasPart)])
+        self.graph.deleteRelation(self.isPartOf)
+        self.assertEqual(self.graph.listRelationIds(),
+                         [str(self.hasPart)])
+
+    def test_listAllRelations(self):
+        all_relations = [
+            ('[1]', str(self.hasPart), '[10]'),
+            ('[2]', str(self.hasPart), '[10]'),
+            ('[2]', str(self.hasPart), '[23]'),
+            ('[2]', str(self.hasPart), '[25]'),
+            ('[10]', str(self.isPartOf), '[1]'),
+            ('[10]', str(self.isPartOf), '[2]'),
+            ('[23]', str(self.isPartOf), '[2]'),
+            ('[25]', str(self.isPartOf), '[2]'),
+            ]
+        self.assertEqual(self.graph.listAllRelations(), all_relations)
+
+    def test_hasRelationFor(self):
+        self.assertEqual(
+            self.graph.hasRelationFor(Node(Uri('1')), self.hasPart),
+            True)
+        self.assertEqual(
+            self.graph.hasRelationFor(Node(Uri('3')), self.hasPart),
+            False)
+
+    def test_addRelationFor(self):
+        self.assertEqual(
+            self.graph.hasRelationFor(Node(Uri('3')), self.hasPart),
+            False)
+        self.graph.addRelationFor(Node(Uri('3')), self.hasPart, Node(Uri('10')))
+        self.assertEqual(
+            self.graph.hasRelationFor(Node(Uri('3')), self.hasPart),
+            True)
+
+    def test_deleteRelationFor(self):
+        related = self.graph.getRelationsFor(Node(Uri('1')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[10]',))
+        self.graph.deleteRelationFor(Node(Uri('1')), self.hasPart, Node(Uri('10')))
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('1')), self.hasPart),
+            ())
+
+    def test_getValueFor(self):
+        # 1 --hasPart--> 10
+        # 2 --hasPart--> 10, 23, 25
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('1')), self.hasPart),
+            Node(Uri('10')))
+        # test default
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('3')), self.hasPart),
+            None)
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('3')), self.hasPart,
+                                   default=Node('4')),
+            Node('4'))
+        # test any
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('1')), self.hasPart, any=False),
+            Node(Uri('10')))
+        # not possible to know which entry will be returned
+        self.assert_(
+            self.graph.getValueFor(Node(Uri('2')), self.hasPart, any=True)
+            in (Node(Uri('10')), Node(Uri('23')), Node(Uri('25'))))
+        self.assertRaises(ValueError,
+                          self.graph.getValueFor,
+                          Node(Uri('2')),
+                          self.hasPart,
+                          any=False)
+
+        # test without subject
+        self.assertEqual(
+            self.graph.getValueFor(None, self.hasPart, Node(Uri('23'))),
+            Node(Uri('2')))
+        self.assertEqual(
+            self.graph.getValueFor(None, self.hasPart, Node(Uri('3'))),
+            None)
+        self.assertEqual(
+            self.graph.getValueFor(None, self.hasPart, Node(Uri('3')),
+                                   default=Node(Uri('666'))),
+            Node(Uri('666')))
+        self.assert_(
+            self.graph.getValueFor(None, self.hasPart, Node(Uri('10')),
+                                   any=True)
+            in (Node(Uri('1')), Node(Uri('2'))))
+        self.assertRaises(ValueError,
+                          self.graph.getValueFor,
+                          None,
+                          self.hasPart,
+                          Node(Uri('10')),
+                          any=False)
+
+        # test without predicate
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('2')), None, Node(Uri('23'))),
+            self.hasPart)
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('1')), None, Node(Uri('3'))),
+            None)
+        self.assertEqual(
+            self.graph.getValueFor(Node(Uri('1')), None, Node(Uri('3')),
+                                   default=6),
+            6)
+        self.graph.addRelationFor(Node(Uri('1')), self.isPartOf, Node(Uri('10')))
+        self.assert_(
+            self.graph.getValueFor(Node(Uri('1')), None, Node(Uri('10')),
+                                   any=True)
+            in (self.hasPart, self.isPartOf))
+        self.assertRaises(ValueError,
+                          self.graph.getValueFor,
+                          Node(Uri('1')),
+                          None,
+                          Node(Uri('10')),
+                          any=False)
+
+    def test_getRelationsFor(self):
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('1')), self.hasPart),
+            (Node(Uri('10')),))
+        related = self.graph.getRelationsFor(Node(Uri('2')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[23]', '[25]', '[10]'))
+
+    def test_getInverseRelationsFor(self):
+        related = self.graph.getInverseRelationsFor(Node(Uri('10')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[1]', '[2]'))
+
+    def test_removeRelationsFor(self):
+        related = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[1]', '[2]'))
+        self.graph.addRelationFor(Node(Uri('10')), self.hasPart, Node(Uri('666')))
+        related = self.graph.getRelationsFor(Node(Uri('10')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[666]',))
+        self.graph.removeRelationsFor(Node(Uri('10')), self.isPartOf)
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf),
+            ())
+        related = self.graph.getRelationsFor(Node(Uri('10')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[666]',))
+
+    def test_removeAllRelationsFor(self):
+        related = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[1]', '[2]'))
+        self.graph.addRelationFor(Node(Uri('10')), self.hasPart, Node(Uri('666')))
+        related = self.graph.getRelationsFor(Node(Uri('10')), self.hasPart)
+        related = self.makeStringTuple(related)
+        self.assertEqual(related, ('[666]',))
+        self.graph.removeAllRelationsFor(Node(Uri('10')))
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf),
+            ())
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('10')), self.hasPart),
+            ())
+
+def test_suite():
+    suite = unittest.TestSuite()
+    if USE_REDLAND:
+        suite.addTest(unittest.makeSuite(TestRedlandGraph))
+    return suite
+
+if __name__ == '__main__':
+    framework()

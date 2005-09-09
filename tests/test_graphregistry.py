@@ -28,12 +28,15 @@ if __name__ == '__main__':
 
 import unittest
 
-from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDF
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.iobtreegraph import IOBTreeGraph
-if USE_RDF:
+if USE_RDFLIB:
     from Products.CPSRelation.rdfgraph import RDFGraph
+if USE_REDLAND:
+    from Products.CPSRelation.redlandgraph import RedlandGraph
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
 
 # default graph types registered at product setup. To be modified when adding
@@ -41,8 +44,10 @@ from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
 DEFAULT_GRAPH_TYPES = [
     IOBTreeGraph.meta_type,
     ]
-if USE_RDF:
+if USE_RDFLIB:
     DEFAULT_GRAPH_TYPES.append(RDFGraph.meta_type)
+if USE_REDLAND:
+    DEFAULT_GRAPH_TYPES.append(RedlandGraph.meta_type)
 
 class DummyGraph:
     meta_type = 'Dummy Graph'
@@ -72,7 +77,7 @@ class TestGraphRegistry(CPSRelationTestCase):
         self.assert_(isinstance(graph, IOBTreeGraph))
 
     def test_makeRDFGraph(self):
-        if not USE_RDF:
+        if not USE_RDFLIB:
             return
         graph = GraphRegistry.makeGraph(RDFGraph.meta_type,
                                         'test_rdfgraph')

@@ -22,21 +22,21 @@
 """Test RDF Graph
 """
 
-from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDF
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
 
 import os, sys
-if __name__ == '__main__' and USE_RDF:
+if __name__ == '__main__' and USE_RDFLIB:
     execfile(os.path.join(sys.path[0], 'framework.py'))
 
 import unittest
 from Interface.Verify import verifyClass
 
-if USE_RDF:
+if USE_RDFLIB:
     from Products.CPSRelation.interfaces.IGraph import IGraph
     from Products.CPSRelation.rdfgraph import RDFGraph, rdflibGraph
     from Products.CPSRelation.rdfgraph import URIRef
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
-    from Products.CPSRelation.tests.CPSRelationTestCase import RDF_NAMESPACE
+    from Products.CPSRelation.tests.CPSRelationTestCase import RDFLIB_NAMESPACE
 else:
     class RDFGraphTestCase:
         pass
@@ -59,9 +59,9 @@ class TestRDFGraph(RDFGraphTestCase):
         self.assertEqual(self.graph.getId(), 'rdfgraph')
         self.assertEqual(self.graph.meta_type, 'RDF Graph')
         self.assert_(isinstance(self.graph, RDFGraph))
-        self.assert_(self.hasPart_ns,
+        self.assert_(self.hasPart,
                      u'http://cps-project.org/2005/data/hasPart')
-        self.assert_(self.isPartOf_ns,
+        self.assert_(self.isPartOf,
                      u'http://cps-project.org/2005/data/isPartOf')
 
     def test__getRDFGraph(self):
@@ -74,14 +74,14 @@ class TestRDFGraph(RDFGraphTestCase):
                                     'test_files/rdf_graph.xml')
         test_graph.parse(input_source, publicID='Dummy publicID')
         all_relations = [
-            (URIRef('1'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('23')),
-            (URIRef('2'), self.hasPart_ns, URIRef('25')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            (URIRef('2'), self.hasPart, URIRef('25')),
+            (URIRef('10'), self.isPartOf, URIRef('1')),
+            (URIRef('10'), self.isPartOf, URIRef('2')),
+            (URIRef('23'), self.isPartOf, URIRef('2')),
+            (URIRef('25'), self.isPartOf, URIRef('2')),
             ]
         self.assertEqual(test_graph.listAllRelations(), all_relations)
 
@@ -116,14 +116,14 @@ class TestRDFGraph(RDFGraphTestCase):
 """
         test_graph.parse(input_source)
         all_relations = [
-            (URIRef('1'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('23')),
-            (URIRef('2'), self.hasPart_ns, URIRef('25')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            (URIRef('2'), self.hasPart, URIRef('25')),
+            (URIRef('10'), self.isPartOf, URIRef('1')),
+            (URIRef('10'), self.isPartOf, URIRef('2')),
+            (URIRef('23'), self.isPartOf, URIRef('2')),
+            (URIRef('25'), self.isPartOf, URIRef('2')),
             ]
         self.assertEqual(test_graph.listAllRelations(), all_relations)
 
@@ -143,135 +143,135 @@ class TestRDFGraph(RDFGraphTestCase):
 
     def test_listRelationIds(self):
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, self.hasPart_ns])
+                         [self.isPartOf, self.hasPart])
 
     def test_deleteAllRelations(self):
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, self.hasPart_ns])
+                         [self.isPartOf, self.hasPart])
         self.graph.deleteAllRelations()
         self.assertEqual(self.graph.listRelationIds(), [])
 
     def test_hasRelation(self):
-        self.assertEqual(self.graph.hasRelation(self.isPartOf_ns),
+        self.assertEqual(self.graph.hasRelation(self.isPartOf),
                          True)
 
 
-        self.assertEqual(self.graph.hasRelation(RDF_NAMESPACE['isPartOfEuh']),
+        self.assertEqual(self.graph.hasRelation(RDFLIB_NAMESPACE['isPartOfEuh']),
                          False)
 
     def test_addRelation(self):
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, self.hasPart_ns])
-        new_relation = RDF_NAMESPACE['dummy']
+                         [self.isPartOf, self.hasPart])
+        new_relation = RDFLIB_NAMESPACE['dummy']
         self.graph.addRelation(new_relation)
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, self.hasPart_ns])
+                         [self.isPartOf, self.hasPart])
         # XXX AT: in RDF graph, relation is added only if a relation instance
         # is added...
         self.graph.addRelationFor(URIRef('25'), new_relation, URIRef('2'))
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, new_relation, self.hasPart_ns])
+                         [self.isPartOf, new_relation, self.hasPart])
 
     def test_deleteRelation(self):
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.isPartOf_ns, self.hasPart_ns])
-        self.graph.deleteRelation(self.isPartOf_ns)
+                         [self.isPartOf, self.hasPart])
+        self.graph.deleteRelation(self.isPartOf)
         self.assertEqual(self.graph.listRelationIds(),
-                         [self.hasPart_ns])
+                         [self.hasPart])
 
     def test_listAllRelations(self):
         all_relations = [
-            (URIRef('1'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('10')),
-            (URIRef('2'), self.hasPart_ns, URIRef('23')),
-            (URIRef('2'), self.hasPart_ns, URIRef('25')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('1')),
-            (URIRef('10'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('23'), self.isPartOf_ns, URIRef('2')),
-            (URIRef('25'), self.isPartOf_ns, URIRef('2')),
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            (URIRef('2'), self.hasPart, URIRef('25')),
+            (URIRef('10'), self.isPartOf, URIRef('1')),
+            (URIRef('10'), self.isPartOf, URIRef('2')),
+            (URIRef('23'), self.isPartOf, URIRef('2')),
+            (URIRef('25'), self.isPartOf, URIRef('2')),
             ]
         self.assertEqual(self.graph.listAllRelations(), all_relations)
 
     def test_hasRelationFor(self):
         self.assertEqual(
-            self.graph.hasRelationFor(URIRef('1'), self.hasPart_ns),
+            self.graph.hasRelationFor(URIRef('1'), self.hasPart),
             True)
         self.assertEqual(
-            self.graph.hasRelationFor(URIRef('3'), self.hasPart_ns),
+            self.graph.hasRelationFor(URIRef('3'), self.hasPart),
             False)
 
     def test_addRelationFor(self):
         self.assertEqual(
-            self.graph.hasRelationFor(URIRef('3'), self.hasPart_ns),
+            self.graph.hasRelationFor(URIRef('3'), self.hasPart),
             False)
-        self.graph.addRelationFor(URIRef('3'), self.hasPart_ns, URIRef('10'))
+        self.graph.addRelationFor(URIRef('3'), self.hasPart, URIRef('10'))
         self.assertEqual(
-            self.graph.hasRelationFor(URIRef('3'), self.hasPart_ns),
+            self.graph.hasRelationFor(URIRef('3'), self.hasPart),
             True)
 
     def test_deleteRelationFor(self):
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('1'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('1'), self.hasPart),
             (URIRef('10'),))
-        self.graph.deleteRelationFor(URIRef('1'), self.hasPart_ns, URIRef('10'))
+        self.graph.deleteRelationFor(URIRef('1'), self.hasPart, URIRef('10'))
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('1'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('1'), self.hasPart),
             ())
 
     def test_getValueFor(self):
         # 1 --hasPart--> 10
         # 2 --hasPart--> 10, 23, 25
         self.assertEqual(
-            self.graph.getValueFor(URIRef('1'), self.hasPart_ns),
+            self.graph.getValueFor(URIRef('1'), self.hasPart),
             URIRef('10'))
         # test default
         self.assertEqual(
-            self.graph.getValueFor(URIRef('3'), self.hasPart_ns),
+            self.graph.getValueFor(URIRef('3'), self.hasPart),
             None)
         self.assertEqual(
-            self.graph.getValueFor(URIRef('3'), self.hasPart_ns,
+            self.graph.getValueFor(URIRef('3'), self.hasPart,
                                    default=URIRef('4')),
             URIRef('4'))
         # test any
         self.assertEqual(
-            self.graph.getValueFor(URIRef('1'), self.hasPart_ns, any=False),
+            self.graph.getValueFor(URIRef('1'), self.hasPart, any=False),
             URIRef('10'))
         # not possible to know which entry will be returned
         self.assert_(
-            self.graph.getValueFor(URIRef('2'), self.hasPart_ns, any=True)
+            self.graph.getValueFor(URIRef('2'), self.hasPart, any=True)
             in (URIRef('10'), URIRef('23'), URIRef('25')))
         self.assertRaises(ValueError,
                           self.graph.getValueFor,
                           URIRef('2'),
-                          self.hasPart_ns,
+                          self.hasPart,
                           any=False)
 
         # test without subject
         self.assertEqual(
-            self.graph.getValueFor(None, self.hasPart_ns, URIRef('23')),
+            self.graph.getValueFor(None, self.hasPart, URIRef('23')),
             URIRef('2'))
         self.assertEqual(
-            self.graph.getValueFor(None, self.hasPart_ns, URIRef('3')),
+            self.graph.getValueFor(None, self.hasPart, URIRef('3')),
             None)
         self.assertEqual(
-            self.graph.getValueFor(None, self.hasPart_ns, URIRef('3'),
+            self.graph.getValueFor(None, self.hasPart, URIRef('3'),
                                    default=URIRef('666')),
             URIRef('666'))
         self.assert_(
-            self.graph.getValueFor(None, self.hasPart_ns, URIRef('10'),
+            self.graph.getValueFor(None, self.hasPart, URIRef('10'),
                                    any=True)
             in (URIRef('1'), URIRef('2')))
         self.assertRaises(ValueError,
                           self.graph.getValueFor,
                           None,
-                          self.hasPart_ns,
+                          self.hasPart,
                           URIRef('10'),
                           any=False)
 
         # test without predicate
         self.assertEqual(
             self.graph.getValueFor(URIRef('2'), None, URIRef('23')),
-            self.hasPart_ns)
+            self.hasPart)
         self.assertEqual(
             self.graph.getValueFor(URIRef('1'), None, URIRef('3')),
             None)
@@ -279,11 +279,11 @@ class TestRDFGraph(RDFGraphTestCase):
             self.graph.getValueFor(URIRef('1'), None, URIRef('3'),
                                    default=6),
             6)
-        self.graph.addRelationFor(URIRef('1'), self.isPartOf_ns, URIRef('10'))
+        self.graph.addRelationFor(URIRef('1'), self.isPartOf, URIRef('10'))
         self.assert_(
             self.graph.getValueFor(URIRef('1'), None, URIRef('10'),
                                    any=True)
-            in (self.hasPart_ns, self.isPartOf_ns))
+            in (self.hasPart, self.isPartOf))
         self.assertRaises(ValueError,
                           self.graph.getValueFor,
                           URIRef('1'),
@@ -293,52 +293,52 @@ class TestRDFGraph(RDFGraphTestCase):
 
     def test_getRelationsFor(self):
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('1'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('1'), self.hasPart),
             (URIRef('10'),))
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('2'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('2'), self.hasPart),
             (URIRef('23'), URIRef('25'), URIRef('10')))
 
     def test_getInverseRelationsFor(self):
         self.assertEqual(
-            self.graph.getInverseRelationsFor(URIRef('10'), self.hasPart_ns),
+            self.graph.getInverseRelationsFor(URIRef('10'), self.hasPart),
             (URIRef('1'), URIRef('2')))
 
     def test_removeRelationsFor(self):
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.isPartOf_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
             (URIRef('1'), URIRef('2')))
-        self.graph.addRelationFor(URIRef('10'), self.hasPart_ns, URIRef('666'))
+        self.graph.addRelationFor(URIRef('10'), self.hasPart, URIRef('666'))
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.hasPart),
             (URIRef('666'),))
-        self.graph.removeRelationsFor(URIRef('10'), self.isPartOf_ns)
+        self.graph.removeRelationsFor(URIRef('10'), self.isPartOf)
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.isPartOf_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
             ())
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.hasPart),
             (URIRef('666'),))
 
     def test_removeAllRelationsFor(self):
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.isPartOf_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
             (URIRef('1'), URIRef('2')))
-        self.graph.addRelationFor(URIRef('10'), self.hasPart_ns, URIRef('666'))
+        self.graph.addRelationFor(URIRef('10'), self.hasPart, URIRef('666'))
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.hasPart),
             (URIRef('666'),))
         self.graph.removeAllRelationsFor(URIRef('10'))
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.isPartOf_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
             ())
         self.assertEqual(
-            self.graph.getRelationsFor(URIRef('10'), self.hasPart_ns),
+            self.graph.getRelationsFor(URIRef('10'), self.hasPart),
             ())
 
 def test_suite():
     suite = unittest.TestSuite()
-    if USE_RDF:
+    if USE_RDFLIB:
         suite.addTest(unittest.makeSuite(TestRDFGraph))
     return suite
 

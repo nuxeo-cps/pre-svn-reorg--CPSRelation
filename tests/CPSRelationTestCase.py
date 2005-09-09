@@ -24,21 +24,33 @@
 
 import unittest
 
-USE_RDF = 0
+USE_RDFLIB = 0
+USE_REDLAND = 0
+
+from Products.CPSRelation.relationtool import RelationTool
 
 # XXX check that rdflib is installed before importing
 try:
     from Products.CPSRelation.rdfgraph import Namespace, URIRef
 except ImportError, err:
+    print "cannot test rdflib features"
     if str(err) != 'cannot import name Namespace':
         raise
 else:
-    USE_RDF = 1
+    USE_RDFLIB = 1
+    RDFLIB_NAMESPACE = Namespace('http://cps-project.org/2005/data/')
 
-from Products.CPSRelation.relationtool import RelationTool
+# XXX check that Redland is installed before importing
+try:
+    from Products.CPSRelation.redlandgraph import Uri, Node, NS
+except ImportError, err:
+    print "cannot test Redland features"
+    if str(err) != 'cannot import name Uri':
+        raise
+else:
+    USE_REDLAND = 1
+    REDLAND_NAMESPACE = NS('http://cps-project.org/2005/data/')
 
-if USE_RDF:
-    RDF_NAMESPACE = Namespace('http://cps-project.org/2005/data/')
 
 class CPSRelationTestCase(unittest.TestCase):
 
@@ -90,6 +102,7 @@ class IOBTreeGraphTestCase(CPSRelationTestCase):
         del self.hasPart
         del self.isPartOf
 
+
 class RDFGraphTestCase(CPSRelationTestCase):
     """CPSRelation test case using RDF graphs"""
 
@@ -99,19 +112,44 @@ class RDFGraphTestCase(CPSRelationTestCase):
         self.graph = self.rtool.getGraph('rdfgraph')
         # 2 relations, hasPart and its inverse, isPartOf
 
-        self.hasPart_ns = RDF_NAMESPACE['hasPart']
-        self.graph.addRelationFor(URIRef('1'), self.hasPart_ns, URIRef('10'))
-        self.graph.addRelationFor(URIRef('2'), self.hasPart_ns, URIRef('10'))
-        self.graph.addRelationFor(URIRef('2'), self.hasPart_ns, URIRef('23'))
-        self.graph.addRelationFor(URIRef('2'), self.hasPart_ns, URIRef('25'))
+        self.hasPart = RDFLIB_NAMESPACE['hasPart']
+        self.graph.addRelationFor(URIRef('1'), self.hasPart, URIRef('10'))
+        self.graph.addRelationFor(URIRef('2'), self.hasPart, URIRef('10'))
+        self.graph.addRelationFor(URIRef('2'), self.hasPart, URIRef('23'))
+        self.graph.addRelationFor(URIRef('2'), self.hasPart, URIRef('25'))
 
-        self.isPartOf_ns = RDF_NAMESPACE['isPartOf']
-        self.graph.addRelationFor(URIRef('10'), self.isPartOf_ns, URIRef('1'))
-        self.graph.addRelationFor(URIRef('10'), self.isPartOf_ns, URIRef('2'))
-        self.graph.addRelationFor(URIRef('23'), self.isPartOf_ns, URIRef('2'))
-        self.graph.addRelationFor(URIRef('25'), self.isPartOf_ns, URIRef('2'))
+        self.isPartOf = RDFLIB_NAMESPACE['isPartOf']
+        self.graph.addRelationFor(URIRef('10'), self.isPartOf, URIRef('1'))
+        self.graph.addRelationFor(URIRef('10'), self.isPartOf, URIRef('2'))
+        self.graph.addRelationFor(URIRef('23'), self.isPartOf, URIRef('2'))
+        self.graph.addRelationFor(URIRef('25'), self.isPartOf, URIRef('2'))
 
     def tearDown(self):
         del self.rtool
         del self.graph
 
+
+class RedlandGraphTestCase(CPSRelationTestCase):
+    """CPSRelation test case using Redland RDF graphs"""
+
+    def setUp(self):
+        self.rtool = RelationTool()
+        self.rtool.addGraph('rdfgraph', 'Redland Graph', backend='memory')
+        self.graph = self.rtool.getGraph('rdfgraph')
+        # 2 relations, hasPart and its inverse, isPartOf
+
+        self.hasPart = REDLAND_NAMESPACE['hasPart']
+        self.graph.addRelationFor(Node(Uri('1')), self.hasPart, Node(Uri('10')))
+        self.graph.addRelationFor(Node(Uri('2')), self.hasPart, Node(Uri('10')))
+        self.graph.addRelationFor(Node(Uri('2')), self.hasPart, Node(Uri('23')))
+        self.graph.addRelationFor(Node(Uri('2')), self.hasPart, Node(Uri('25')))
+
+        self.isPartOf = REDLAND_NAMESPACE['isPartOf']
+        self.graph.addRelationFor(Node(Uri('10')), self.isPartOf, Node(Uri('1')))
+        self.graph.addRelationFor(Node(Uri('10')), self.isPartOf, Node(Uri('2')))
+        self.graph.addRelationFor(Node(Uri('23')), self.isPartOf, Node(Uri('2')))
+        self.graph.addRelationFor(Node(Uri('25')), self.isPartOf, Node(Uri('2')))
+
+    def tearDown(self):
+        del self.rtool
+        del self.graph
