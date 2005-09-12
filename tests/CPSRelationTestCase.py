@@ -56,19 +56,20 @@ class CPSRelationTestCase(unittest.TestCase):
 
     # XXX AT: order is not important in here so override it to sort
     # lists/tuples
-    def assertEqual(self, first, second, msg=None):
-        if isinstance(first, tuple):
-            first_list = list(first)
-            first_list.sort()
-            first = tuple(first_list)
-        elif isinstance(first, list):
-            first.sort()
-        if isinstance(second, tuple):
-            second_list = list(second)
-            second_list.sort()
-            second = tuple(second_list)
-        elif isinstance(second, list):
-            second.sort()
+    def assertEqual(self, first, second, msg=None, keep_order=False):
+        if not keep_order:
+            if isinstance(first, tuple):
+                first_list = list(first)
+                first_list.sort()
+                first = tuple(first_list)
+            elif isinstance(first, list):
+                first.sort()
+            if isinstance(second, tuple):
+                second_list = list(second)
+                second_list.sort()
+                second = tuple(second_list)
+            elif isinstance(second, list):
+                second.sort()
         return unittest.TestCase.assertEqual(self, first, second, msg)
 
     assertEquals = assertEqual

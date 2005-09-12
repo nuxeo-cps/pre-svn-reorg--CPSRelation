@@ -414,6 +414,86 @@ WHERE {
             ]
         self.assertEqual(results, expected)
 
+    def test_order(self):
+        test_graph = RedlandGraph('dummy', backend='memory')
+        # root
+        #   section1
+        #     subsection11
+        #     subsection12
+        #   my section 2
+        #     another subsection21
+        #     a subsection22
+        #   section3
+        #     subsection 31
+        #       subsubsection 311
+        self.hasOrder = REDLAND_NAMESPACE['hasOrder']
+        self.hasLevel = REDLAND_NAMESPACE['hasLevel']
+        test_graph.addRelationFor(Node(Uri('root')), self.hasPart,
+                                  Node(Uri('section1')))
+        test_graph.addRelationFor(Node(Uri('root')), self.hasLevel, '1')
+        test_graph.addRelationFor(Node(Uri('section1')), self.hasOrder, '1')
+        test_graph.addRelationFor(Node(Uri('section1')), self.hasLevel, '2')
+        test_graph.addRelationFor(Node(Uri('section1')), self.hasPart,
+                                  Node(Uri('subsection11')))
+        test_graph.addRelationFor(Node(Uri('subsection11')), self.hasOrder, '1')
+        test_graph.addRelationFor(Node(Uri('subsection11')), self.hasLevel, '3')
+        test_graph.addRelationFor(Node(Uri('section1')), self.hasPart,
+                                  Node(Uri('subsection12')))
+        test_graph.addRelationFor(Node(Uri('subsection12')), self.hasOrder, '2')
+        test_graph.addRelationFor(Node(Uri('subsection12')), self.hasLevel, '3')
+        test_graph.addRelationFor(Node(Uri('root')), self.hasPart,
+                                  Node(Uri('my section 2')))
+        test_graph.addRelationFor(Node(Uri('my section 2')), self.hasOrder, '2')
+        test_graph.addRelationFor(Node(Uri('my section 2')), self.hasLevel, '2')
+        test_graph.addRelationFor(Node(Uri('my section 2')), self.hasPart,
+                                  Node(Uri('another subsection21')))
+        test_graph.addRelationFor(Node(Uri('another subsection21')), self.hasOrder, '1')
+        test_graph.addRelationFor(Node(Uri('another subsection21')), self.hasLevel, '3')
+        test_graph.addRelationFor(Node(Uri('my section 2')), self.hasPart,
+                                  Node(Uri('a subsection22')))
+        test_graph.addRelationFor(Node(Uri('a subsection22')), self.hasOrder, '2')
+        test_graph.addRelationFor(Node(Uri('a subsection22')), self.hasLevel, '3')
+        test_graph.addRelationFor(Node(Uri('my section 2')), self.hasOrder, '2')
+        test_graph.addRelationFor(Node(Uri('root')), self.hasPart,
+                                  Node(Uri('section3')))
+        test_graph.addRelationFor(Node(Uri('section3')), self.hasOrder, '3')
+        test_graph.addRelationFor(Node(Uri('section3')), self.hasLevel, '2')
+        test_graph.addRelationFor(Node(Uri('section3')), self.hasPart,
+                                  Node(Uri('subsection31')))
+        test_graph.addRelationFor(Node(Uri('subsection31')), self.hasOrder, '1')
+        test_graph.addRelationFor(Node(Uri('subsection31')), self.hasLevel, '3')
+        test_graph.addRelationFor(Node(Uri('subsection31')), self.hasPart,
+                                  Node(Uri('subsubsection311')))
+        test_graph.addRelationFor(Node(Uri('subsubsection311')), self.hasOrder, '1')
+        test_graph.addRelationFor(Node(Uri('subsubsection311')), self.hasLevel, '4')
+
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj ?obj
+WHERE {
+  ?subj cps:hasPart ?obj
+  ?obj cps:hasOrder ?order
+  ?obj cps:hasLevel ?level
+}
+ORDER BY ?level ?order
+"""
+        results = test_graph.query(query, query_language='sparql')
+        results = [(str(x['subj']), str(x['obj'])) for x in results]
+
+        expected = [
+            ('[root]', '[section1]'),
+            ('[root]', '[my section 2]'),
+            ('[root]', '[section3]'),
+            ('[section1]', '[subsection11]'),
+            ('[my section 2]', '[another subsection21]'),
+            ('[section3]', '[subsection31]'),
+            ('[section1]', '[subsection12]'),
+            ('[my section 2]', '[a subsection22]'),
+            ('[subsection31]', '[subsubsection311]'),
+            ]
+
+        self.assertEqual(results, expected, keep_order=True)
+
 def test_suite():
     suite = unittest.TestSuite()
     if USE_REDLAND:
