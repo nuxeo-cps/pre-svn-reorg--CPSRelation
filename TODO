@@ -6,4 +6,3 @@ $Id: $
 
 - Concurrency to access a bdb graph (see Zope db adapters)
 - Transactions management (add/remove, see beforeCommitHook mechanism)
-- Add test case for relation tool using a redland graph

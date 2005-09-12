@@ -30,13 +30,17 @@ import unittest
 from Interface.Verify import verifyClass
 
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 
 if USE_RDFLIB:
     from Products.CPSRelation.rdfgraph import URIRef
+if USE_REDLAND:
+    from Products.CPSRelation.redlandgraph import Node, Uri
 
 from Products.CPSRelation.relationtool import RelationTool
 from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
 from Products.CPSRelation.tests.CPSRelationTestCase import IOBTreeGraphTestCase
+
 if USE_RDFLIB:
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFLIB_NAMESPACE
@@ -44,8 +48,16 @@ else:
     class RDFGraphTestCase:
         pass
 
+if USE_REDLAND:
+    from Products.CPSRelation.tests.CPSRelationTestCase import RedlandGraphTestCase
+    from Products.CPSRelation.tests.CPSRelationTestCase import REDLAND_NAMESPACE
+else:
+    class RedlandGraphTestCase:
+        pass
+
 class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
-    """Test Relations Tool"""
+    """Test Relations Tool with and iobtree graph
+    """
 
     def test_interface(self):
         verifyClass(IRelationTool, RelationTool)
@@ -166,6 +178,25 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
             self.rtool.getRelationsFor('iobtreegraph', 3, 'hasPart'),
             (10,))
 
+    def test_addRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 10, 'isPartOf'),
+            (1, 2))
+        new_rel = (
+            (10, 'isPartOf', 3),
+            (10, 'isPartOf', 23),
+            )
+        self.rtool.addRelationsFor('iobtreegraph', new_rel)
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 10, 'isPartOf'),
+            (1, 2, 3, 23))
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 3, 'hasPart'),
+            (10,))
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 23, 'hasPart'),
+            (10,))
+
     def test_deleteRelationFor(self):
         self.rtool.deleteRelationFor('iobtreegraph', 1, 'hasPart', 10)
 
@@ -181,6 +212,29 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(
             self.rtool.getRelationsFor('iobtreegraph', 23, 'isPartOf'),
             (2,))
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 25, 'isPartOf'),
+            (2,))
+
+    def test_deleteRelationsFor(self):
+        del_rel = (
+            (1, 'hasPart', 10),
+            (2, 'hasPart', 23),
+            )
+        self.rtool.deleteRelationsFor('iobtreegraph', del_rel)
+
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 1, 'hasPart'),
+            ())
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 2, 'hasPart'),
+            (10, 25))
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 10, 'isPartOf'),
+            (2,))
+        self.assertEqual(
+            self.rtool.getRelationsFor('iobtreegraph', 23, 'isPartOf'),
+            ())
         self.assertEqual(
             self.rtool.getRelationsFor('iobtreegraph', 25, 'isPartOf'),
             (2,))
@@ -286,7 +340,8 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
 
 
 class TestRelationToolRDFGraph(RDFGraphTestCase):
-    """Test Relations Tool"""
+    """Test Relations Tool with a rdflib graph
+    """
 
     def test_interface(self):
         verifyClass(IRelationTool, RelationTool)
@@ -446,6 +501,30 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
                                        URIRef('3'), self.hasPart),
             ())
 
+    def test_addRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('10'), self.isPartOf),
+            (URIRef('1'), URIRef('2')))
+        new_rel = (
+            (URIRef('10'), self.isPartOf, URIRef('3')),
+            (URIRef('10'), self.isPartOf, URIRef('23')),
+            )
+        self.rtool.addRelationsFor('rdfgraph', new_rel)
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('10'), self.isPartOf),
+            (URIRef('1'), URIRef('2'), URIRef('3'), URIRef('23')))
+        # XXX inverse relations are not added
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('3'), self.hasPart),
+            ())
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('23'), self.hasPart),
+            ())
+
     def test_deleteRelationFor(self):
         self.rtool.deleteRelationFor('rdfgraph',
                                      URIRef('1'), self.hasPart, URIRef('10'))
@@ -458,6 +537,35 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
             self.rtool.getRelationsFor('rdfgraph',
                                        URIRef('2'), self.hasPart),
             (URIRef('10'), URIRef('23'), URIRef('25')))
+        # XXX inverse relation is not deleted
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('10'), self.isPartOf),
+            (URIRef('1'), URIRef('2'),))
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('23'), self.isPartOf),
+            (URIRef('2'),))
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('25'), self.isPartOf),
+            (URIRef('2'),))
+
+    def test_deleteRelationsFor(self):
+        del_rel = (
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            )
+        self.rtool.deleteRelationsFor('rdfgraph', del_rel)
+
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('1'), self.hasPart),
+            ())
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       URIRef('2'), self.hasPart),
+            (URIRef('10'), URIRef('25')))
         # XXX inverse relation is not deleted
         self.assertEqual(
             self.rtool.getRelationsFor('rdfgraph',
@@ -595,11 +703,437 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
                           'query :)')
 
 
+class TestRelationToolRedlandGraph(RedlandGraphTestCase):
+    """Test Relations Tool with a redland graph
+    """
+
+    def test_interface(self):
+        verifyClass(IRelationTool, RelationTool)
+
+    def test_creation(self):
+        tool = RelationTool()
+        self.assertEqual(tool.getId(), 'portal_relations')
+        self.assertEqual(tool.meta_type, 'Relation Tool')
+
+    def test_test_case_tool(self):
+        self.assertNotEqual(self.rtool, None)
+        self.assertEqual(self.rtool.getId(), 'portal_relations')
+        self.assertEqual(self.rtool.meta_type, 'Relation Tool')
+        self.assert_(isinstance(self.rtool, RelationTool))
+
+    def test_listGraphIds(self):
+        self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
+
+    def test_deleteAllGraphs(self):
+        self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
+        self.rtool.deleteAllGraphs()
+        self.assertEqual(self.rtool.listGraphIds(), [])
+
+    def test_hasGraph(self):
+        self.assertEqual(self.rtool.hasGraph('rdfgraph'), True)
+        self.assertEqual(self.rtool.hasGraph('rdfgrapheuh'), False)
+
+    def test_addGraph(self):
+        self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
+        self.rtool.addGraph('test_graph', 'Redland Graph', backend='memory')
+        self.assertEqual(self.rtool.listGraphIds(),
+                         ['test_graph', 'rdfgraph'])
+        test_graph = self.rtool.getGraph('test_graph')
+        self.assertEqual(test_graph.getId(), 'test_graph')
+        self.assertEqual(test_graph.meta_type, 'Redland Graph')
+
+    def test_deleteGraph(self):
+        self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
+        self.rtool.addGraph('test_graph', 'Redland Graph', backend='memory')
+        self.assertEqual(self.rtool.listGraphIds(),
+                         ['test_graph', 'rdfgraph'])
+        self.rtool.deleteGraph('test_graph')
+        self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
+
+    def test_getGraph(self):
+        test_graph = self.rtool.getGraph('rdfgraph')
+        self.assertEqual(test_graph, self.graph)
+        self.assertEqual(test_graph.getId(), 'rdfgraph')
+        self.assertEqual(test_graph.meta_type, 'Redland Graph')
+
+    def test_parseGraph_file(self):
+        self.rtool.addGraph('test_graph', 'Redland Graph', backend='memory')
+        from Products.CPSRelation import tests as here_tests
+        input_source = os.path.join(here_tests.__path__[0],
+                                    'test_files/rdf_graph.xml')
+        self.rtool.parseGraph('test_graph', 'file:'+input_source,
+                              publicID=Uri('y'))
+        all_relations = [
+            ('[y1]', str(self.hasPart), '[y10]'),
+            ('[y2]', str(self.hasPart), '[y10]'),
+            ('[y2]', str(self.hasPart), '[y23]'),
+            ('[y2]', str(self.hasPart), '[y25]'),
+            ('[y10]', str(self.isPartOf), '[y1]'),
+            ('[y10]', str(self.isPartOf), '[y2]'),
+            ('[y23]', str(self.isPartOf), '[y2]'),
+            ('[y25]', str(self.isPartOf), '[y2]'),
+            ]
+        test_graph = self.rtool.getGraph('test_graph')
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_parseGraph_string(self):
+        self.rtool.addGraph('test_graph', 'Redland Graph', backend='memory')
+        input_source = """<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF
+   xmlns:_3="http://cps-project.org/2005/data/"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:xml="http://www.w3.org/XML/1998/namespace"
+>
+  <rdf:Description rdf:about="2">
+    <_3:hasPart rdf:resource="25"/>
+    <_3:hasPart rdf:resource="23"/>
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="25">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="23">
+    <_3:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <_3:isPartOf rdf:resource="2"/>
+    <_3:isPartOf rdf:resource="1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="1">
+    <_3:hasPart rdf:resource="10"/>
+  </rdf:Description>
+</rdf:RDF>
+"""
+        self.rtool.parseGraph('test_graph', input_source,
+                              publicID=Uri('x'))
+        all_relations = [
+            ('[x1]', str(self.hasPart), '[x10]'),
+            ('[x2]', str(self.hasPart), '[x10]'),
+            ('[x2]', str(self.hasPart), '[x23]'),
+            ('[x2]', str(self.hasPart), '[x25]'),
+            ('[x10]', str(self.isPartOf), '[x1]'),
+            ('[x10]', str(self.isPartOf), '[x2]'),
+            ('[x23]', str(self.isPartOf), '[x2]'),
+            ('[x25]', str(self.isPartOf), '[x2]'),
+            ]
+        test_graph = self.rtool.getGraph('test_graph')
+        self.assertEqual(test_graph.listAllRelations(), all_relations)
+
+    def test_serializeGraph(self):
+        serialized = self.rtool.serializeGraph('rdfgraph')
+        # not possible to test xml rendering, it changes every time...
+        start = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
+        self.assert_(serialized.startswith(start))
+        end = "</rdf:RDF>\n"
+        self.assert_(serialized.endswith(end))
+
+    def test_listRelationIds(self):
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'),
+                         [str(self.hasPart), str(self.isPartOf)])
+
+    def test_deleteAllRelations(self):
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'),
+                         [str(self.hasPart), str(self.isPartOf)])
+        self.rtool.deleteAllRelations('rdfgraph')
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'), [])
+
+    def test_hasRelation(self):
+        self.assertEqual(self.rtool.hasRelation('rdfgraph', self.hasPart),
+                         True)
+        self.assertEqual(self.rtool.hasRelation('rdfgraph', self.isPartOf),
+                         True)
+        self.assertEqual(
+            self.rtool.hasRelation('rdfgraph', REDLAND_NAMESPACE['dummy']),
+            False)
+
+    def test_addRelation(self):
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'),
+                         [str(self.isPartOf), str(self.hasPart)])
+        new_relation = REDLAND_NAMESPACE['dummy']
+        self.rtool.addRelation('rdfgraph', new_relation)
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'),
+                         [str(self.isPartOf), str(self.hasPart)])
+        # XXX AT: in RDF graph, relation is added only if a relation instance
+        # is added...
+        self.rtool.addRelationFor('rdfgraph',
+                                  Node(Uri('25')), new_relation, Node(Uri('2')))
+        self.assertEqual(self.rtool.listRelationIds('rdfgraph'),
+                         [str(self.isPartOf), str(self.hasPart),
+                          str(new_relation)])
+
+    def test_deleteRelation(self):
+        self.assertEqual(self.rtool.hasRelation('rdfgraph', self.hasPart),
+                         True)
+        self.rtool.deleteRelation('rdfgraph', self.hasPart)
+        self.assertEqual(self.rtool.hasRelation('rdfgraph', self.hasPart),
+                         False)
+
+    def test_hasRelationFor(self):
+        self.assertEqual(
+            self.rtool.hasRelationFor('rdfgraph',
+                                      Node(Uri('1')), self.hasPart),
+            True)
+        self.assertEqual(
+            self.rtool.hasRelationFor('rdfgraph',
+                                      Node(Uri('10')), self.hasPart),
+            False)
+
+    def test_addRelationFor(self):
+        self.assertEqual(
+            self.rtool.hasRelationFor('rdfgraph', Node(Uri('3')), self.hasPart),
+            False)
+        self.rtool.addRelationFor('rdfgraph',
+                                  Node(Uri('3')), self.hasPart, Node(Uri('10')))
+        self.assertEqual(
+            self.rtool.hasRelationFor('rdfgraph', Node(Uri('3')), self.hasPart),
+            True)
+
+    def test_addRelationsFor(self):
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        new_rel = (
+            (Node(Uri('10')), self.isPartOf, Node(Uri('3'))),
+            (Node(Uri('10')), self.isPartOf, Node(Uri('23'))),
+            )
+        self.rtool.addRelationsFor('rdfgraph', new_rel)
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]', '[3]', '[23]'))
+        # XXX inverse relations are not added
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('3')), self.hasPart),
+            ())
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('23')), self.hasPart),
+            ())
+
+    def test_deleteRelationFor(self):
+        self.rtool.deleteRelationFor('rdfgraph',
+                                     Node(Uri('1')), self.hasPart, Node(Uri('10')))
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('1')), self.hasPart),
+            ())
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+        # XXX inverse relation is not deleted
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('23')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('25')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+
+    def test_deleteRelationsFor(self):
+        del_rel = (
+            (Node(Uri('1')), self.hasPart, Node(Uri('10'))),
+            (Node(Uri('2')), self.hasPart, Node(Uri('23'))),
+            )
+        self.rtool.deleteRelationsFor('rdfgraph', del_rel)
+
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('1')), self.hasPart),
+            ())
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[25]'))
+        # XXX inverse relation is not deleted
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('23')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('25')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+
+    def test_getValueFor(self):
+        # 1 --hasPart--> 10
+        # 2 --hasPart--> 10, 23, 25
+        self.assertEqual(
+            self.rtool.getValueFor('rdfgraph', Node(Uri('1')), self.hasPart),
+            Node(Uri('10')))
+        # test default
+        self.assertEqual(
+            self.rtool.getValueFor('rdfgraph', Node(Uri('3')), self.hasPart),
+            None)
+        self.assertEqual(
+            self.rtool.getValueFor('rdfgraph', Node(Uri('3')), self.hasPart,
+                                   default=Node(Uri('4'))),
+            Node(Uri('4')))
+        # test any
+        self.assertEqual(
+            self.rtool.getValueFor('rdfgraph', Node(Uri('1')), self.hasPart, any=False),
+            Node(Uri('10')))
+        # not possible to know which entry will be returned
+        self.assert_(
+            self.rtool.getValueFor('rdfgraph', Node(Uri('2')), self.hasPart, any=True)
+            in (Node(Uri('10')), Node(Uri('23')), Node(Uri('25'))))
+        self.assertRaises(ValueError,
+                          self.rtool.getValueFor,
+                          'rdfgraph',
+                          Node(Uri('2')),
+                          self.hasPart,
+                          any=False)
+
+    def test_getRelationsFor(self):
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('1')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]',))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('23')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('25')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+
+    def test_getInverseRelationsFor(self):
+        rel = self.rtool.getInverseRelationsFor('rdfgraph',
+                                                Node(Uri('1')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]',))
+        rel = self.rtool.getInverseRelationsFor('rdfgraph',
+                                                Node(Uri('2')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+        rel = self.rtool.getInverseRelationsFor('rdfgraph',
+                                                Node(Uri('10')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        rel = self.rtool.getInverseRelationsFor('rdfgraph',
+                                                Node(Uri('23')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+        rel = self.rtool.getInverseRelationsFor('rdfgraph',
+                                                Node(Uri('25')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+
+    def test_removeRelationsFor(self):
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+        self.rtool.removeRelationsFor('rdfgraph',
+                                      Node(Uri('2')), self.hasPart)
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('2')), self.hasPart),
+            ())
+
+    def test_removeAllRelationsFor(self):
+        self.rtool.addRelationFor('rdfgraph',
+                                  Node(Uri('2')), self.isPartOf, Node(Uri('3')))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('2')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[3]',))
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+
+        self.rtool.removeAllRelationsFor('rdfgraph', Node(Uri('2')))
+
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('2')), self.hasPart),
+            ())
+        self.assertEqual(
+            self.rtool.getRelationsFor('rdfgraph',
+                                       Node(Uri('2')), self.isPartOf),
+            ())
+        rel = self.rtool.getRelationsFor('rdfgraph',
+                                         Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]',))
+
+    def test_queryGraph(self):
+        # add other relations for tests
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart, Node(Uri('totoro')))
+        self.graph.addRelationFor(Node(Uri(('2'))), self.hasPart, Node(Uri(('toto'))))
+        self.graph.addRelationFor(Node(Uri(('10'))), self.hasPart, Node(Uri(('tota'))))
+        self.graph.addRelationFor(Node(Uri(('toto'))), self.hasPart, Node(Uri(('totoro'))))
+
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj, ?obj
+WHERE {
+  ?subj cps:hasPart ?obj .
+  FILTER REGEX(?obj, "^[0-9]+")
+}
+"""
+        results = self.rtool.queryGraph('rdfgraph', query, query_language='sparql')
+        results = [(str(x['subj']), str(x['obj'])) for x in results]
+        expected = [
+            ('[1]', '[10]'),
+            ('[2]', '[10]'),
+            ('[2]', '[23]'),
+            ('[2]', '[25]'),
+            ]
+        self.assertEqual(results, expected)
+
+        # change filter
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj, ?obj
+WHERE {
+  ?subj cps:hasPart ?obj .
+  FILTER REGEX(?obj, "^toto.*")
+}
+"""
+        results = self.rtool.queryGraph('rdfgraph', query, query_language='sparql')
+        results = [(str(x['subj']), str(x['obj'])) for x in results]
+        expected = [
+            ('[1]', '[totoro]'),
+            ('[2]', '[toto]'),
+            ('[toto]', '[totoro]'),
+            ]
+        self.assertEqual(results, expected)
+
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestRelationToolIOBTreeGraph))
     if USE_RDFLIB:
         suite.addTest(unittest.makeSuite(TestRelationToolRDFGraph))
+    if USE_REDLAND:
+        suite.addTest(unittest.makeSuite(TestRelationToolRedlandGraph))
     return suite
 
 if __name__ == '__main__':

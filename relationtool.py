@@ -112,27 +112,34 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
 
 
     security.declareProtected(ManagePortal, 'parseGraph')
-    def parseGraph(self, graph_id, source, publicID=None, format="xml"):
+    def parseGraph(self, graph_id, source, publicID=None, format=None):
         """Parse source into the given graph.
 
         source can either be a string, location, sml.sax.xmlreader.InputSource
         instance.
-        Format defaults to xml (AKA rdf/xml).
         The publicID argument is for specifying the logical URI for the case
         that it's different from the physical source URI.
         """
         graph = self.getGraph(graph_id)
-        return graph.parse(source, publicID, format)
+        if format is None:
+            res = graph.parse(source, publicID)
+        else:
+            res = graph.parse(source, publicID, format)
+        return res
 
     security.declareProtected(ManagePortal, 'serializeGraph')
     def serializeGraph(self, graph_id, destination=None,
-                       format='xml', base=None):
+                       format=None, base=None):
         """Serialize the given graph to destination
 
         If destination is None then serialization is returned as string.
         """
         graph = self.getGraph(graph_id)
-        return graph.serialize(destination, format, base)
+        if format is None:
+            res = graph.serialize(destination, base=base)
+        else:
+            res = graph.serialize(destination, format=format, base=base)
+        return res
 
     # relations
 
@@ -193,6 +200,16 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         graph = self.getGraph(graph_id)
         return graph.addRelationFor(uid, relation_id, related_uid)
 
+    security.declareProtected(View, 'addRelationsFor')
+    def addRelationsFor(self, graph_id, triplets_list):
+        """Add given relations to the given graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        graph = self.getGraph(graph_id)
+        return graph.addRelationsFor(triplets_list)
+
     security.declareProtected(View, 'deleteRelationFor')
     def deleteRelationFor(self, graph_id, uid, relation_id, related_uid):
         """Delete relation for the given object uids and the given relation
@@ -200,6 +217,16 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         """
         graph = self.getGraph(graph_id)
         return graph.deleteRelationFor(uid, relation_id, related_uid)
+
+    security.declareProtected(View, 'deleteRelationsFor')
+    def deleteRelationsFor(self, graph_id, triplets_list):
+        """Delete given relations in the given graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        graph = self.getGraph(graph_id)
+        return graph.deleteRelationsFor(triplets_list)
 
     security.declareProtected(View, 'getValueFor')
     def getValueFor(self, graph_id, uid, relation_id, related_uid=None,

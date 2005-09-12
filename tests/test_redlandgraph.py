@@ -43,10 +43,6 @@ else:
 
 class TestRedlandGraph(RedlandGraphTestCase):
 
-    def makeStringTuple(self, sequence):
-        res = tuple([str(x) for x in sequence])
-        return res
-
     def test_interface(self):
         verifyClass(IGraph, RedlandGraph)
 
@@ -150,8 +146,6 @@ class TestRedlandGraph(RedlandGraphTestCase):
     def test_hasRelation(self):
         self.assertEqual(self.graph.hasRelation(self.isPartOf),
                          True)
-
-
         self.assertEqual(self.graph.hasRelation(REDLAND_NAMESPACE['isPartOfEuh']),
                          False)
 
@@ -206,6 +200,26 @@ class TestRedlandGraph(RedlandGraphTestCase):
             self.graph.hasRelationFor(Node(Uri('3')), self.hasPart),
             True)
 
+    def test_addRelationsFor(self):
+        rel = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        new_rel = (
+            (Node(Uri('10')), self.isPartOf, Node(Uri('3'))),
+            (Node(Uri('10')), self.isPartOf, Node(Uri('23'))),
+            )
+        self.graph.addRelationsFor(new_rel)
+        rel = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]', '[3]', '[23]'))
+        # XXX inverse relations are not added
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('3')), self.hasPart),
+            ())
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('23')), self.hasPart),
+            ())
+
     def test_deleteRelationFor(self):
         related = self.graph.getRelationsFor(Node(Uri('1')), self.hasPart)
         related = self.makeStringTuple(related)
@@ -214,6 +228,30 @@ class TestRedlandGraph(RedlandGraphTestCase):
         self.assertEqual(
             self.graph.getRelationsFor(Node(Uri('1')), self.hasPart),
             ())
+
+    def test_deleteRelationsFor(self):
+        del_rel = (
+            (Node(Uri('1')), self.hasPart, Node(Uri('10'))),
+            (Node(Uri('2')), self.hasPart, Node(Uri('23'))),
+            )
+        self.graph.deleteRelationsFor(del_rel)
+
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('1')), self.hasPart),
+            ())
+        rel = self.graph.getRelationsFor(Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[25]'))
+        # XXX inverse relation is not deleted
+        rel = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[1]', '[2]'))
+        rel = self.graph.getRelationsFor(Node(Uri('23')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
+        rel = self.graph.getRelationsFor(Node(Uri('25')), self.isPartOf)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[2]',))
 
     def test_getValueFor(self):
         # 1 --hasPart--> 10

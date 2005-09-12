@@ -218,6 +218,17 @@ class RDFGraph(UniqueObject, PortalFolder):
         rdf_graph = self._getRDFGraph()
         rdf_graph.add((uid, relation_id, related_uid))
 
+    security.declareProtected(View, 'addRelationsFor')
+    def addRelationsFor(self, triplets_list):
+        """Add given relations to the graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        rdf_graph = self._getRDFGraph()
+        for item in triplets_list:
+            rdf_graph.add(item)
+
     security.declareProtected(View, 'deleteRelationFor')
     def deleteRelationFor(self, uid, relation_id, related_uid):
         """Delete relation for the given object uids and the given relation
@@ -225,6 +236,17 @@ class RDFGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getRDFGraph()
         rdf_graph.remove((uid, relation_id, related_uid))
+
+    security.declareProtected(View, 'deleteRelationsFor')
+    def deleteRelationsFor(self, triplets_list):
+        """Delete given relations in the graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        rdf_graph = self._getRDFGraph()
+        for item in triplets_list:
+            rdf_graph.remove(item)
 
     security.declareProtected(View, 'getValueFor')
     def getValueFor(self, uid, relation_id, related_uid=None,

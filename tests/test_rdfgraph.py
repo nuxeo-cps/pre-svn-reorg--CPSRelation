@@ -209,6 +209,25 @@ class TestRDFGraph(RDFGraphTestCase):
             self.graph.hasRelationFor(URIRef('3'), self.hasPart),
             True)
 
+    def test_addRelationsFor(self):
+        self.assertEqual(self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
+                         (URIRef('1'), URIRef('2')))
+        self.assertEqual(self.graph.getRelationsFor(URIRef('3'), self.hasPart),
+                         ())
+        self.assertEqual(self.graph.getRelationsFor(URIRef('23'), self.hasPart),
+                         ())
+        new_rel = (
+            (URIRef('10'), self.isPartOf, URIRef('3')),
+            (URIRef('10'), self.isPartOf, URIRef('23')),
+            )
+        self.graph.addRelationsFor(new_rel)
+        self.assertEqual(self.graph.getRelationsFor(URIRef('10'), self.isPartOf),
+                         (URIRef('1'), URIRef('2'), URIRef('3'), URIRef('23')))
+        self.assertEqual(self.graph.getRelationsFor(URIRef('3'), self.hasPart),
+                         ())
+        self.assertEqual(self.graph.getRelationsFor(URIRef('23'), self.hasPart),
+                         ())
+
     def test_deleteRelationFor(self):
         self.assertEqual(
             self.graph.getRelationsFor(URIRef('1'), self.hasPart),
@@ -217,6 +236,25 @@ class TestRDFGraph(RDFGraphTestCase):
         self.assertEqual(
             self.graph.getRelationsFor(URIRef('1'), self.hasPart),
             ())
+
+    def test_deleteRelationsFor(self):
+        self.assertEqual(
+            self.graph.getRelationsFor(URIRef('1'), self.hasPart),
+            (URIRef('10'),))
+        self.assertEqual(
+            self.graph.getRelationsFor(URIRef('2'), self.hasPart),
+            (URIRef('10'), URIRef('23'), URIRef('25')))
+        del_rel = (
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            )
+        self.graph.deleteRelationsFor(del_rel)
+        self.assertEqual(
+            self.graph.getRelationsFor(URIRef('1'), self.hasPart),
+            ())
+        self.assertEqual(
+            self.graph.getRelationsFor(URIRef('2'), self.hasPart),
+            (URIRef('10'), URIRef('25')))
 
     def test_getValueFor(self):
         # 1 --hasPart--> 10

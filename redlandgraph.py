@@ -243,6 +243,17 @@ class RedlandGraph(UniqueObject, PortalFolder):
         rdf_graph = self._getGraph()
         rdf_graph.append(Statement(uid, relation_id, related_uid))
 
+    security.declareProtected(View, 'addRelationsFor')
+    def addRelationsFor(self, triplets_list):
+        """Add given relations to the graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        rdf_graph = self._getGraph()
+        for item in triplets_list:
+            rdf_graph.append(Statement(item[0], item[1], item[2]))
+
     security.declareProtected(View, 'deleteRelationFor')
     def deleteRelationFor(self, uid, relation_id, related_uid):
         """Delete relation for the given object uids and the given relation
@@ -250,6 +261,17 @@ class RedlandGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getGraph()
         rdf_graph.remove_statement(Statement(uid, relation_id, related_uid))
+
+    security.declareProtected(View, 'deleteRelationsFor')
+    def deleteRelationsFor(self, triplets_list):
+        """Delete given relations in the graph
+
+        triplets_list items must be like (uid, relation_id, related_uid)
+        Useful when it's costly to access the graph.
+        """
+        rdf_graph = self._getGraph()
+        for item in triplets_list:
+            rdf_graph.remove_statement(Statement(item[0], item[1], item[2]))
 
     security.declareProtected(View, 'getValueFor')
     def getValueFor(self, uid, relation_id, related_uid=None,

@@ -153,3 +153,8 @@ class RedlandGraphTestCase(CPSRelationTestCase):
     def tearDown(self):
         del self.rtool
         del self.graph
+
+    def makeStringTuple(self, sequence):
+        res = tuple([str(x) for x in sequence])
+        return res
+

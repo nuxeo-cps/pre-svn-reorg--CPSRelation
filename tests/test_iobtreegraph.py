@@ -115,12 +115,46 @@ class TestIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(self.graph.hasRelationFor(3, 'hasPart'),
                          True)
 
+    def test_addRelationsFor(self):
+        self.assertEqual(self.graph.getRelationsFor(10, 'isPartOf'),
+                         (1, 2))
+        self.assertEqual(self.graph.getRelationsFor(3, 'hasPart'),
+                         ())
+        self.assertEqual(self.graph.getRelationsFor(23, 'hasPart'),
+                         ())
+        new_rel = (
+            (10, 'isPartOf', 3),
+            (10, 'isPartOf', 23),
+            )
+        self.graph.addRelationsFor(new_rel)
+        self.assertEqual(self.graph.getRelationsFor(10, 'isPartOf'),
+                         (1, 2, 3, 23))
+        self.assertEqual(self.graph.getRelationsFor(3, 'hasPart'),
+                         (10,))
+        self.assertEqual(self.graph.getRelationsFor(23, 'hasPart'),
+                         (10,))
+
     def test_deleteRelationFor(self):
         self.assertEqual(self.graph.getRelationsFor(1, 'hasPart'),
                          (10,))
         self.graph.deleteRelationFor(1, 'hasPart', 10)
         self.assertEqual(self.graph.getRelationsFor(1, 'hasPart'),
                          ())
+
+    def test_deleteRelationsFor(self):
+        self.assertEqual(self.graph.getRelationsFor(1, 'hasPart'),
+                         (10,))
+        self.assertEqual(self.graph.getRelationsFor(2, 'hasPart'),
+                         (10, 23, 25,))
+        del_rel = (
+            (1, 'hasPart', 10),
+            (2, 'hasPart', 23)
+            )
+        self.graph.deleteRelationsFor(del_rel)
+        self.assertEqual(self.graph.getRelationsFor(1, 'hasPart'),
+                         ())
+        self.assertEqual(self.graph.getRelationsFor(2, 'hasPart'),
+                         (10, 25,))
 
     def test_getValueFor(self):
         # 1 --hasPart--> 10
