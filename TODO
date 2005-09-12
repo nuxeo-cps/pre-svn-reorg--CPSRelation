@@ -6,4 +6,4 @@ $Id: $
 
 - Concurrency to access a bdb graph (see Zope db adapters)
 - Transactions management (add/remove, see beforeCommitHook mechanism)
-- Remove relations in a graph with a bdb backend before remoing the graph
+

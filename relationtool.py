@@ -72,7 +72,8 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
     def deleteAllGraphs(self):
         """Delete all the graphs.
         """
-        CMFBTreeFolder._initBTrees(self)
+        for graph_id in self.listGraphIds():
+            self.deleteGraph(graph_id)
 
     security.declareProtected(ManagePortal, 'hasGraph')
     def hasGraph(self, graph_id):
@@ -99,7 +100,9 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
     def deleteGraph(self, graph_id):
         """Delete graph with given id
         """
-        # XXX AT: remove relations in the graph if it's in a bdb backend
+        # remove relations in the graph in case it's in a bdb backend
+        graph = self.getGraph(graph_id)
+        graph.deleteAllRelations()
         return CMFBTreeFolder._delOb(self, graph_id)
 
     security.declareProtected(ManagePortal, 'getGraph')
@@ -109,8 +112,6 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         Then will be able to query this graph API
         """
         return CMFBTreeFolder._getOb(self, graph_id)
-
-
 
     security.declareProtected(ManagePortal, 'parseGraph')
     def parseGraph(self, graph_id, source, publicID=None, format=None):
