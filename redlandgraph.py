@@ -72,11 +72,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
                 self.path = path
         elif backend == 'memory':
             # for tests
-            options = "new='yes',hash-type='memory',dir='.'"
-            storage = Storage(storage_name="hashes",
-                              name=self.id,
-                              options_string=options)
-            self.storage = storage
+            pass
         else:
             raise ValueError("Backend %s not supported "
                              "for graph %s" %(backend, id))
@@ -91,11 +87,22 @@ class RedlandGraph(UniqueObject, PortalFolder):
         """Get the RDF graph
         """
         if self.backend == 'bdb':
-            # XXX AT: check behaviour with multiple access to BDB
-            dir_path = os.path.join(CLIENT_HOME, self.path)
-            storage = HashStorage(dir_path, options="hash-type='bdb'")
+            storage = getattr(self, '_v_storage', None)
+            if storage is None:
+                LOG("_getGraph", DEBUG, "rebuilding storage")
+                # XXX AT: check behaviour with multiple access to BDB
+                dir_path = os.path.join(CLIENT_HOME, self.path)
+                storage = HashStorage(dir_path, options="hash-type='bdb'")
+                self._v_storage = storage
         elif self.backend == 'memory':
-            storage = self.storage
+            storage = getattr(self, '_v_storage', None)
+            if storage is None:
+                LOG("_getGraph", DEBUG, "rebuilding storage")
+                options = "new='yes',hash-type='memory',dir='.'"
+                storage = Storage(storage_name="hashes",
+                                  name=self.id,
+                                  options_string=options)
+                self._v_storage = storage
         else:
             raise ValueError("Backend %s not supported "
                              "for graph %s" %(self.backend, self.id))

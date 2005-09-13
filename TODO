@@ -4,6 +4,6 @@ CPSRelation TODO
 
 $Id: $
 
-- Concurrency to access a bdb graph (see Zope db adapters)
+- Concurrency to access a bdb graph (see Zope db adapters?)
 - Transactions management (add/remove, see beforeCommitHook mechanism)
 

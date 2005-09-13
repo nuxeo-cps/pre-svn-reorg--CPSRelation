@@ -128,6 +128,8 @@ class RDFGraphTestCase(CPSRelationTestCase):
     def tearDown(self):
         del self.rtool
         del self.graph
+        del self.hasPart
+        del self.isPartOf
 
 
 class RedlandGraphTestCase(CPSRelationTestCase):
@@ -154,8 +156,11 @@ class RedlandGraphTestCase(CPSRelationTestCase):
     def tearDown(self):
         del self.rtool
         del self.graph
+        del self.hasPart
+        del self.isPartOf
 
     def makeStringTuple(self, sequence):
         res = tuple([str(x) for x in sequence])
         return res
+
 

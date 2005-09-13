@@ -40,6 +40,7 @@ if USE_REDLAND:
 from Products.CPSRelation.relationtool import RelationTool
 from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
 from Products.CPSRelation.tests.CPSRelationTestCase import IOBTreeGraphTestCase
+from Products.CPSRelation.tests.test_graphregistry import DEFAULT_GRAPH_TYPES
 
 if USE_RDFLIB:
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
@@ -72,6 +73,10 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(self.rtool.getId(), 'portal_relations')
         self.assertEqual(self.rtool.meta_type, 'Relation Tool')
         self.assert_(isinstance(self.rtool, RelationTool))
+
+    def test_getSupportedGraphTypes(self):
+        self.assertEquals(self.rtool.getSupportedGraphTypes(),
+                          DEFAULT_GRAPH_TYPES)
 
     def test_listGraphIds(self):
         self.assertEqual(self.rtool.listGraphIds(), ['iobtreegraph'])

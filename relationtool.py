@@ -60,6 +60,12 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         """
         CMFBTreeFolder.__init__(self, self.id)
 
+    security.declareProtected(View, 'getSupportedGraphTypes')
+    def getSupportedGraphTypes(self):
+        """Get supported graph meta types
+        """
+        return GraphRegistry.listGraphTypes()
+
     # graphs
 
     security.declareProtected(ManagePortal, 'listGraphsIds')
