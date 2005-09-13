@@ -30,6 +30,9 @@ from Products.CMFCore.permissions import AddPortalContent
 from Products.CPSRelation import relationtool
 from Products.CPSRelation import graphregistry
 
+from Products.CPSRelation import objectserializertool
+from Products.CPSRelation import objectserializer
+
 from Products.CPSRelation import iobtreegraph
 from Products.CPSRelation import iobtreerelation
 
@@ -62,19 +65,8 @@ def initialize(registrar):
         icon='tool.png'
         ).initialize(registrar)
 
-    #registrar.registerClass(
-    #    relationtool.RelationTool,
-    #    permission='AddPortalContent',
-    #    constructors=(
-    #    RelationTool.manage_addRelationTool,
-    #    #RelationTool.manage_addRelationToolForm,
-    #    ),
-    #    )
-    #
-    #registrar.registerClass(
-    #    Relation.Relation,
-    #    permission=AddPortalContent,
-    #    constructors=(
-    #        RelationTool.RelationTool.manage_addRelation,
-    #        )
-    #    )
+    ToolInit(
+        'Object Serializer Tool',
+        tools=(objectserializertool.ObjectSerializerTool,),
+        icon='tool.png',
+        ).initialize(registrar)

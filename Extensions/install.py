@@ -44,6 +44,7 @@ class CPSRelationInstaller(CPSInstaller):
     def install(self):
         self.log("### Starting CPSRelation install ###")
         self.setupRelationTool()
+        self.setupObjectSerializerTool()
         self.log("### End of specific CPSRelation install ###")
 
     def setupRelationTool(self):
@@ -52,6 +53,11 @@ class CPSRelationInstaller(CPSInstaller):
                         'CPSRelation',
                         'Relation Tool')
 
+    def setupObjectSerializerTool(self):
+        self.log("Checking Serializer Tool")
+        self.verifyTool('portal_serializer',
+                        'CPSRelation',
+                        'Object Serializer Tool')
 
 def install(self):
     installer = CPSRelationInstaller(self, 'CPSRelation')
