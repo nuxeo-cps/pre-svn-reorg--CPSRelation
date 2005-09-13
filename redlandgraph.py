@@ -26,6 +26,8 @@ from zLOG import LOG, DEBUG, INFO
 import os.path
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
+from AccessControl import ModuleSecurityInfo
+from AccessControl import allow_class
 
 from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
@@ -34,8 +36,13 @@ from Products.CMFCore.PortalFolder import PortalFolder
 from RDF import Storage, HashStorage, Model, Statement
 # RDF imports, unused here but placed here to provide compatible
 # imports. other imports may be needed and added here
-from RDF import Uri, Node, NS
+import RDF
 from RDF import Parser, Serializer, Query
+from RDF import Uri, Node, NS
+ModuleSecurityInfo('RDF').declarePublic('Uri', 'Node', 'NS')
+allow_class(Uri)
+allow_class(Node)
+allow_class(NS)
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
