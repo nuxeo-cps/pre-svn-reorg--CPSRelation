@@ -27,7 +27,6 @@
     </td>
   </tr>
   <dtml-in keys>
-
   <dtml-let key=sequence-item>
   <dtml-if sequence-odd>
   <tr class="row-normal">
