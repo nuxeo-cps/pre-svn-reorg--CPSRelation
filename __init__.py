@@ -56,17 +56,16 @@ except ImportError, err:
     if str(err) != 'No module named RDF':
         raise
 
+tools = (
+    relationtool.RelationTool,
+    objectserializertool.ObjectSerializerTool,
+    )
+
 def initialize(registrar):
     """Initalization of Relations tool and Relation content
     """
     ToolInit(
-        'Relation Tool',
-        tools=(relationtool.RelationTool,),
+        'CPSRelation Tools',
+        tools=tools,
         icon='tool.png'
-        ).initialize(registrar)
-
-    ToolInit(
-        'Object Serializer Tool',
-        tools=(objectserializertool.ObjectSerializerTool,),
-        icon='tool.png',
         ).initialize(registrar)
