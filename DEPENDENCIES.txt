@@ -1,6 +1,10 @@
 # $Id$
 
-# Only to be able to use RDF graphs
-Zope >= 2.8.1
+CMF
+CPSInstaller
+CPSUtil
+
+# Only to be able to use rdflib graphs
 rdflib >= 2.1.3
 
+# Redland with python bindings to be able to use RedlandGraph
