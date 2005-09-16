@@ -330,9 +330,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
                 retval = default
             else:
                 retval = values.current()
-                next = values.next()
+                values.next()
                 if not values.end():
-                    all_values = [retval, next] + list(values)
+                    all_values = [retval] + list(values)
                     all_values = [str(x) for x in all_values]
                     err = ("Uniqueness assumption is not fulfilled. "
                            "Multiple values are: %s" % (all_values,))
