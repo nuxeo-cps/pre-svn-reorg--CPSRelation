@@ -31,7 +31,7 @@ from Products.CPSRelation.relationtool import RelationTool
 
 # XXX check that rdflib is installed before importing
 try:
-    from Products.CPSRelation.rdfgraph import Namespace, URIRef
+    from Products.CPSRelation.rdflibgraph import Namespace, URIRef
 except ImportError, err:
     print "cannot test rdflib features"
     if str(err) != 'cannot import name Namespace':

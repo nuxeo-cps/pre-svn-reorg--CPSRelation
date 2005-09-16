@@ -33,7 +33,7 @@ from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 
 if USE_RDFLIB:
-    from Products.CPSRelation.rdfgraph import URIRef
+    from Products.CPSRelation.rdflibgraph import URIRef
 if USE_REDLAND:
     from Products.CPSRelation.redlandgraph import Node, Uri
 

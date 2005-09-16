@@ -34,7 +34,7 @@ from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.iobtreegraph import IOBTreeGraph
 if USE_RDFLIB:
-    from Products.CPSRelation.rdfgraph import RDFGraph
+    from Products.CPSRelation.rdflibgraph import RDFGraph
 if USE_REDLAND:
     from Products.CPSRelation.redlandgraph import RedlandGraph
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase

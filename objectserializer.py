@@ -86,7 +86,7 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
             }
         graph_types = rtool.getSupportedGraphTypes()
         if 'RDF Graph' in graph_types:
-            from rdfgraph import Namespace, RDF, URIRef, Literal
+            from rdflibgraph import Namespace, RDF, URIRef, Literal
             mapping.update({
                 'Namespace': Namespace,
                 'RDF': RDF,

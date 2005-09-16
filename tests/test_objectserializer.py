@@ -135,7 +135,7 @@ class TestObjectSerializer(CPSRelationTestCase):
         self.assert_(isinstance(expr_c(context), FakeSerializerTool))
         self.assertEqual(expr_c(context).getId(), 'portal_serializer')
         if USE_RDFLIB:
-            from Products.CPSRelation.rdfgraph import Namespace
+            from Products.CPSRelation.rdflibgraph import Namespace
             expr_c = Expression("python:Namespace")
             self.assertEqual(expr_c(context), Namespace)
         if USE_REDLAND:

@@ -418,7 +418,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
     manage_editRelations = DTMLFile('zmi/rdfgraph_content', globals())
 
     security.declareProtected(ManagePortal, 'overview')
-    overview = DTMLFile('zmi/rdfgraph_overview', globals())
+    overview = DTMLFile('zmi/redlandgraph_overview', globals())
 
     security.declareProtected(ManagePortal, 'manage_deleteAllRelations')
     def manage_deleteAllRelations(self, REQUEST=None):

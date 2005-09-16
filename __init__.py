@@ -38,7 +38,7 @@ from Products.CPSRelation import iobtreerelation
 
 # XXX check that rdflib is installed before importing
 try:
-    from Products.CPSRelation import rdfgraph
+    from Products.CPSRelation import rdflibgraph
 except ImportError, err:
     LOG("CPSRelation", INFO,
         "rdflib is not installed, no RDF feature will be available")

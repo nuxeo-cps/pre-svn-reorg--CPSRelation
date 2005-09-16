@@ -33,8 +33,8 @@ from Interface.Verify import verifyClass
 
 if USE_RDFLIB:
     from Products.CPSRelation.interfaces.IGraph import IGraph
-    from Products.CPSRelation.rdfgraph import RDFGraph, rdflibGraph
-    from Products.CPSRelation.rdfgraph import URIRef
+    from Products.CPSRelation.rdflibgraph import RDFGraph, rdflibGraph
+    from Products.CPSRelation.rdflibgraph import URIRef
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFLIB_NAMESPACE
 else:
