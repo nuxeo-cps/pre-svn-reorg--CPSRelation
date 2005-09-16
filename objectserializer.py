@@ -85,7 +85,7 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
             'portal_serializer': stool,
             }
         graph_types = rtool.getSupportedGraphTypes()
-        if 'RDF Graph' in graph_types:
+        if 'Rdflib Graph' in graph_types:
             from rdflibgraph import Namespace, RDF, URIRef, Literal
             mapping.update({
                 'Namespace': Namespace,

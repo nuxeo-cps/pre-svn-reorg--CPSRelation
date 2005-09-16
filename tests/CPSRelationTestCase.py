@@ -104,12 +104,12 @@ class IOBTreeGraphTestCase(CPSRelationTestCase):
         del self.isPartOf
 
 
-class RDFGraphTestCase(CPSRelationTestCase):
+class RdflibGraphTestCase(CPSRelationTestCase):
     """CPSRelation test case using RDF graphs"""
 
     def setUp(self):
         self.rtool = RelationTool()
-        self.rtool.addGraph('rdfgraph', 'RDF Graph')
+        self.rtool.addGraph('rdfgraph', 'Rdflib Graph')
         self.graph = self.rtool.getGraph('rdfgraph')
         # 2 relations, hasPart and its inverse, isPartOf
 

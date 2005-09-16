@@ -19,7 +19,7 @@
 #
 #-------------------------------------------------------------------------------
 # $Id$
-"""Test RDF Graph
+"""Test Redland Graph
 """
 
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND

@@ -19,7 +19,7 @@
 #
 #-------------------------------------------------------------------------------
 # $Id$
-"""Test RDF Graph
+"""Test Rdflib Graph
 """
 
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
@@ -33,42 +33,42 @@ from Interface.Verify import verifyClass
 
 if USE_RDFLIB:
     from Products.CPSRelation.interfaces.IGraph import IGraph
-    from Products.CPSRelation.rdflibgraph import RDFGraph, rdflibGraph
-    from Products.CPSRelation.rdflibgraph import URIRef
-    from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
+    from Products.CPSRelation.rdflibgraph import RdflibGraph
+    from Products.CPSRelation.rdflibgraph import Graph, URIRef
+    from Products.CPSRelation.tests.CPSRelationTestCase import RdflibGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFLIB_NAMESPACE
 else:
-    class RDFGraphTestCase:
+    class RdflibGraphTestCase:
         pass
 
-class TestRDFGraph(RDFGraphTestCase):
+class TestRdflibGraph(RdflibGraphTestCase):
 
     def test_interface(self):
-        verifyClass(IGraph, RDFGraph)
+        verifyClass(IGraph, RdflibGraph)
 
     def test_creation(self):
         bindings = {
             "dc": "http://purl.org/dc/elements/1.1/",
             "dc2": "http://purl.org/dc/elements/1.1/",
             }
-        dummy = RDFGraph('dummy', bindings=bindings)
+        dummy = RdflibGraph('dummy', bindings=bindings)
         self.assertEqual(dummy.getId(), 'dummy')
-        self.assertEqual(dummy.meta_type, 'RDF Graph')
+        self.assertEqual(dummy.meta_type, 'Rdflib Graph')
 
     def test_test_case_graph(self):
         self.assertEqual(self.graph.getId(), 'rdfgraph')
-        self.assertEqual(self.graph.meta_type, 'RDF Graph')
-        self.assert_(isinstance(self.graph, RDFGraph))
+        self.assertEqual(self.graph.meta_type, 'Rdflib Graph')
+        self.assert_(isinstance(self.graph, RdflibGraph))
         self.assert_(self.hasPart,
                      u'http://cps-project.org/2005/data/hasPart')
         self.assert_(self.isPartOf,
                      u'http://cps-project.org/2005/data/isPartOf')
 
-    def test__getRDFGraph(self):
-        self.assert_(isinstance(self.graph._getRDFGraph(), rdflibGraph))
+    def test__getGraph(self):
+        self.assert_(isinstance(self.graph._getGraph(), Graph))
 
     def test_parse_file(self):
-        test_graph = RDFGraph('dummy')
+        test_graph = RdflibGraph('dummy')
         from Products.CPSRelation import tests as here_tests
         input_source = os.path.join(here_tests.__path__[0],
                                     'test_files/rdf_graph.xml')
@@ -86,7 +86,7 @@ class TestRDFGraph(RDFGraphTestCase):
         self.assertEqual(test_graph.listAllRelations(), all_relations)
 
     def test_parse_string(self):
-        test_graph = RDFGraph('dummy')
+        test_graph = RdflibGraph('dummy')
         input_source = """<?xml version="1.0" encoding="UTF-8"?>
 <rdf:RDF
    xmlns:_3="http://cps-project.org/2005/data/"
@@ -382,7 +382,7 @@ class TestRDFGraph(RDFGraphTestCase):
 def test_suite():
     suite = unittest.TestSuite()
     if USE_RDFLIB:
-        suite.addTest(unittest.makeSuite(TestRDFGraph))
+        suite.addTest(unittest.makeSuite(TestRdflibGraph))
     return suite
 
 if __name__ == '__main__':

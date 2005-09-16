@@ -34,7 +34,7 @@ from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.iobtreegraph import IOBTreeGraph
 if USE_RDFLIB:
-    from Products.CPSRelation.rdflibgraph import RDFGraph
+    from Products.CPSRelation.rdflibgraph import RdflibGraph
 if USE_REDLAND:
     from Products.CPSRelation.redlandgraph import RedlandGraph
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
@@ -45,7 +45,7 @@ DEFAULT_GRAPH_TYPES = [
     IOBTreeGraph.meta_type,
     ]
 if USE_RDFLIB:
-    DEFAULT_GRAPH_TYPES.append(RDFGraph.meta_type)
+    DEFAULT_GRAPH_TYPES.append(RdflibGraph.meta_type)
 if USE_REDLAND:
     DEFAULT_GRAPH_TYPES.append(RedlandGraph.meta_type)
 
@@ -76,14 +76,14 @@ class TestGraphRegistry(CPSRelationTestCase):
         self.assertEquals(graph.getId(), 'test_iobtreegraph')
         self.assert_(isinstance(graph, IOBTreeGraph))
 
-    def test_makeRDFGraph(self):
+    def test_makeRdflibGraph(self):
         if not USE_RDFLIB:
             return
-        graph = GraphRegistry.makeGraph(RDFGraph.meta_type,
+        graph = GraphRegistry.makeGraph(RdflibGraph.meta_type,
                                         'test_rdfgraph')
-        self.assertEquals(graph.meta_type, RDFGraph.meta_type)
+        self.assertEquals(graph.meta_type, RdflibGraph.meta_type)
         self.assertEquals(graph.getId(), 'test_rdfgraph')
-        self.assert_(isinstance(graph, RDFGraph))
+        self.assert_(isinstance(graph, RdflibGraph))
 
 def test_suite():
     suite = unittest.TestSuite()

@@ -43,10 +43,10 @@ from Products.CPSRelation.tests.CPSRelationTestCase import IOBTreeGraphTestCase
 from Products.CPSRelation.tests.test_graphregistry import DEFAULT_GRAPH_TYPES
 
 if USE_RDFLIB:
-    from Products.CPSRelation.tests.CPSRelationTestCase import RDFGraphTestCase
+    from Products.CPSRelation.tests.CPSRelationTestCase import RdflibGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import RDFLIB_NAMESPACE
 else:
-    class RDFGraphTestCase:
+    class RdflibGraphTestCase:
         pass
 
 if USE_REDLAND:
@@ -344,7 +344,7 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
                           'query :)')
 
 
-class TestRelationToolRDFGraph(RDFGraphTestCase):
+class TestRelationToolRdflibGraph(RdflibGraphTestCase):
     """Test Relations Tool with a rdflib graph
     """
 
@@ -376,16 +376,16 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
 
     def test_addGraph(self):
         self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
-        self.rtool.addGraph('test_graph', 'RDF Graph')
+        self.rtool.addGraph('test_graph', 'Rdflib Graph')
         self.assertEqual(self.rtool.listGraphIds(),
                          ['test_graph', 'rdfgraph'])
         test_graph = self.rtool.getGraph('test_graph')
         self.assertEqual(test_graph.getId(), 'test_graph')
-        self.assertEqual(test_graph.meta_type, 'RDF Graph')
+        self.assertEqual(test_graph.meta_type, 'Rdflib Graph')
 
     def test_deleteGraph(self):
         self.assertEqual(self.rtool.listGraphIds(), ['rdfgraph'])
-        self.rtool.addGraph('test_graph', 'RDF Graph')
+        self.rtool.addGraph('test_graph', 'Rdflib Graph')
         self.assertEqual(self.rtool.listGraphIds(),
                          ['test_graph', 'rdfgraph'])
         self.rtool.deleteGraph('test_graph')
@@ -395,10 +395,10 @@ class TestRelationToolRDFGraph(RDFGraphTestCase):
         test_graph = self.rtool.getGraph('rdfgraph')
         self.assertEqual(test_graph, self.graph)
         self.assertEqual(test_graph.getId(), 'rdfgraph')
-        self.assertEqual(test_graph.meta_type, 'RDF Graph')
+        self.assertEqual(test_graph.meta_type, 'Rdflib Graph')
 
     def test_parseGraph_file(self):
-        self.rtool.addGraph('test_graph', 'RDF Graph')
+        self.rtool.addGraph('test_graph', 'Rdflib Graph')
         from Products.CPSRelation import tests as here_tests
         input_source = os.path.join(here_tests.__path__[0],
                                     'test_files/rdf_graph.xml')
@@ -1136,7 +1136,7 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestRelationToolIOBTreeGraph))
     if USE_RDFLIB:
-        suite.addTest(unittest.makeSuite(TestRelationToolRDFGraph))
+        suite.addTest(unittest.makeSuite(TestRelationToolRdflibGraph))
     if USE_REDLAND:
         suite.addTest(unittest.makeSuite(TestRelationToolRedlandGraph))
     return suite

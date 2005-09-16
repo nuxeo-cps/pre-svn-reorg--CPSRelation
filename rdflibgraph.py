@@ -34,7 +34,7 @@ from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
 
-from rdflib import Graph as rdflibGraph
+from rdflib import Graph
 from rdflib.exceptions import UniquenessError
 # rdflib imports, unused here but placed here to provide compatible
 # imports. other imports may be needed and added here
@@ -50,12 +50,12 @@ allow_class(Literal)
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
 
-class RDFGraph(UniqueObject, PortalFolder):
+class RdflibGraph(UniqueObject, PortalFolder):
     """Graph.
     """
     __implements__ = (IGraph,)
 
-    meta_type = 'RDF Graph'
+    meta_type = 'Rdflib Graph'
 
     security = ClassSecurityInfo()
 
@@ -80,23 +80,23 @@ class RDFGraph(UniqueObject, PortalFolder):
             else:
                 self.path = path
         elif backend == 'ZODB':
-            self.rdf_graph = rdflibGraph(self.backend)
+            self.rdf_graph = Graph(self.backend)
         else:
             raise ValueError("Backend %s not supported "
                              "for graph %s" %(backend, id))
 
         # bindings
-        graph = self._getRDFGraph()
+        graph = self._getGraph()
         for k, v in bindings.items():
             graph.bind(k, v)
 
-    security.declarePrivate('_getRDFGraph')
-    def _getRDFGraph(self):
+    security.declarePrivate('_getGraph')
+    def _getGraph(self):
         """Get the RDF graph
         """
         if self.backend == 'SleepyCat':
             # XXX AT: check behaviour with multiple access to BDB
-            graph = rdflibGraph(backend=self.backend)
+            graph = Graph(backend=self.backend)
             dir_path = os.path.join(CLIENT_HOME, self.path)
             graph.open(dir_path)
         else:
@@ -115,7 +115,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """
         # XXX AT: make sure this will not add duplicate relations in the graph,
         # or find a way to make it optional
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         # XXX AT: waiting for rdflib to handle the string case
         if (isinstance(source, str)
             and source.startswith("<?xml")):
@@ -137,14 +137,14 @@ class RDFGraph(UniqueObject, PortalFolder):
 
         If destination is None then serialization is returned as string.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         return rdf_graph.serialize(destination, format, base)
 
     security.declareProtected(View, 'listRelationIds')
     def listRelationIds(self):
         """List all the existing relations.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         items = {}
         # XXX AT: this is not uneffecient, optimization required...
         #for item in rdf_graph.predicates():
@@ -162,7 +162,7 @@ class RDFGraph(UniqueObject, PortalFolder):
     def deleteAllRelations(self):
         """Delete all the relations.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for triple in tuple(rdf_graph.triples((None, None, None))):
             rdf_graph.remove(triple)
 
@@ -170,7 +170,7 @@ class RDFGraph(UniqueObject, PortalFolder):
     def hasRelation(self, relation_id):
         """Does the graph have a relation with the given id?
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         relations = tuple(rdf_graph.triples((None, relation_id, None)))
         if relations:
             return 1
@@ -192,7 +192,7 @@ class RDFGraph(UniqueObject, PortalFolder):
 
         All exiting relation instances for this relation will be deleted
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for triple in tuple(rdf_graph.triples((None, relation_id, None))):
             rdf_graph.remove(triple)
 
@@ -202,7 +202,7 @@ class RDFGraph(UniqueObject, PortalFolder):
     def listAllRelations(self):
         """List all existing relation instances
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         items = []
         for s, p, o in rdf_graph.triples((None, None, None)):
             items.append((s, p, o))
@@ -213,7 +213,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """Does the graph have a relation for the given object uid and the
         given relation type?
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         objects = tuple(rdf_graph.objects(uid, relation_id))
         if objects:
             return 1
@@ -224,7 +224,7 @@ class RDFGraph(UniqueObject, PortalFolder):
     def addRelationFor(self, uid, relation_id, related_uid):
         """Add relation to the given object uid for the given relation type
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         rdf_graph.add((uid, relation_id, related_uid))
 
     security.declareProtected(View, 'addRelationsFor')
@@ -234,7 +234,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         triplets_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for item in triplets_list:
             rdf_graph.add(item)
 
@@ -243,7 +243,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """Delete relation for the given object uids and the given relation
         type
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         rdf_graph.remove((uid, relation_id, related_uid))
 
     security.declareProtected(View, 'deleteRelationsFor')
@@ -253,7 +253,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         triplets_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for item in triplets_list:
             rdf_graph.remove(item)
 
@@ -270,7 +270,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         if any is True, return any value if more than one are found. If any is
         False, raise ValueError.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         try:
             retval = rdf_graph.value(uid, relation_id, related_uid,
                                      default, any)
@@ -282,7 +282,7 @@ class RDFGraph(UniqueObject, PortalFolder):
     def getRelationsFor(self, uid, relation_id):
         """Get relations for the given object uid and the given relation type
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         return tuple(rdf_graph.objects(uid, relation_id))
 
     security.declareProtected(View, 'getInverseRelationsFor')
@@ -290,7 +290,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """Get relations for the given object uid and the inverse of the given
         relation type
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         return tuple(rdf_graph.subjects(relation_id, uid))
 
     security.declareProtected(View, 'removeRelationsFor')
@@ -298,7 +298,7 @@ class RDFGraph(UniqueObject, PortalFolder):
         """Remove relations for the given object uid and the given relation
         type
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for object in tuple(rdf_graph.objects(uid, relation_id)):
             rdf_graph.remove((uid, relation_id, object))
 
@@ -308,7 +308,7 @@ class RDFGraph(UniqueObject, PortalFolder):
 
         This is useful when deleting an object, for instance.
         """
-        rdf_graph = self._getRDFGraph()
+        rdf_graph = self._getGraph()
         for (predicate, object) in tuple(rdf_graph.predicate_objects(uid)):
             rdf_graph.remove((uid, predicate, object))
         for (subject, predicate) in tuple(rdf_graph.subject_predicates(uid)):
@@ -350,7 +350,7 @@ class RDFGraph(UniqueObject, PortalFolder):
                                       '?manage_tabs_message=Deleted.')
 
 
-InitializeClass(RDFGraph)
+InitializeClass(RdflibGraph)
 
 # Register to the graph registry
-GraphRegistry.register(RDFGraph)
+GraphRegistry.register(RdflibGraph)
