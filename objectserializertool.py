@@ -54,6 +54,12 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         """
         CMFBTreeFolder.__init__(self, self.id)
 
+    security.declareProtected(View, 'listSerializers')
+    def listSerializers(self):
+        """List object serializers managed by the tool
+        """
+        return CMFBTreeFolder.objectIds_d(self).keys()
+
     security.declareProtected(View, 'hasSerializer')
     def hasSerializer(self, id):
         """Does the tool have the given object serializer?
@@ -158,9 +164,70 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
     # ZMI
     #
 
-    manage_options = CMFBTreeFolder.manage_options
-
     # Here define options using DTML files
+    manage_options = (
+        {'label': "Object Serializers",
+         'action': 'manage_main'
+         },
+        # XXX AT: doc is not ready yet
+        #{'label': "Overview",
+        # 'action': 'overview'
+        # },
+        ) + CMFBTreeFolder.manage_options[2:4]
+
+    security.declareProtected(ManagePortal, 'manage_main')
+    manage_main = DTMLFile('zmi/objectserializertool_content', globals())
+
+    security.declareProtected(ManagePortal, 'overview')
+    overview = DTMLFile('zmi/objectserializertool_overview', globals())
+
+    security.declareProtected(ManagePortal, 'manage_addSerializer')
+    def manage_addSerializer(self, id, serialization_expr, REQUEST=None):
+        """Add a graph TTW"""
+        self.addSerializer(id, serialization_expr)
+        if REQUEST is not None:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
+                                      '?manage_tabs_message=Serializer Added.')
+
+    security.declareProtected(ManagePortal, 'manage_editSerializers')
+    def manage_editSerializers(self,
+                               all_ids,
+                               serialization_expressions,
+                               REQUEST=None,
+                               ):
+        """Edit Object Serializers TTW.
+        """
+        for index, id in enumerate(all_ids):
+            if self.hasSerializer(id):
+                expr = serialization_expressions[index]
+                kw = {
+                    'serialization_expr': expr,
+                    }
+                serializer = self.getSerializer(id)
+                serializer.manage_changeProperties(**kw)
+        if REQUEST:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
+                                      '?manage_tabs_message=Edited.')
+
+    security.declareProtected(ManagePortal, 'manage_deleteSerializers')
+    def manage_deleteSerializers(self, ids, REQUEST=None):
+        """Delete object serializers TTW."""
+        for id in ids:
+            self.deleteSerializer(id)
+        if REQUEST is not None:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
+                                      '?manage_tabs_message=Deleted.')
+
+    security.declareProtected(ManagePortal, 'manage_deleteAllSerializers')
+    def manage_deleteAllSerializers(self, REQUEST=None):
+        """Delete all object serializers TTW."""
+        for id in self.listSerializers():
+            self.deleteSerializer(id)
+        if REQUEST is not None:
+            REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
+                                      '?manage_tabs_message=Deleted.')
+
+
 
 InitializeClass(ObjectSerializerTool)
 

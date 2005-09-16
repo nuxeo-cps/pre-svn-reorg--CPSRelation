@@ -47,7 +47,7 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     _propertiesBaseClass = SimpleItemWithProperties
     _properties = (
         {'id': 'serialization_expr', 'type': 'string', 'mode': 'w',
-         'label': 'Serialiation expression'},
+         'label': 'Serialization expression'},
         )
 
     serialization_expr = ''

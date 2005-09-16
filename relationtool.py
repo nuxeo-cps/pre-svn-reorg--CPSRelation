@@ -310,10 +310,10 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         ) + CMFBTreeFolder.manage_options[2:4]
 
     security.declareProtected(ManagePortal, 'manage_editGraphs')
-    manage_editGraphs = DTMLFile('zmi/tool_graphs', globals())
+    manage_editGraphs = DTMLFile('zmi/relationtool_graphs', globals())
 
     security.declareProtected(ManagePortal, 'overview')
-    overview = DTMLFile('zmi/tool_overview', globals())
+    overview = DTMLFile('zmi/relationtool_overview', globals())
 
     security.declareProtected(ManagePortal, 'manage_listGraphTypes')
     def manage_listGraphTypes(self):
