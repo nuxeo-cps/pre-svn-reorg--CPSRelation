@@ -101,3 +101,35 @@ Tests have been made using versions:
 
 Please refer to the Redland documentation and installation instructions at
 http://librdf.org/.
+
+- Take care of library path settings when installing packages because rasqal
+  requires raptor, and redland requires raptor and rasqal.
+- packages like libxml2-dev and libdb4.3-dev, and a C++ compiler like g++
+  may have to be installed too.
+
+For information, our build summaries were:
+
+Raptor build summary:
+  RDF parsers available     : rdfxml ntriples turtle rss-tag-soup grddl
+  RDF parsers enabled       : rdfxml ntriples turtle rss-tag-soup grddl
+  RDF serializers available : rdfxml rdfxml-abbrev ntriples
+  RDF serializers enabled   : rdfxml rdfxml-abbrev ntriples
+  XML parser                : libxml(system 2.6.20)
+  WWW library               : libxml(system 2.6.20)
+
+Rasqal build summary:
+  RDF query languages available : rdql sparql
+  RDF query languages enabled   : rdql sparql
+  Triples source                : raptor 1.4.7
+
+Redland build summary:
+  Berkeley/Sleepycat DB   : Version 4.3 (library db-4.3 in /usr/lib)
+  Triple stores available : file hashes(memory) hashes(bdb 4.3)
+  Triple stores enabled   : memory file hashes
+  RDF parsers             : raptor(system 1.4.7)
+  RDF query               : rasqal(system 0.9.10)
+  Content digests         : md5(openssl) sha1(openssl) ripemd160(openssl)
+
+Redland build summary: (bindings)
+  Redland:              system 1.0.2
+  Language APIs built:    python
