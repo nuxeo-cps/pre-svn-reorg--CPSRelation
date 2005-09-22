@@ -47,9 +47,14 @@ class TestRedlandGraph(RedlandGraphTestCase):
         verifyClass(IGraph, RedlandGraph)
 
     def test_creation(self):
-        dummy = RedlandGraph('dummy', backend='memory')
+        bindings = {
+            "dc": "http://purl.org/dc/elements/1.1/",
+            "cps": "http://cps-project.org/2005/data/",
+            }
+        dummy = RedlandGraph('dummy', backend='memory', bindings=bindings)
         self.assertEqual(dummy.getId(), 'dummy')
         self.assertEqual(dummy.meta_type, 'Redland Graph')
+        self.assertEqual(dummy.bindings, bindings)
 
     def test_test_case_graph(self):
         self.assertEqual(self.graph.getId(), 'rdfgraph')
@@ -128,7 +133,7 @@ class TestRedlandGraph(RedlandGraphTestCase):
         serialized = self.graph.serialize()
         # not possible to test xml rendering, it changes every time...
         start = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
+<rdf:RDF xmlns:cps="http://cps-project.org/2005/data/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
         self.assert_(serialized.startswith(start))
         end = "</rdf:RDF>\n"
         self.assert_(serialized.endswith(end))

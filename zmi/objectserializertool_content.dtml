@@ -25,6 +25,9 @@
     <td align="left" valign="top">
       <div class="form-label">Serializer Expression</div>
     </td>
+    <td align="left" valign="top">
+      <div class="form-label">Serializer Bindings</div>
+    </td>
   </tr>
   <dtml-in keys>
   <dtml-let key=sequence-item>
@@ -34,7 +37,8 @@
   <tr class="row-hilite">
   </dtml-if>
     <td align="left" valign="top">
-      <input type="checkbox" name="all_ids:list" value="&dtml-key;">
+      <input type="checkbox" name="checked_ids:list" value="&dtml-key;">
+      <input type="hidden" name="all_ids:list" value="&dtml-key;">
     </td>
     <td align="left" valign="top">
       <div class="list-item">
@@ -45,6 +49,14 @@
       <div class="form-item">
         <dtml-let expr="_[key].serialization_expr">
           <input type="text" name="serialization_expressions:list" size="60"
+            value="&dtml-expr;"/>
+        </dtml-let>
+      </div>
+    </td>
+    <td align="left" valign="top">
+      <div class="form-item">
+        <dtml-let expr="_[key].bindings">
+          <input type="text" name="all_bindings:list" size="60"
             value="&dtml-expr;"/>
         </dtml-let>
       </div>
@@ -92,6 +104,16 @@
   </td>
   <td align="left">
     <div class="form-item"><input type="text" name="serialization_expr" size="40" /></div>
+  </td>
+</tr>
+<tr>
+  <td align="left">
+    <div class="form-label">
+      Serialization bindings (dictionnary)
+    </div>
+  </td>
+  <td align="left">
+    <div class="form-item"><input type="text" name="bindings" size="70" /></div>
   </td>
 </tr>
 <tr>

@@ -149,6 +149,8 @@ class RedlandGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getGraph()
         serializer = Serializer(mime_type=format)
+        for prefix, uri in self.bindings.items():
+            serializer.set_namespace(prefix, uri)
         if destination is None:
             res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
         else:

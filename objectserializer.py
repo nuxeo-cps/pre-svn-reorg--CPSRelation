@@ -48,9 +48,12 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     _properties = (
         {'id': 'serialization_expr', 'type': 'string', 'mode': 'w',
          'label': 'Serialization expression'},
+        {'id': 'bindings', 'type': 'text', 'mode': 'w',
+         'label': 'Prefix/Uri bindings'},
         )
 
     serialization_expr = ''
+    bindings = {}
 
     _properties_post_process_tales = (
         ('serialization_expr', 'serialization_expr_c'),
@@ -62,11 +65,12 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     # API
     #
 
-    def __init__(self, id, expression=''):
+    def __init__(self, id, expression='', bindings={}):
         """Initialization
         """
         self.id = id
-        self.manage_changeProperties(serialization_expr=expression)
+        self.manage_changeProperties(serialization_expr=expression,
+                                     bindings=bindings)
 
     security.declarePrivate('_createSerializationExpressionContext')
     def _createExpressionContext(self, object):
@@ -113,6 +117,11 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
             expr_context = self._createExpressionContext(object)
             res = self.serialization_expr_c(expr_context)
         return res
+
+    def getBindings(self):
+        """Get defined bindings dictionnary
+        """
+        return self.bindings
 
     #
     # ZMI

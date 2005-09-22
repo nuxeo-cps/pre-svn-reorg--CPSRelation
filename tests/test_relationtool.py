@@ -829,7 +829,7 @@ class TestRelationToolRedlandGraph(RedlandGraphTestCase):
         serialized = self.rtool.serializeGraph('rdfgraph')
         # not possible to test xml rendering, it changes every time...
         start = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
+<rdf:RDF xmlns:cps="http://cps-project.org/2005/data/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
         self.assert_(serialized.startswith(start))
         end = "</rdf:RDF>\n"
         self.assert_(serialized.endswith(end))

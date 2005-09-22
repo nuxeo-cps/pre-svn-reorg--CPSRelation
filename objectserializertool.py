@@ -71,13 +71,13 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
             return 0
 
     security.declareProtected(ManagePortal, 'addSerializer')
-    def addSerializer(self, id, expr=''):
+    def addSerializer(self, id, expr='', bindings={}):
         """Add an object serializer with given id and expression
         """
         if self.hasSerializer(id):
             raise ValueError("The id '%s' is invalid - it is already in use"%id)
         else:
-            ser = ObjectSerializer(id, expr)
+            ser = ObjectSerializer(id, expr, bindings)
             self._setObject(id, ser)
             return self._getOb(id)
 
@@ -113,7 +113,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
 
     # XXX AT: Currently requires Redland
     security.declarePrivate('serializeTriples')
-    def serializeTriples(self, triples, base=None):
+    def serializeTriples(self, triples, base=None, bindings={}):
         """Serialize triples to an rdf/xml string using the optional base URI
         """
         from Products.CPSRelation.redlandgraph import Model, Statement
@@ -127,6 +127,8 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         for item in triples:
             rdf_graph.append(Statement(item[0], item[1], item[2]))
         serializer = Serializer(mime_type="application/rdf+xml")
+        for prefix, uri in bindings.items():
+            serializer.set_namespace(prefix, uri)
         res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
         return res
 
@@ -140,7 +142,8 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         """
         ser = self.getSerializer(serializer_id)
         triples = ser.getTriples(object)
-        return self.serializeTriples(triples, base=base)
+        bindings = ser.getBindings()
+        return self.serializeTriples(triples, base=base, bindings=bindings)
 
     # XXX AT: Currently requires Redland
     security.declareProtected(View, 'getSerialization')
@@ -154,11 +157,14 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         URI
         """
         all_triples = []
+        all_bindings = {}
         for object_info in objects_info:
             ser = self.getSerializer(object_info[1])
             triples = ser.getTriples(object_info[0])
             all_triples.extend(triples)
-        return self.serializeTriples(all_triples, base=base)
+            all_bindings.update(ser.getBindings())
+        return self.serializeTriples(all_triples, base=base,
+                                     bindings=all_bindings)
 
     #
     # ZMI
@@ -182,9 +188,10 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
     overview = DTMLFile('zmi/objectserializertool_overview', globals())
 
     security.declareProtected(ManagePortal, 'manage_addSerializer')
-    def manage_addSerializer(self, id, serialization_expr, REQUEST=None):
+    def manage_addSerializer(self, id, serialization_expr, bindings,
+                             REQUEST=None):
         """Add a graph TTW"""
-        self.addSerializer(id, serialization_expr)
+        self.addSerializer(id, serialization_expr, bindings)
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
                                       '?manage_tabs_message=Serializer Added.')
@@ -193,6 +200,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
     def manage_editSerializers(self,
                                all_ids,
                                serialization_expressions,
+                               all_bindings,
                                REQUEST=None,
                                ):
         """Edit Object Serializers TTW.
@@ -200,8 +208,10 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         for index, id in enumerate(all_ids):
             if self.hasSerializer(id):
                 expr = serialization_expressions[index]
+                bindings = all_bindings[index]
                 kw = {
                     'serialization_expr': expr,
+                    'bindings': bindings,
                     }
                 serializer = self.getSerializer(id)
                 serializer.manage_changeProperties(**kw)
@@ -210,9 +220,9 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
                                       '?manage_tabs_message=Edited.')
 
     security.declareProtected(ManagePortal, 'manage_deleteSerializers')
-    def manage_deleteSerializers(self, ids, REQUEST=None):
+    def manage_deleteSerializers(self, checked_ids, REQUEST=None):
         """Delete object serializers TTW."""
-        for id in ids:
+        for id in checked_ids:
             self.deleteSerializer(id)
         if REQUEST is not None:
             REQUEST.RESPONSE.redirect(self.absolute_url()+'/manage_main'
