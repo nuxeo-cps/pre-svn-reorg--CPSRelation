@@ -1,4 +1,23 @@
 *******************************************
+** CPSRelation V1.2.0 [R1 build 2005/09/23-18:04 by madarche]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 27554
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Adding rdflib and Redland RDF frameworks support. Relations created using the
+  old code will be broken as no compatibility could be kept.
+- Adding a serializer tool to serialize objects given a TAL Expression. RDF/XML
+  serialization currently relies on a Redland serializer.
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- 
+
+*******************************************
 ** CPSRelation V1.1.0 [R1 build 2005/03/24-19:33 by anahide]
 
 Requires:

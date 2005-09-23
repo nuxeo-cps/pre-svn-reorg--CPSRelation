@@ -3,13 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Adding rdflib and Redland RDF frameworks support. Relations created using the
-  old code will be broken as no compatibility could be kept.
-- Adding a serializer tool to serialize objects given a TAL Expression. RDF/XML
-  serialization currently relies on a Redland serializer.
+-
 Bug fixes:
 ~~~~~~~~~~
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- 
+-
