@@ -10,5 +10,3 @@ Bug fixes:
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - Code cleaning
-- Added a new 'content' variable in object serializer expression
-  namespace.

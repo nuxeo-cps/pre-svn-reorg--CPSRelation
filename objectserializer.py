@@ -83,7 +83,6 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
         mapping = {
             'object': object,
             'proxy': object,
-            'content': object.getContent(),
             'container': aq_parent(aq_inner(object)),
             'user': user,
             'portal': portal,
