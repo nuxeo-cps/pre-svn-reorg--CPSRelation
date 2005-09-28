@@ -209,14 +209,14 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         return graph.addRelationFor(uid, relation_id, related_uid)
 
     security.declareProtected(View, 'addRelationsFor')
-    def addRelationsFor(self, graph_id, triplets_list):
+    def addRelationsFor(self, graph_id, triples_list):
         """Add given relations to the given graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         graph = self.getGraph(graph_id)
-        return graph.addRelationsFor(triplets_list)
+        return graph.addRelationsFor(triples_list)
 
     security.declareProtected(View, 'deleteRelationFor')
     def deleteRelationFor(self, graph_id, uid, relation_id, related_uid):
@@ -227,14 +227,14 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         return graph.deleteRelationFor(uid, relation_id, related_uid)
 
     security.declareProtected(View, 'deleteRelationsFor')
-    def deleteRelationsFor(self, graph_id, triplets_list):
+    def deleteRelationsFor(self, graph_id, triples_list):
         """Delete given relations in the given graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         graph = self.getGraph(graph_id)
-        return graph.deleteRelationsFor(triplets_list)
+        return graph.deleteRelationsFor(triples_list)
 
     security.declareProtected(View, 'getValueFor')
     def getValueFor(self, graph_id, uid, relation_id, related_uid=None,

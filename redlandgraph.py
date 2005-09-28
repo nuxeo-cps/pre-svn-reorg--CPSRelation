@@ -84,11 +84,6 @@ class RedlandGraph(UniqueObject, PortalFolder):
             raise ValueError("Backend %s not supported "
                              "for graph %s" %(backend, id))
 
-        # bindings
-        #graph = self._getGraph()
-        #for k, v in bindings.items():
-        #    graph.bind(k, v)
-
     security.declarePrivate('_getGraph')
     def _getGraph(self):
         """Get the RDF graph
@@ -260,14 +255,14 @@ class RedlandGraph(UniqueObject, PortalFolder):
         rdf_graph.append(Statement(uid, relation_id, related_uid))
 
     security.declareProtected(View, 'addRelationsFor')
-    def addRelationsFor(self, triplets_list):
+    def addRelationsFor(self, triples_list):
         """Add given relations to the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         rdf_graph = self._getGraph()
-        for item in triplets_list:
+        for item in triples_list:
             rdf_graph.append(Statement(item[0], item[1], item[2]))
 
     security.declareProtected(View, 'deleteRelationFor')
@@ -279,14 +274,14 @@ class RedlandGraph(UniqueObject, PortalFolder):
         rdf_graph.remove_statement(Statement(uid, relation_id, related_uid))
 
     security.declareProtected(View, 'deleteRelationsFor')
-    def deleteRelationsFor(self, triplets_list):
+    def deleteRelationsFor(self, triples_list):
         """Delete given relations in the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         rdf_graph = self._getGraph()
-        for item in triplets_list:
+        for item in triples_list:
             rdf_graph.remove_statement(Statement(item[0], item[1], item[2]))
 
     security.declareProtected(View, 'getValueFor')

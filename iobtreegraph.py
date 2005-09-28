@@ -181,15 +181,15 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         relation.addRelationFor(uid, related_uid)
 
     security.declareProtected(View, 'addRelationsFor')
-    def addRelationsFor(self, triplets_list):
+    def addRelationsFor(self, triples_list):
         """Add given relations to the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         # sort by relation_id
         relations_sorted = {}
-        for item in triplets_list:
+        for item in triples_list:
             relation_id = item[1]
             if relation_id not in relations_sorted:
                 relations_sorted[relation_id] = [item]
@@ -197,9 +197,9 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
                 new_value = relations_sorted[relation_id]
                 new_value.append(item)
                 relations_sorted[relation_id] = new_value
-        for relation_id, triplets in relations_sorted.items():
+        for relation_id, triples in relations_sorted.items():
             relation = self._getRelation(relation_id)
-            for item in triplets:
+            for item in triples:
                 relation.addRelationFor(item[0], item[2])
 
     security.declareProtected(View, 'deleteRelationFor')
@@ -211,16 +211,16 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         relation.deleteRelationFor(uid, related_uid)
 
     security.declareProtected(View, 'deleteRelationsFor')
-    def deleteRelationsFor(self, triplets_list):
+    def deleteRelationsFor(self, triples_list):
         """Delete given relations in the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
         # sort by relation_id
         # sort by relation_id
         relations_sorted = {}
-        for item in triplets_list:
+        for item in triples_list:
             relation_id = item[1]
             if relation_id not in relations_sorted:
                 relations_sorted[relation_id] = [item]
@@ -228,9 +228,9 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
                 new_value = relations_sorted[relation_id]
                 new_value.append(item)
                 relations_sorted[relation_id] = new_value
-        for relation_id, triplets in relations_sorted.items():
+        for relation_id, triples in relations_sorted.items():
             relation = self._getRelation(relation_id)
-            for item in triplets:
+            for item in triples:
                 relation.deleteRelationFor(item[0], item[2])
 
     security.declareProtected(View, 'getValueFor')

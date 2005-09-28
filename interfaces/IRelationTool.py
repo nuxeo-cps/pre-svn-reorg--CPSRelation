@@ -108,10 +108,10 @@ class IRelationTool(Interface.Base):
         the given graph
         """
 
-    def addRelationsFor(graph_id, triplets_list):
+    def addRelationsFor(graph_id, triples_list):
         """Add given relations to the given graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
 
@@ -120,10 +120,10 @@ class IRelationTool(Interface.Base):
         type in the given graph
         """
 
-    def deleteRelationsFor(graph_id, triplets_list):
+    def deleteRelationsFor(graph_id, triples_list):
         """Delete given relations in the given graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
 

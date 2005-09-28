@@ -85,10 +85,10 @@ class IGraph(Interface.Base):
         """Add relation to the given object uid for the given relation type
         """
 
-    def addRelationsFor(triplets_list):
+    def addRelationsFor(triples_list):
         """Add given relations to the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
 
@@ -97,10 +97,10 @@ class IGraph(Interface.Base):
         type
         """
 
-    def deleteRelationsFor(triplets_list):
+    def deleteRelationsFor(triples_list):
         """Delete given relations in the graph
 
-        triplets_list items must be like (uid, relation_id, related_uid)
+        triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
         """
 
