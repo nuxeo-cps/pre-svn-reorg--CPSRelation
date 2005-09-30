@@ -17,11 +17,10 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+#-------------------------------------------------------------------------------
 # $Id$
-
-"""Relation Tool to hold relations between objects
-
-The relations tools stores relation items.
+#-------------------------------------------------------------------------------
+"""Relation tool to manage graphs holding relations between objects.
 """
 
 from zLOG import LOG, ERROR, DEBUG, INFO
@@ -37,11 +36,7 @@ from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
 from Products.CPSRelation.graphregistry import GraphRegistry
 
 class RelationTool(UniqueObject, CMFBTreeFolder):
-    """Relation tool
-
-    Relation tool holds Relation objects.
-    A Relation object holds a relation table that gives relations between
-    objects. It also knows about its inverse Relation table.
+    """Relation tool to manage graphs holding relations between objects.
     """
 
     id = 'portal_relations'
@@ -303,10 +298,9 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         {'label': "Graphs",
          'action': 'manage_editGraphs'
          },
-        # XXX AT: doc is not up to date
-        #{'label': "Overview",
-        # 'action': 'overview'
-        # },
+        {'label': "Overview",
+         'action': 'overview'
+         },
         ) + CMFBTreeFolder.manage_options[2:4]
 
     security.declareProtected(ManagePortal, 'manage_editGraphs')

@@ -5,6 +5,18 @@ CPSRelation - README
 $Id$
 
 
+Contents
+========
+
+* `Features`_
+* `Installation notes`_
+
+  - `Requirements`_
+  - `CPSRelation Installation`_
+  - `rdflib Installation`_
+  - `Redland Installation`_
+
+
 Features
 ========
 
@@ -31,6 +43,8 @@ Another tool (portal_serializer) has been designed to provide object
 serializations via pluggable TALES expressions. This tool currently requires
 Redland to provide XML serializations following the RDF/XML syntax.
 
+Additional information can be found in the doc/ directory.
+
 
 Installation notes
 ==================
@@ -39,6 +53,7 @@ Requirements
 ------------
 
 CPSRelation requires:
+
 - Zope (2.8.1 at least is recommended)
 - CMF
 - CPSInstaller
@@ -54,7 +69,7 @@ Otherwise, the usual way to install a CPS product applies:
 
 - Log into the ZMI as manager
 - Go to your CPS root directory
-- Create an External Method with the following parameters:
+- Create an External Method with the following parameters::
 
     id            : cpsrelation_install (or whatever)
     title         : CPSRelation Install (or whatever)
@@ -109,7 +124,8 @@ http://librdf.org/.
 
 For information, our build summaries were:
 
-Raptor build summary:
+Raptor build summary::
+
   RDF parsers available     : rdfxml ntriples turtle rss-tag-soup grddl
   RDF parsers enabled       : rdfxml ntriples turtle rss-tag-soup grddl
   RDF serializers available : rdfxml rdfxml-abbrev ntriples
@@ -117,12 +133,14 @@ Raptor build summary:
   XML parser                : libxml(system 2.6.20)
   WWW library               : libxml(system 2.6.20)
 
-Rasqal build summary:
+Rasqal build summary::
+
   RDF query languages available : rdql sparql
   RDF query languages enabled   : rdql sparql
   Triples source                : raptor 1.4.7
 
-Redland build summary:
+Redland build summary::
+
   Berkeley/Sleepycat DB   : Version 4.3 (library db-4.3 in /usr/lib)
   Triple stores available : file hashes(memory) hashes(bdb 4.3)
   Triple stores enabled   : memory file hashes
@@ -130,6 +148,7 @@ Redland build summary:
   RDF query               : rasqal(system 0.9.10)
   Content digests         : md5(openssl) sha1(openssl) ripemd160(openssl)
 
-Redland build summary: (bindings)
+Redland build summary (installing the Python binding)::
+
   Redland:              system 1.0.2
   Language APIs built:    python

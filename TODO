@@ -4,6 +4,11 @@ CPSRelation TODO
 
 $Id: $
 
-- Concurrency to access a bdb graph (see Zope db adapters?)
-- Transactions management (add/remove, see beforeCommitHook mechanism)
-
+- Concurrency when accessing bdb graphs.
+- Transactions management using external non-transactional storage (add/remove,
+  see the CPSCore "before commit hook" mechanism).
+- Be able to store graphs elsewhere than in relations tool (see CPSMailAccess
+  use case).
+- Change the API taking care of the fact that relations are not to be managed
+  in RDF graphs as in historical IOBtreeGraph.
+- Give a better query API looking at SPARQL/RDQL querying features.

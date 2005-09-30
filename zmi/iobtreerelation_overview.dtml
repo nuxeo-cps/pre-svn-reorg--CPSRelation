@@ -68,4 +68,5 @@ The relation methods include the following features:<br>
 - delete a relation between two objects (and update the inverse table)<br>
 - remove all the relations for a given object (and update the inverse table)<br>
 - get all the relations for a given object
+- ...
 </p>

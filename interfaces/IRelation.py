@@ -16,7 +16,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+#-------------------------------------------------------------------------------
 # $Id$
+#-------------------------------------------------------------------------------
 """Interface for labeled relations dealing with instances of items to be
 related
 

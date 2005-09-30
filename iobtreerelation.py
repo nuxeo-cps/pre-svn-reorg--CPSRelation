@@ -19,11 +19,11 @@
 #
 #-------------------------------------------------------------------------------
 # $Id$
-
+#-------------------------------------------------------------------------------
 """Relation that holds relations between objects
 
-A relation holds a BTree with object uids as keys and tuples of related object
-uids as values. It also stores the id of its inverse relation.
+A relation holds a IOBTree with object uids as keys and tuples of related
+object uids as values. It also stores the id of its inverse relation.
 """
 
 from zLOG import LOG, DEBUG, INFO

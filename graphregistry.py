@@ -16,12 +16,19 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+#-------------------------------------------------------------------------------
 # $Id$
+#-------------------------------------------------------------------------------
+"""
+Registry of the available graph types.
+"""
 
 class GraphRegistry:
-    """Registry of the available graph types."""
+    """Registry of the available graph types.
+    """
 
     def __init__(self):
+        """Initialization"""
         self._graph_classes = {}
 
     def register(self, cls):

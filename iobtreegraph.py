@@ -19,10 +19,8 @@
 #
 #-------------------------------------------------------------------------------
 # $Id$
-
-"""Relation Tool to hold relations between objects
-
-The relations tools stores relation items.
+#-------------------------------------------------------------------------------
+"""Graph using IOBtree objects to store relations between integers
 """
 
 from zLOG import LOG, ERROR, DEBUG, INFO
@@ -39,7 +37,7 @@ from Products.CPSRelation.iobtreerelation import IOBTreeRelation
 from Products.CPSRelation.graphregistry import GraphRegistry
 
 class IOBTreeGraph(UniqueObject, PortalFolder):
-    """
+    """Graph using IOBtree objects to store relations between integers
     """
 
     meta_type = 'IOBTree Graph'
@@ -314,10 +312,9 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
-        # XXX AT: doc not ready yet
-        #{'label': "Overview",
-        # 'action': 'overview'
-        # },
+        {'label': "Overview",
+         'action': 'overview'
+         },
         ) + PortalFolder.manage_options[3:-2]
 
     security.declareProtected(ManagePortal, 'manage_editRelations')

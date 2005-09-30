@@ -17,8 +17,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+#-------------------------------------------------------------------------------
 # $Id$
-
+#-------------------------------------------------------------------------------
 """Graph using rdflib RDF Application framework
 """
 
@@ -51,7 +52,7 @@ from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
 
 class RdflibGraph(UniqueObject, PortalFolder):
-    """Graph.
+    """Graph using rdflib RDF Application framework
     """
     __implements__ = (IGraph,)
 
@@ -328,10 +329,9 @@ class RdflibGraph(UniqueObject, PortalFolder):
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
-        # XXX AT: doc not ready yet
-        #{'label': "Overview",
-        # 'action': 'overview'
-        # },
+        {'label': "Overview",
+         'action': 'overview'
+         },
         ) + PortalFolder.manage_options[2:]
 
     security.declareProtected(ManagePortal, 'manage_editRelations')

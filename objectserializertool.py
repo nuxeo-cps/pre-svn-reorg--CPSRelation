@@ -16,7 +16,9 @@
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
 # 02111-1307, USA.
 #
+#-------------------------------------------------------------------------------
 # $Id$
+#-------------------------------------------------------------------------------
 """
 Object Serializer Tool that provides services to get RDF serializations of
 objects
@@ -175,10 +177,9 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         {'label': "Object Serializers",
          'action': 'manage_main'
          },
-        # XXX AT: doc is not ready yet
-        #{'label': "Overview",
-        # 'action': 'overview'
-        # },
+        {'label': "Overview",
+         'action': 'overview'
+         },
         ) + CMFBTreeFolder.manage_options[2:4]
 
     security.declareProtected(ManagePortal, 'manage_main')
