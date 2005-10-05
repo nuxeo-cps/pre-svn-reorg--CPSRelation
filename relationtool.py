@@ -102,8 +102,12 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         """Delete graph with given id
         """
         # remove relations in the graph in case it's in a bdb backend
-        graph = self.getGraph(graph_id)
-        graph.deleteAllRelations()
+        try:
+            graph = self.getGraph(graph_id)
+        except KeyError:
+            pass
+        else:
+            graph.deleteAllRelations()
         return CMFBTreeFolder._delOb(self, graph_id)
 
     security.declareProtected(ManagePortal, 'getGraph')

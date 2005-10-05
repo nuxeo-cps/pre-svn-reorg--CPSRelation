@@ -33,9 +33,12 @@ import unittest
 from Interface.Verify import verifyClass
 
 if USE_REDLAND:
+    # XXX if necessary, RDF has a debug mode:
+    #from Products.CPSRelation.redlandgraph import RDF
+    #RDF.debug(1)
     from Products.CPSRelation.interfaces.IGraph import IGraph
     from Products.CPSRelation.redlandgraph import RedlandGraph, Model
-    from Products.CPSRelation.redlandgraph import Node, Uri
+    from Products.CPSRelation.redlandgraph import Node, Uri, NS
     from Products.CPSRelation.tests.CPSRelationTestCase import RedlandGraphTestCase
     from Products.CPSRelation.tests.CPSRelationTestCase import REDLAND_NAMESPACE
 else:
@@ -499,6 +502,26 @@ ORDER BY ?level ?order
             ]
 
         self.assertEqual(results, expected, keep_order=True)
+
+
+    def test_query_node(self):
+        # tests query with a node value, must be a node with namespace
+        CPS_NAMESPACE_URI = "http://cps-project.org/2005/data/"
+        CPS_NAMESPACE = NS(CPS_NAMESPACE_URI)
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart, CPS_NAMESPACE['totoro'])
+
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:hasPart <totoro> .
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[1]'])
+
 
 def test_suite():
     suite = unittest.TestSuite()

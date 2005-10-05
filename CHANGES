@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Made graph deletion more robust
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 - Code cleaning
