@@ -1,4 +1,20 @@
 *******************************************
+** CPSRelation V1.2.1 [R1 build 2005/10/07-20:02 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 28081
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Made graph deletion more robust
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Code cleaning
+
+*******************************************
 ** CPSRelation V1.2.0 [R1 build 2005/09/23-18:04 by madarche]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 27554
 Requires:
