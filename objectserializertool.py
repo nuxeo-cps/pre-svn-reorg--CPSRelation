@@ -114,12 +114,26 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         return triples
 
     # XXX AT: Currently requires Redland
-    security.declarePrivate('serializeTriples')
-    def serializeTriples(self, triples, base=None, bindings={}):
-        """Serialize triples to an rdf/xml string using the optional base URI
+    security.declarePrivate('serializeGraph')
+    def serializeGraph(self, rdf_graph, base=None, bindings={}):
+        """Serialize triples or graph to an rdf/xml string using the optional
+        base URI
+
+        At least one out of triples or graph has to be set.
         """
-        from Products.CPSRelation.redlandgraph import Model, Statement
-        from Products.CPSRelation.redlandgraph import Storage, Serializer
+        from Products.CPSRelation.redlandgraph import Serializer
+        serializer = Serializer(mime_type="application/rdf+xml")
+        for prefix, uri in bindings.items():
+            serializer.set_namespace(prefix, uri)
+        res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+        return res
+
+    # XXX AT: Currently requires Redland
+    security.declareProtected(View, 'getSerializationGraph')
+    def getSerializationGraph(self, triples):
+        """Get the graph that will be used for serialization
+        """
+        from Products.CPSRelation.redlandgraph import Model, Statement, Storage
         # create an rdf_graph with a memory storage for given purpose
         options = "new='yes',hash-type='memory',dir='.'"
         storage = Storage(storage_name="hashes",
@@ -128,27 +142,44 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         rdf_graph = Model(storage)
         for item in triples:
             rdf_graph.append(Statement(item[0], item[1], item[2]))
-        serializer = Serializer(mime_type="application/rdf+xml")
-        for prefix, uri in bindings.items():
-            serializer.set_namespace(prefix, uri)
-        res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
-        return res
+        return rdf_graph
 
     # XXX AT: Currently requires Redland
-    security.declareProtected(View, 'getSerialization')
-    def getSerialization(self, object, serializer_id, base=None):
-        """Get Serialization for given object using given serializer
+    security.declareProtected(View, 'getSerializationFromSerializer')
+    def getSerializationFromSerializer(self, object, serializer_id, base=None):
+        """Get serialization for given object using given serializer
 
-        Serialize found triples to an rdf/xml string using the optional base
-        URI
+        Serialize triples given by serializer to an rdf/xml string using the
+        optional base URI.
         """
         ser = self.getSerializer(serializer_id)
         triples = ser.getTriples(object)
+        rdf_graph = self.getSerializationGraph(triples)
         bindings = ser.getBindings()
-        return self.serializeTriples(triples, base=base, bindings=bindings)
+        return self.serializeGraph(rdf_graph, base=base, bindings=bindings)
 
     # XXX AT: Currently requires Redland
-    security.declareProtected(View, 'getSerialization')
+    security.declareProtected(View, 'getSerializationFromTriples')
+    def getSerializationFromTriples(self, triples, bindings={}, base=None):
+        """Get serialization for given triples
+
+        Serialize given triples to an rdf/xml string using the optional base
+        URI.
+        """
+        rdf_graph = self.getSerializationGraph(triples)
+        return self.serializeGraph(rdf_graph, base=base, bindings=bindings)
+
+    # XXX AT: Currently requires Redland
+    security.declareProtected(View, 'getSerializationFromGraph')
+    def getSerializationFromGraph(self, graph, bindings={}, base=None):
+        """Get serialization for given graph
+
+        Serialize graph to an rdf/xml string using the optional base URI.
+        """
+        return self.serializeGraph(graph, base=base, bindings=bindings)
+
+    # XXX AT: Currently requires Redland
+    security.declareProtected(View, 'getMultipleSerialization')
     def getMultipleSerialization(self, objects_info, base=None):
         """Get Serialization for given objects
 
@@ -165,8 +196,9 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
             triples = ser.getTriples(object_info[0])
             all_triples.extend(triples)
             all_bindings.update(ser.getBindings())
-        return self.serializeTriples(all_triples, base=base,
-                                     bindings=all_bindings)
+        rdf_graph = self.getSerializationGraph(all_triples)
+        return self.serializeGraph(rdf_graph, base=base,
+                                   bindings=all_bindings)
 
     #
     # ZMI

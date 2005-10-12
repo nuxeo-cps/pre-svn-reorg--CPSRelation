@@ -161,13 +161,22 @@ class TestObjectSerializerTool(CPSRelationTestCase):
 
     # XXX AT: theses tests require Redland
     if USE_REDLAND:
-        def test_serializeTriples(self):
+        def test_serializeGraph(self):
+            from Products.CPSRelation.redlandgraph import Model, Statement
+            from Products.CPSRelation.redlandgraph import Storage
             from Products.CPSRelation.redlandgraph import Node, Uri, NS
             namespace = NS('http://www.example.org/')
             triples = [
                 (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
                 (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
                 ]
+            options = "new='yes',hash-type='memory',dir='.'"
+            storage = Storage(storage_name="hashes",
+                              name='dummy',
+                              options_string=options)
+            rdf_graph = Model(storage)
+            for item in triples:
+                rdf_graph.append(Statement(item[0], item[1], item[2]))
             serialization = """<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
@@ -178,10 +187,10 @@ class TestObjectSerializerTool(CPSRelationTestCase):
   </rdf:Description>
 </rdf:RDF>
 """
-            self.assertEqual(self.stool.serializeTriples(triples),
+            self.assertEqual(self.stool.serializeGraph(rdf_graph),
                              serialization)
 
-        def test_getSerialization(self):
+        def test_getSerializationFromSerializer(self):
             # XXX make real triples
             new_expr = """python:[
             (Node(Uri(getattr(object, 'id'))),
@@ -202,8 +211,57 @@ class TestObjectSerializerTool(CPSRelationTestCase):
   </rdf:Description>
 </rdf:RDF>
 """
-            serialization = self.stool.getSerialization(self.object,
-                                                        'serializer')
+            serialization = self.stool.getSerializationFromSerializer(self.object,
+                                                                      'serializer')
+            self.assertEqual(serialization, expected)
+
+        def test_getSerializationFromTriples(self):
+            from Products.CPSRelation.redlandgraph import Node, Uri, NS
+            namespace = NS('http://www.example.org/')
+            triples = [
+                (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
+                (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
+               ]
+            expected = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="fake_object">
+    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+  </rdf:Description>
+  <rdf:Description rdf:about="fake_object">
+    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+  </rdf:Description>
+</rdf:RDF>
+"""
+            serialization = self.stool.getSerializationFromTriples(triples)
+            self.assertEqual(serialization, expected)
+
+        def test_getSerializationFromGraph(self):
+            from Products.CPSRelation.redlandgraph import Model, Statement
+            from Products.CPSRelation.redlandgraph import Storage
+            from Products.CPSRelation.redlandgraph import Node, Uri, NS
+            namespace = NS('http://www.example.org/')
+            triples = [
+                (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
+                (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
+               ]
+            options = "new='yes',hash-type='memory',dir='.'"
+            storage = Storage(storage_name="hashes",
+                              name='dummy',
+                              options_string=options)
+            rdf_graph = Model(storage)
+            for item in triples:
+                rdf_graph.append(Statement(item[0], item[1], item[2]))
+            expected = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="fake_object">
+    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+  </rdf:Description>
+  <rdf:Description rdf:about="fake_object">
+    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+  </rdf:Description>
+</rdf:RDF>
+"""
+            serialization = self.stool.getSerializationFromGraph(rdf_graph)
             self.assertEqual(serialization, expected)
 
         def test_getMultipleSerialization(self):
