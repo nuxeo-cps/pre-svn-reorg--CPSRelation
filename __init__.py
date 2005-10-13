@@ -65,8 +65,6 @@ tools = (
 def initialize(registrar):
     """Initalization of Relations tool and Relation content
     """
-    ToolInit(
-        'CPSRelation Tools',
-        tools=tools,
-        icon='tool.png'
-        ).initialize(registrar)
+    ToolInit('CPSRelation Tools',
+             tools=tools,
+             icon='tool.png').initialize(registrar)

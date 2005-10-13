@@ -25,6 +25,7 @@
 from zLOG import LOG, DEBUG, INFO
 
 import os.path
+import string
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 from AccessControl import ModuleSecurityInfo
@@ -47,6 +48,7 @@ allow_class(NS)
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
+from Products.CPSRelation.graphdrawer import GraphDrawer
 
 class RedlandGraph(UniqueObject, PortalFolder):
     """Graph using the Redland RDF Application Framework
@@ -138,7 +140,8 @@ class RedlandGraph(UniqueObject, PortalFolder):
         return res
 
     security.declareProtected(View, 'serialize')
-    def serialize(self, destination=None, format="application/rdf+xml", base=None):
+    def serialize(self, destination=None,
+                  format="application/rdf+xml", base=None):
         """Serialize the graph to destination
 
         If destination is None then serialization is returned as string.
@@ -398,6 +401,13 @@ class RedlandGraph(UniqueObject, PortalFolder):
         results = list(rdf_graph.execute(query))
         return results
 
+    def getDrawing(self):
+        """Get drawing for this graph
+        """
+        drawer = RedlandGraphDrawer(self)
+        ok, res = drawer.getDrawing()
+        return ok, res
+
     #
     # ZMI
     #
@@ -406,6 +416,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
+        {'label': "Drawing",
+         'action': 'manage_drawing'
+         },
         {'label': "Overview",
          'action': 'overview'
          },
@@ -413,6 +426,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
 
     security.declareProtected(ManagePortal, 'manage_editRelations')
     manage_editRelations = DTMLFile('zmi/rdfgraph_content', globals())
+
+    security.declareProtected(ManagePortal, 'manage_drawing')
+    manage_drawing = DTMLFile('zmi/graph_drawing', globals())
 
     security.declareProtected(ManagePortal, 'overview')
     overview = DTMLFile('zmi/redlandgraph_overview', globals())
@@ -431,3 +447,64 @@ InitializeClass(RedlandGraph)
 
 # Register to the graph registry
 GraphRegistry.register(RedlandGraph)
+
+
+class RedlandGraphDrawer(GraphDrawer):
+
+    def _getDotGraph(self):
+        """Get the graph in dot language
+
+        Get rela triples, not their string representation
+        """
+        import pydot
+        dot_graph = pydot.Dot(graph_name=self.graph.getId(),
+                              type='digraph',
+                              simplify=True)
+        all_triples = []
+        related_statement = Statement(None, None, None)
+        related_iter = self.graph._getGraph().find_statements(related_statement)
+        while not related_iter.end():
+            statement = related_iter.current()
+            triple = (statement.subject,
+                      statement.predicate,
+                      statement.object)
+            all_triples.append(triple)
+            related_iter.next()
+        for triple in all_triples:
+            edge = self._getEdge(triple)
+            if edge is not None:
+                dot_graph.add_edge(edge)
+        return dot_graph
+
+    def _getEdge(self, triple):
+        """Get the pydot edge representing the given triple
+
+        Use graph binding to get a clearer drawing
+        """
+        new_triple = []
+        for item in triple:
+            if isinstance(item, Node):
+                if isinstance(item, unicode):
+                    item.encode('utf-8', 'ignore')
+                item = str(item)
+                if item.startswith('['):
+                    item = item[1:]
+                if item.endswith(']'):
+                    item = item[:-1]
+                for key, binding in self.graph.bindings.items():
+                    if item.startswith(binding):
+                        item = item[len(binding):]
+                        item = key + '_' + item
+            else:
+                if isinstance(item, unicode):
+                    item.encode('utf-8', 'ignore')
+                item = str(item)
+            # dont break label
+            item = string.replace(item, ':', '_')
+            new_triple.append(item)
+        import pydot
+        edge = pydot.Edge(new_triple[0], new_triple[2], label=new_triple[1])
+        return edge
+
+
+InitializeClass(RedlandGraphDrawer)

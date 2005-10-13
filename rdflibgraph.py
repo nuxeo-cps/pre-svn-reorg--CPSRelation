@@ -50,6 +50,7 @@ allow_class(Literal)
 
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
+from Products.CPSRelation.graphdrawer import GraphDrawer
 
 class RdflibGraph(UniqueObject, PortalFolder):
     """Graph using rdflib RDF Application framework
@@ -321,6 +322,15 @@ class RdflibGraph(UniqueObject, PortalFolder):
         """
         raise NotImplementedError
 
+    security.declareProtected(View, 'getDrawing')
+    def getDrawing(self):
+        """Get drawing for this graph
+        """
+        drawer = GraphDrawer(self)
+        ok, res = drawer.getDrawing()
+        return ok, res
+
+
     #
     # ZMI
     #
@@ -329,6 +339,9 @@ class RdflibGraph(UniqueObject, PortalFolder):
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
+        {'label': "Drawing",
+         'action': 'manage_drawing'
+         },
         {'label': "Overview",
          'action': 'overview'
          },
@@ -336,6 +349,9 @@ class RdflibGraph(UniqueObject, PortalFolder):
 
     security.declareProtected(ManagePortal, 'manage_editRelations')
     manage_editRelations = DTMLFile('zmi/rdfgraph_content', globals())
+
+    security.declareProtected(ManagePortal, 'manage_drawing')
+    manage_drawing = DTMLFile('zmi/graph_drawing', globals())
 
     security.declareProtected(ManagePortal, 'overview')
     overview = DTMLFile('zmi/rdflibgraph_overview', globals())

@@ -15,7 +15,7 @@ Contents
   - `CPSRelation Installation`_
   - `rdflib Installation`_
   - `Redland Installation`_
-
+  - `pydot Installation`_
 
 Features
 ========
@@ -42,6 +42,8 @@ graphs.
 Another tool (portal_serializer) has been designed to provide object
 serializations via pluggable TALES expressions. This tool currently requires
 Redland to provide XML serializations following the RDF/XML syntax.
+If the pydot Python library is available, this tool also provides drawings
+representing the graph content.
 
 Additional information can be found in the doc/ directory.
 
@@ -152,3 +154,20 @@ Redland build summary (installing the Python binding)::
 
   Redland:              system 1.0.2
   Language APIs built:    python
+
+
+
+pydot Installation
+------------------
+
+pydot is a Python interface that allows to create graphs in GraphViz's dot
+language. It is used in CPSRelation to provide graphic representations of
+relation instances.
+
+Please refer to the pydot documentation and installation instructions at
+http://dkbza.org/pydot.html
+
+GraphViz is required.
+pyparsing is required too although it is not used for our purpose. The
+dependency can be easily broken, though: commenting out one pyparsing import
+before installing pydot is enough with version 0.9.10.

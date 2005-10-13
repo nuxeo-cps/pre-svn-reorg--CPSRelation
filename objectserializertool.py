@@ -26,18 +26,20 @@ objects
 
 # XXX Currently requires Serializer from RDF to serialize to RDF/XML files
 
+from zLOG import LOG, ERROR, DEBUG, INFO
+
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 
 from Products.CMFCore.permissions import ManagePortal, View
-from Products.CMFCore.utils import UniqueObject
+from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 
 from Products.CPSRelation.objectserializer import ObjectSerializer
 
 class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
-    """Object Serializer Tool that provides services to get RDF serializations of
-    objects
+    """Object Serializer Tool that provides services to get RDF serializations
+    of objects
 
     Stores definitions of mappings between objects and their rdf view (triples)
     """
@@ -200,6 +202,48 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         return self.serializeGraph(rdf_graph, base=base,
                                    bindings=all_bindings)
 
+
+    # drawing operations, require pydot installation
+
+    def checkPydotInstall(self):
+        """Check pydot/GraphViz installation
+
+        Return (ok, err). If ok is False (some install has not been detected),
+        err is the error message.
+        """
+        ok = True
+        err = ''
+        try:
+            import pydot
+        except ImportError, err:
+            if str(err) != 'No module named pydot':
+                raise
+            LOG("CPSRelation.graphdrawer", INFO,
+                "pydot could not be found")
+            ok, err = False, 'pydot not found'
+        else:
+            if pydot.find_graphviz() is None:
+                LOG("CPSRelation.graphdrawer", INFO,
+                    "GraphViz could not be found")
+                ok, err = False, 'GraphViz not found'
+        return ok, err
+
+    def getGraphDrawing(self, graph_id):
+        """Get the graph drawing
+
+        graph is a CPSRelation graph: it has to have a type registered in the
+        graph registry.
+        """
+        ok, err = self.checkPydotInstall()
+        if ok is True:
+            rtool = getToolByName(self, 'portal_relations')
+            graph = rtool.getGraph(graph_id)
+            ok, res = graph.getDrawing()
+        else:
+            res = ''
+        # only return drawing as image will be displayed in a img HTML tag
+        return res
+
     #
     # ZMI
     #
@@ -234,8 +278,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
                                all_ids,
                                serialization_expressions,
                                all_bindings,
-                               REQUEST=None,
-                               ):
+                               REQUEST=None):
         """Edit Object Serializers TTW.
         """
         for index, id in enumerate(all_ids):

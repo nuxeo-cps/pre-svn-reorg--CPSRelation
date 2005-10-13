@@ -35,6 +35,7 @@ from Products.CMFCore.PortalFolder import PortalFolder
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.iobtreerelation import IOBTreeRelation
 from Products.CPSRelation.graphregistry import GraphRegistry
+from Products.CPSRelation.graphdrawer import GraphDrawer
 
 class IOBTreeGraph(UniqueObject, PortalFolder):
     """Graph using IOBtree objects to store relations between integers
@@ -304,6 +305,14 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         """
         raise NotImplementedError
 
+    security.declareProtected(View, 'getDrawing')
+    def getDrawing(self):
+        """Get drawing for this graph
+        """
+        drawer = GraphDrawer(self)
+        ok, res = drawer.getDrawing()
+        return ok, res
+
     #
     # ZMI
     #
@@ -312,6 +321,9 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
+        {'label': "Drawing",
+         'action': 'manage_drawing'
+         },
         {'label': "Overview",
          'action': 'overview'
          },
@@ -319,6 +331,9 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
 
     security.declareProtected(ManagePortal, 'manage_editRelations')
     manage_editRelations = DTMLFile('zmi/iobtreegraph_content', globals())
+
+    security.declareProtected(ManagePortal, 'manage_drawing')
+    manage_drawing = DTMLFile('zmi/graph_drawing', globals())
 
     security.declareProtected(ManagePortal, 'overview')
     overview = DTMLFile('zmi/iobtreegraph_overview', globals())
