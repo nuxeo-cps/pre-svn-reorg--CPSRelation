@@ -3,8 +3,7 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Now possible to serialize from triples or a graph, instead of having to
-  specify an object and a serializer.
+-
 Bug fixes:
 ~~~~~~~~~~
 -

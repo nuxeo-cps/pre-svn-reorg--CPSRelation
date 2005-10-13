@@ -1,4 +1,21 @@
 *******************************************
+** CPSRelation V1.3.0 [R1 build 2005/10/13-07:17 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 28232
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Now possible to serialize from triples or a graph, instead of having to
+  specify an object and a serializer.
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSRelation V1.2.1 [R1 build 2005/10/07-20:02 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 28081
 Requires:
