@@ -63,7 +63,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
     # API
     #
 
-    def __init__(self, id, bindings={}, backend='bdb', path='', **kw):
+    def __init__(self, id, bindings={}, backend='mysql', path='', **kw):
         """Initialization
 
         kw are passed to be able to set the backend and other parameters
@@ -81,6 +81,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
                 # path is the path towards the directory where BDB files will be
                 self.path = path
         elif backend == 'memory':
+            # for tests
+            pass
+        elif backend == 'mysql':
             # for tests
             pass
         else:
@@ -105,6 +108,15 @@ class RedlandGraph(UniqueObject, PortalFolder):
                 LOG("_getGraph", DEBUG, "rebuilding storage")
                 options = "new='yes',hash-type='memory',dir='.'"
                 storage = Storage(storage_name="hashes",
+                                  name=self.id,
+                                  options_string=options)
+                self._v_storage = storage
+        elif self.backend == 'mysql':
+            storage = getattr(self, '_v_storage', None)
+            if storage is None:
+                LOG("_getGraph", DEBUG, "rebuilding mysql storage")
+                options = "host='localhost',port=3306,database='RDFDB',user='root',password='mypass'"
+                storage = Storage(storage_name="mysql",
                                   name=self.id,
                                   options_string=options)
                 self._v_storage = storage
