@@ -39,6 +39,7 @@ from RDF import Storage, HashStorage, Model, Statement
 # RDF imports, unused here but placed here to provide compatible
 # imports. other imports may be needed and added here
 import RDF
+from RDF import RedlandError
 from RDF import Parser, Serializer, Query
 from RDF import Uri, Node, NS
 ModuleSecurityInfo('RDF').declarePublic('Uri', 'Node', 'NS')
@@ -60,65 +61,113 @@ class RedlandGraph(UniqueObject, PortalFolder):
     security = ClassSecurityInfo()
 
     #
+    # Properties
+    #
+
+    _properties = (
+        {'id': 'backend', 'type': 'selection', 'mode': 'w',
+         'select_variable': 'supported_backends',
+         'label': "Backend",
+         },
+        {'id': 'bindings', 'type': 'text', 'mode': 'w',
+         'label': "Namespace bindings",
+         },
+        # path is relative to the var directory of the Zope instance
+        {'id': 'bdb_path', 'type': 'string', 'mode': 'w',
+         'label': "Path towards bdb files (for bdb backend)",
+         },
+        # mysql options are like
+        # host='localhost',port=3306,user='root',password='mypass'
+        {'id': 'mysql_options', 'type': 'string', 'mode': 'w',
+         'label': "mysql connection parameters (for mysql backend)"
+         },
+        )
+    supported_backends = [
+        'memory',
+        'bdb',
+        'mysql',
+        ]
+    # default values
+    backend = 'memory'
+    bindings = {}
+    bdb_path = ''
+    mysql_options = ''
+
+    #
     # API
     #
 
-    def __init__(self, id, bindings={}, backend='mysql', path='', **kw):
+    def __init__(self, id, backend='memory', bindings={}, **kw):
         """Initialization
 
-        kw are passed to be able to set the backend and other parameters
+        kw are passed to be able to set the backend specific parameters
         """
+        # check backend before init
+        if backend not in self.supported_backends:
+            raise ValueError("Backend %s not supported "
+                             "for graph %s" %(backend, id))
+
         self.id = id
         self.backend = backend
-        self.bindings = bindings
         if backend == 'bdb':
             # path is the path towards the directory where BDB files will be
             # kept in the var directory of the Zope instance
-            if not path:
+            bdb_path = kw.get('bdb_path')
+            if not bdb_path:
                 raise ValueError("Graph %s cannot be created with bdb "
-                                 "backend if no path is specified" %(id,))
+                                 "backend if no bdb_path is specified" %(id,))
             else:
-                # path is the path towards the directory where BDB files will be
-                self.path = path
-        elif backend == 'memory':
-            # for tests
-            pass
+                self.bdb_path = bdb_path
         elif backend == 'mysql':
-            # for tests
-            pass
-        else:
-            raise ValueError("Backend %s not supported "
-                             "for graph %s" %(backend, id))
+            # options information
+            mysql_options = kw.get('mysql_options')
+            if not mysql_options:
+                raise ValueError("Graph %s cannot be created with mysql "
+                                 "backend if no mysql_options are specified" %(id,))
+            else:
+                self.mysql_options = mysql_options
+        self.bindings = bindings
 
     security.declarePrivate('_getGraph')
     def _getGraph(self):
         """Get the RDF graph
         """
-        if self.backend == 'bdb':
+        if self.backend == 'memory':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("_getGraph", DEBUG, "rebuilding storage")
-                # XXX AT: check behaviour with multiple access to BDB
-                dir_path = os.path.join(CLIENT_HOME, self.path)
-                storage = HashStorage(dir_path, options="hash-type='bdb'")
-                self._v_storage = storage
-        elif self.backend == 'memory':
-            storage = getattr(self, '_v_storage', None)
-            if storage is None:
-                LOG("_getGraph", DEBUG, "rebuilding storage")
+                LOG("_getGraph", DEBUG, "rebuilding memory storage")
                 options = "new='yes',hash-type='memory',dir='.'"
                 storage = Storage(storage_name="hashes",
                                   name=self.id,
                                   options_string=options)
                 self._v_storage = storage
+        elif self.backend == 'bdb':
+            storage = getattr(self, '_v_storage', None)
+            if storage is None:
+                LOG("_getGraph", DEBUG, "rebuilding bdb storage")
+                # XXX AT: check behaviour with multiple access to BDB
+                dir_path = os.path.join(CLIENT_HOME, self.bdb_path)
+                storage = HashStorage(dir_path, options="hash-type='bdb'")
+                self._v_storage = storage
         elif self.backend == 'mysql':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
                 LOG("_getGraph", DEBUG, "rebuilding mysql storage")
-                options = "host='localhost',port=3306,database='RDFDB',user='root',password='mypass'"
-                storage = Storage(storage_name="mysql",
-                                  name=self.id,
-                                  options_string=options)
+                options = self.mysql_options + ",database='%s'"%self.id
+                try:
+                    storage = Storage(storage_name="mysql",
+                                      name=self.id,
+                                      options_string=options)
+                except:
+                    # catching RedlandError is unefficient, dont know why...
+                    # Try to create table: adding the new option creates
+                    # tables, but erases data if tables already exist, that's
+                    # why it's done after a first try without it.
+                    LOG("_getGraph", DEBUG, "creating tables")
+                    options = "new='yes'," + options
+                    storage = Storage(storage_name="mysql",
+                                      name=self.id,
+                                      options_string=options)
                 self._v_storage = storage
         else:
             raise ValueError("Backend %s not supported "

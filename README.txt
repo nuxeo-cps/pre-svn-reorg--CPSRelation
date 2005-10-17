@@ -150,12 +150,34 @@ Redland build summary::
   RDF query               : rasqal(system 0.9.10)
   Content digests         : md5(openssl) sha1(openssl) ripemd160(openssl)
 
+Redland build summary (using mysql backend too)::
+
+  Berkeley/Sleepycat DB   : Version 4.3 (library db-4.3 in /usr/lib)
+  Triple stores available : file hashes(memory) hashes(bdb 4.3) mysql(4.1.10a)
+  Triple stores enabled   : memory file hashes mysql
+  RDF parsers             : raptor(system 1.4.7)
+  RDF query               : rasqal(system 0.9.10)
+  Content digests         : md5(openssl) sha1(openssl) ripemd160(openssl)
+
 Redland build summary (installing the Python binding)::
 
   Redland:              system 1.0.2
   Language APIs built:    python
 
 
+Mysql notes:
+
+Packages installed:
+
+- mysql-common
+- mysql-server
+- mysql-client
+- libmysqlclient14-dev
+
+Rebuild Redland with configure option "--with-mysql=yes".
+Re-installing redland-binding is not necessary.
+Database with same name than the graph in portal_relations has to be
+created, the rest is done automatically.
 
 pydot Installation
 ------------------

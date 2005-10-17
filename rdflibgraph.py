@@ -62,10 +62,36 @@ class RdflibGraph(UniqueObject, PortalFolder):
     security = ClassSecurityInfo()
 
     #
+    # Properties
+    #
+
+    _properties = (
+        {'id': 'backend', 'type': 'selection', 'mode': 'w',
+         'select_variable': 'supported_backends',
+         'label': "Backend",
+         },
+        {'id': 'bindings', 'type': 'text', 'mode': 'w',
+         'label': "Namespace bindings",
+         },
+        # path is relative to the var directory of the Zope instance
+        {'id': 'bdb_path', 'type': 'string', 'mode': 'w',
+         'label': "Path towards bdb files (for bdb backend)",
+         },
+        )
+    supported_backends = [
+        'ZODB',
+        'SleepyCat',
+        ]
+    # default values
+    backend = 'ZODB'
+    bindings = {}
+    bdb_path = ''
+
+    #
     # API
     #
 
-    def __init__(self, id, bindings={}, backend='ZODB', path='', **kw):
+    def __init__(self, id, backend='ZODB', bindings={}, bdb_path='', **kw):
         """Initialization
 
         kw are passed to be able to set the backend and other parameters
@@ -74,13 +100,13 @@ class RdflibGraph(UniqueObject, PortalFolder):
         self.backend = backend
         self.bindings = bindings
         if backend == 'SleepyCat':
-            # path is the path towards the directory where BDB files will be
-            # kept in the var directory of the Zope instance
-            if not path:
+            # bdb_path is the path towards the directory where BDB files will
+            # be kept in the var directory of the Zope instance
+            if not bdb_path:
                 raise ValueError("Graph %s cannot be created with SleepyCat "
                                  "backend if no path is specified" %(id,))
             else:
-                self.path = path
+                self.bdb_path = bdb_path
         elif backend == 'ZODB':
             self.rdf_graph = Graph(self.backend)
         else:
@@ -99,7 +125,7 @@ class RdflibGraph(UniqueObject, PortalFolder):
         if self.backend == 'SleepyCat':
             # XXX AT: check behaviour with multiple access to BDB
             graph = Graph(backend=self.backend)
-            dir_path = os.path.join(CLIENT_HOME, self.path)
+            dir_path = os.path.join(CLIENT_HOME, self.bdb_path)
             graph.open(dir_path)
         else:
             graph = self.rdf_graph
