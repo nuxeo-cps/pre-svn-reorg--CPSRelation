@@ -4,6 +4,7 @@ Requires:
 New features:
 ~~~~~~~~~~~~~
 - Now possible to get graph drawings using pydot.
+- Redland graphs can now use a MySQL backend.
 Bug fixes:
 ~~~~~~~~~~
 -
