@@ -3,12 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Now possible to get graph drawings using pydot.
-- Redland graphs can now use a MySQL backend.
+-
 Bug fixes:
 ~~~~~~~~~~
-- Serializations presented rdf binding twice if it was given in serialization
-  bindings.
+-
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
