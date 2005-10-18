@@ -126,7 +126,12 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         from Products.CPSRelation.redlandgraph import Serializer
         serializer = Serializer(mime_type="application/rdf+xml")
         for prefix, uri in bindings.items():
-            serializer.set_namespace(prefix, uri)
+            # XXX AT: seems like
+            # xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" namespace
+            # binding is always set, adding it makes it appear twice in
+            # serialized file.
+            if prefix != 'rdf':
+                serializer.set_namespace(prefix, uri)
         res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
         return res
 

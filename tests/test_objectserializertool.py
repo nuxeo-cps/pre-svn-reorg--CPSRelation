@@ -76,6 +76,11 @@ class TestObjectSerializerTool(CPSRelationTestCase):
         ser_id = self.stool._setObject('serializer', ser)
         self.serializer = getattr(self.stool, ser_id)
 
+        self.bindings = {
+            'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+            'exp': "http://www.example.org/",
+            }
+
         # test object
         kw = {
             'title': 'Fake Object',
@@ -89,6 +94,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
         del self.object
         del self.stool
         del self.serializer
+        del self.bindings
         del self.expr
 
     def test_creation(self):
@@ -165,7 +171,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
             from Products.CPSRelation.redlandgraph import Model, Statement
             from Products.CPSRelation.redlandgraph import Storage
             from Products.CPSRelation.redlandgraph import Node, Uri, NS
-            namespace = NS('http://www.example.org/')
+            namespace = NS(self.bindings.get('exp'))
             triples = [
                 (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
                 (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
@@ -178,16 +184,17 @@ class TestObjectSerializerTool(CPSRelationTestCase):
             for item in triples:
                 rdf_graph.append(Statement(item[0], item[1], item[2]))
             serialization = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
-    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+    <exp:isTruly>Fake Object</exp:isTruly>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
-    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+    <exp:hasTitle>My title</exp:hasTitle>
   </rdf:Description>
 </rdf:RDF>
 """
-            self.assertEqual(self.stool.serializeGraph(rdf_graph),
+            self.assertEqual(self.stool.serializeGraph(rdf_graph,
+                                                       bindings=self.bindings),
                              serialization)
 
         def test_getSerializationFromSerializer(self):
@@ -200,11 +207,12 @@ class TestObjectSerializerTool(CPSRelationTestCase):
              NS('http://www.otherexample.org/')['isTruly'],
              getattr(object, 'title')),
             ]"""
-            self.serializer.manage_changeProperties(serialization_expr=new_expr)
+            self.serializer.manage_changeProperties(serialization_expr=new_expr,
+                                                    bindings=self.bindings)
             expected = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
-    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+    <exp:hasTitle>My title</exp:hasTitle>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
     <ns0:isTruly xmlns:ns0="http://www.otherexample.org/">Fake Object</ns0:isTruly>
@@ -217,29 +225,30 @@ class TestObjectSerializerTool(CPSRelationTestCase):
 
         def test_getSerializationFromTriples(self):
             from Products.CPSRelation.redlandgraph import Node, Uri, NS
-            namespace = NS('http://www.example.org/')
+            namespace = NS(self.bindings.get('exp'))
             triples = [
                 (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
                 (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
                ]
             expected = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
-    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+    <exp:isTruly>Fake Object</exp:isTruly>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
-    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+    <exp:hasTitle>My title</exp:hasTitle>
   </rdf:Description>
 </rdf:RDF>
 """
-            serialization = self.stool.getSerializationFromTriples(triples)
+            serialization = self.stool.getSerializationFromTriples(triples,
+                                                    bindings=self.bindings)
             self.assertEqual(serialization, expected)
 
         def test_getSerializationFromGraph(self):
             from Products.CPSRelation.redlandgraph import Model, Statement
             from Products.CPSRelation.redlandgraph import Storage
             from Products.CPSRelation.redlandgraph import Node, Uri, NS
-            namespace = NS('http://www.example.org/')
+            namespace = NS(self.bindings.get('exp'))
             triples = [
                 (Node(Uri('fake_object')), namespace['hasTitle'], 'My title'),
                 (Node(Uri('fake_object')), namespace['isTruly'], 'Fake Object'),
@@ -252,16 +261,17 @@ class TestObjectSerializerTool(CPSRelationTestCase):
             for item in triples:
                 rdf_graph.append(Statement(item[0], item[1], item[2]))
             expected = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
-    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+    <exp:isTruly>Fake Object</exp:isTruly>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
-    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+    <exp:hasTitle>My title</exp:hasTitle>
   </rdf:Description>
 </rdf:RDF>
 """
-            serialization = self.stool.getSerializationFromGraph(rdf_graph)
+            serialization = self.stool.getSerializationFromGraph(rdf_graph,
+                                                    bindings=self.bindings)
             self.assertEqual(serialization, expected)
 
         def test_getMultipleSerialization(self):
@@ -274,7 +284,8 @@ class TestObjectSerializerTool(CPSRelationTestCase):
              NS('http://www.example.org/')['isTruly'],
              getattr(object, 'title')),
             ]"""
-            self.serializer.manage_changeProperties(serialization_expr=new_expr)
+            self.serializer.manage_changeProperties(serialization_expr=new_expr,
+                                                    bindings=self.bindings)
             other_expr = """python:[
             (Node(Uri(getattr(object, 'id'))),
              NS('http://www.otherexample.org/')['hasNumber'],
@@ -295,7 +306,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
                 (other_object, 'new_serializer'),
                 ]
             expected = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+<rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="other_fake_object">
     <ns0:hasReference xmlns:ns0="http://www.otherexample.org/">My reference</ns0:hasReference>
   </rdf:Description>
@@ -303,10 +314,10 @@ class TestObjectSerializerTool(CPSRelationTestCase):
     <ns0:hasNumber xmlns:ns0="http://www.otherexample.org/">689</ns0:hasNumber>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
-    <ns0:isTruly xmlns:ns0="http://www.example.org/">Fake Object</ns0:isTruly>
+    <exp:isTruly>Fake Object</exp:isTruly>
   </rdf:Description>
   <rdf:Description rdf:about="fake_object">
-    <ns0:hasTitle xmlns:ns0="http://www.example.org/">My title</ns0:hasTitle>
+    <exp:hasTitle>My title</exp:hasTitle>
   </rdf:Description>
 </rdf:RDF>
 """
