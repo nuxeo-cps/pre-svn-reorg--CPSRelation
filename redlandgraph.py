@@ -158,16 +158,22 @@ class RedlandGraph(UniqueObject, PortalFolder):
                     storage = Storage(storage_name="mysql",
                                       name=self.id,
                                       options_string=options)
-                except:
-                    # catching RedlandError is unefficient, dont know why...
-                    # Try to create table: adding the new option creates
-                    # tables, but erases data if tables already exist, that's
-                    # why it's done after a first try without it.
-                    LOG("_getGraph", DEBUG, "creating tables")
-                    options = "new='yes'," + options
-                    storage = Storage(storage_name="mysql",
-                                      name=self.id,
-                                      options_string=options)
+                except Exception, err:
+                    # XXX catching RDF.RedlandError is unefficient, because
+                    # RedlandError raised in that case does not come from the
+                    # Python binding but from C code, even if it has the same
+                    # name.
+                    if err.__class__.__name__ != 'RedlandError':
+                        raise
+                    else:
+                        # Try to create table: adding the new option creates
+                        # tables, but erases data if tables already exist,
+                        # that's why it's done after a first try without it.
+                        LOG("_getGraph", DEBUG, "creating tables")
+                        options = "new='yes'," + options
+                        storage = Storage(storage_name="mysql",
+                                          name=self.id,
+                                          options_string=options)
                 self._v_storage = storage
         else:
             raise ValueError("Backend %s not supported "
