@@ -148,13 +148,13 @@ class RdflibGraph(UniqueObject, PortalFolder):
         if (isinstance(source, str)
             and source.startswith("<?xml")):
             from rdflib import plugin
-            from rdflib.syntax.parser import Parser
+            from rdflib.syntax.parsers import Parser
             from rdflib.StringInputSource import StringInputSource
-            parser = plugin.get(format, Parser)(self)
+            parser = plugin.get(format, Parser)()
             input_source = StringInputSource(source)
             if publicID:
                 input_source.setPublicId(publicID)
-            res = parser.store.parse(input_source)
+            res = parser.parse(input_source, rdf_graph)
         else:
             res = rdf_graph.parse(source, publicID, format)
         return res

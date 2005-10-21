@@ -87,7 +87,12 @@ rdflib installation
 
 rdflib is a python library providing RDF related features.
 
-Tests have been made using rdflib version 2.1.3 and Python version 2.3.5.
+Tests have been made using Python version 2.3.5.
+Currently supported rdflib versions:
+
+- 2.2.1
+- 2.2.2
+- 2.2.3
 
 Please refer to the rdflib documentation and installation instructions at
 http://rdflib.net
