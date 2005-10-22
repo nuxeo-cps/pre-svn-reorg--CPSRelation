@@ -576,17 +576,7 @@ class RedlandGraphDrawer(GraphDrawer):
         dot_graph = pydot.Dot(graph_name=self.graph.getId(),
                               type='digraph',
                               simplify=True)
-        all_triples = []
-        related_statement = Statement(None, None, None)
-        related_iter = self.graph._getGraph().find_statements(related_statement)
-        while not related_iter.end():
-            statement = related_iter.current()
-            triple = (statement.subject,
-                      statement.predicate,
-                      statement.object)
-            all_triples.append(triple)
-            related_iter.next()
-        for triple in all_triples:
+        for triple in self.graph.listAllRelations():
             edge = self._getEdge(triple)
             if edge is not None:
                 dot_graph.add_edge(edge)

@@ -6,6 +6,9 @@ New features:
 - Added API to get the list of (predicate, object) tuples for a node,
   e.g. results of a (node, *, *) query, and the list of (subject, predicate)
   tuples, e.g results of a (*, *, object) query.
+- graphs API: Added a printAllRelations method, to make the difference between
+  a print of all relations, and a dump of all relations using the
+  listAllRelations method.
 Bug fixes:
 ~~~~~~~~~~
 -

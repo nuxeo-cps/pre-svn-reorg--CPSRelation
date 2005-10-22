@@ -358,8 +358,8 @@ class TestRedlandGraph(RedlandGraphTestCase):
         expected = [(Node(Uri('1')), self.hasPart),
                     (Node(Uri('2')), self.hasPart),
                     ]
-        # XXX AT: dont know why sometines node comparison fails; uses hashes
-        # instead
+        # XXX AT: dont know why, but sometimes node comparison fails ; use
+        # hashes instead
         related = [(hash(x), hash(y)) for (x, y) in related]
         expected = [(hash(x), hash(y)) for (x, y) in expected]
         self.assertEqual(related, expected)

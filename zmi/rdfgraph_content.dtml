@@ -5,7 +5,7 @@
 
 <form action="&dtml-URL1;" method="post">
 
-<dtml-let keys=listAllRelations>
+<dtml-let keys=printAllRelations>
 <dtml-if keys>
 
 <dtml-let keys_count="len(keys)">
