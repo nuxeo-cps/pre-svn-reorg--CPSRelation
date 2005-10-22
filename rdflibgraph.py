@@ -236,6 +236,16 @@ class RdflibGraph(UniqueObject, PortalFolder):
             items.append((s, p, o))
         return items
 
+    security.declareProtected(View, 'printAllRelations')
+    def printAllRelations(self):
+        """Print all existing relation instances
+        """
+        rdf_graph = self._getGraph()
+        items = []
+        for s, p, o in rdf_graph.triples((None, None, None)):
+            items.append((str(s), str(p), str(o)))
+        return items
+
     security.declareProtected(View, 'hasRelationFor')
     def hasRelationFor(self, uid, relation_id):
         """Does the graph have a relation for the given object uid and the
@@ -320,6 +330,20 @@ class RdflibGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getGraph()
         return tuple(rdf_graph.subjects(relation_id, uid))
+
+    security.declareProtected(View, 'getAllRelationsFor')
+    def getAllRelationsFor(self, uid):
+        """Get the list of all (predicate, object) tuples for given uid
+        """
+        rdf_graph = self._getGraph()
+        return list(rdf_graph.predicate_objects(uid))
+
+    security.declareProtected(View, 'getAllInverseRelationsFor')
+    def getAllInverseRelationsFor(self, uid):
+        """Get the list of all (subject, predicate) tuples for given uid
+        """
+        rdf_graph = self._getGraph()
+        return list(rdf_graph.subject_predicates(uid))
 
     security.declareProtected(View, 'removeRelationsFor')
     def removeRelationsFor(self, uid, relation_id):

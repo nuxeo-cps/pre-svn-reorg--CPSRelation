@@ -103,6 +103,20 @@ class TestIOBTreeGraph(IOBTreeGraphTestCase):
         self.assertEqual(self.graph.listAllRelations(),
                          all_relations)
 
+    def test_printAllRelations(self):
+        all_relations = [
+            ('1', 'hasPart', '10'),
+            ('2', 'hasPart', '10'),
+            ('2', 'hasPart', '23'),
+            ('2', 'hasPart', '25'),
+            ('10', 'isPartOf', '1'),
+            ('10', 'isPartOf', '2'),
+            ('23', 'isPartOf', '2'),
+            ('25', 'isPartOf', '2'),
+            ]
+        self.assertEqual(self.graph.printAllRelations(),
+                         all_relations)
+
     def test_hasRelationFor(self):
         self.assertEqual(self.graph.hasRelationFor(1, 'hasPart'),
                          True)
@@ -210,6 +224,21 @@ class TestIOBTreeGraph(IOBTreeGraphTestCase):
     def test_getInverseRelationsFor(self):
         self.assertEqual(self.graph.getInverseRelationsFor(10, 'hasPart'),
                          (1, 2))
+
+    def test_getAllRelationsFor(self):
+        self.assertEqual(self.graph.getAllRelationsFor(1),
+                         [('hasPart', 10)])
+        self.assertEqual(self.graph.getAllRelationsFor(2),
+                         [('hasPart', 10),
+                          ('hasPart', 23),
+                          ('hasPart', 25),
+                          ])
+
+    def test_getAllInverseRelationsFor(self):
+        self.assertEqual(self.graph.getAllInverseRelationsFor(10),
+                         [(1, 'hasPart'),
+                          (2, 'hasPart'),
+                          ])
 
     def test_removeRelationsFor(self):
         self.assertEqual(self.graph.getRelationsFor(10, 'isPartOf'),

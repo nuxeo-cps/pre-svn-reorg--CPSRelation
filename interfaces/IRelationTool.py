@@ -152,6 +152,16 @@ class IRelationTool(Interface.Base):
         relation type in the given graph
         """
 
+    def getAllRelationsFor(graph_id, uid):
+        """Get the list of all (predicate, object) tuples for given uid in the
+        given graph
+        """
+
+    def getAllInverseRelationsFor(graph_id, uid):
+        """Get the list of all (subject, predicate) tuples for given uid in the
+        given graph
+        """
+
     def removeRelationsFor(graph_id, uid, relation_id):
         """Remove relations for the given object uid and the given relation
         type in the given graph

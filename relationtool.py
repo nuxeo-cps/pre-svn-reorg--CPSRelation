@@ -268,6 +268,22 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
         graph = self.getGraph(graph_id)
         return graph.getInverseRelationsFor(uid, relation_id)
 
+    security.declareProtected(View, 'getAllRelationsFor')
+    def getAllRelationsFor(self, graph_id, uid):
+        """Get the list of all (predicate, object) tuples for given uid in the
+        given graph
+        """
+        graph = self.getGraph(graph_id)
+        return graph.getAllRelationsFor(uid)
+
+    security.declareProtected(View, 'getAllInverseRelationsFor')
+    def getAllInverseRelationsFor(self, graph_id, uid):
+        """Get the list of all (subject, predicate) tuples for given uid in the
+        given graph
+        """
+        graph = self.getGraph(graph_id)
+        return graph.getAllInverseRelationsFor(uid)
+
     security.declareProtected(View, 'removeRelationsFor')
     def removeRelationsFor(self, graph_id, uid, relation_id):
         """Remove relations for the given object uid and the given relation

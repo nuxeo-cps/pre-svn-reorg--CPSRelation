@@ -88,7 +88,7 @@ class TestRedlandGraph(RedlandGraphTestCase):
             ('[y23]', str(self.isPartOf), '[y2]'),
             ('[y25]', str(self.isPartOf), '[y2]'),
             ]
-        self.assertEqual(test_graph.listAllRelations(), all_relations)
+        self.assertEqual(test_graph.printAllRelations(), all_relations)
 
     def test_parse_string(self):
         test_graph = RedlandGraph('dummy', backend='memory')
@@ -131,7 +131,7 @@ class TestRedlandGraph(RedlandGraphTestCase):
             ('[x23]', str(self.isPartOf), '[x2]'),
             ('[x25]', str(self.isPartOf), '[x2]'),
             ]
-        self.assertEqual(test_graph.listAllRelations(), all_relations)
+        self.assertEqual(test_graph.printAllRelations(), all_relations)
 
     def test_serialize(self):
         serialized = self.graph.serialize()
@@ -190,7 +190,7 @@ class TestRedlandGraph(RedlandGraphTestCase):
             ('[23]', str(self.isPartOf), '[2]'),
             ('[25]', str(self.isPartOf), '[2]'),
             ]
-        self.assertEqual(self.graph.listAllRelations(), all_relations)
+        self.assertEqual(self.graph.printAllRelations(), all_relations)
 
     def test_hasRelationFor(self):
         self.assertEqual(
@@ -347,6 +347,22 @@ class TestRedlandGraph(RedlandGraphTestCase):
         related = self.graph.getInverseRelationsFor(Node(Uri('10')), self.hasPart)
         related = self.makeStringTuple(related)
         self.assertEqual(related, ('[1]', '[2]'))
+
+    def test_getAllRelationsFor(self):
+        self.assertEqual(
+            self.graph.getAllRelationsFor(Node(Uri('1'))),
+            [(self.hasPart, Node(Uri('10')))])
+
+    def test_getAllInverseRelationsFor(self):
+        related = self.graph.getAllInverseRelationsFor(Node(Uri(('10'))))
+        expected = [(Node(Uri('1')), self.hasPart),
+                    (Node(Uri('2')), self.hasPart),
+                    ]
+        # XXX AT: dont know why sometines node comparison fails; uses hashes
+        # instead
+        related = [(hash(x), hash(y)) for (x, y) in related]
+        expected = [(hash(x), hash(y)) for (x, y) in expected]
+        self.assertEqual(related, expected)
 
     def test_removeRelationsFor(self):
         related = self.graph.getRelationsFor(Node(Uri('10')), self.isPartOf)

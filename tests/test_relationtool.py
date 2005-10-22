@@ -305,6 +305,50 @@ class TestRelationToolIOBTreeGraph(IOBTreeGraphTestCase):
             self.rtool.getInverseRelationsFor('iobtreegraph', 25, 'hasPart'),
             (2,))
 
+    def test_getAllRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('iobtreegraph', 1),
+            [('hasPart', 10)])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('iobtreegraph', 2),
+            [('hasPart', 10),
+             ('hasPart', 23),
+             ('hasPart', 25),
+             ])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('iobtreegraph', 10),
+            [('isPartOf', 1),
+             ('isPartOf', 2),
+             ])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('iobtreegraph', 23),
+            [('isPartOf', 2)])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('iobtreegraph', 25),
+            [('isPartOf', 2)])
+
+    def test_getAllInverseRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('iobtreegraph', 1),
+            [(10, 'isPartOf')])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('iobtreegraph', 2),
+            [(10, 'isPartOf'),
+             (23, 'isPartOf'),
+             (25, 'isPartOf'),
+             ])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('iobtreegraph', 10),
+            [(1, 'hasPart'),
+             (2, 'hasPart'),
+             ])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('iobtreegraph', 23),
+            [(2, 'hasPart')])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('iobtreegraph', 25),
+            [(2, 'hasPart')])
+
     def test_removeRelationsFor(self):
         self.assertEqual(
             self.rtool.getRelationsFor('iobtreegraph', 2, 'hasPart'),
@@ -659,6 +703,51 @@ class TestRelationToolRdflibGraph(RdflibGraphTestCase):
                                               URIRef('25'), self.hasPart),
             (URIRef('2'),))
 
+
+    def test_getAllRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('rdfgraph', URIRef('1')),
+            [(self.hasPart, URIRef('10'))])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('rdfgraph', URIRef('2')),
+            [(self.hasPart, URIRef('10')),
+             (self.hasPart, URIRef('23')),
+             (self.hasPart, URIRef('25')),
+             ])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('rdfgraph', URIRef('10')),
+            [(self.isPartOf, URIRef('1')),
+             (self.isPartOf, URIRef('2')),
+             ])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('rdfgraph', URIRef('23')),
+            [(self.isPartOf, URIRef('2'))])
+        self.assertEqual(
+            self.rtool.getAllRelationsFor('rdfgraph', URIRef('25')),
+            [(self.isPartOf, URIRef('2'))])
+
+    def test_getAllInverseRelationsFor(self):
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('rdfgraph', URIRef('1')),
+            [(URIRef('10'), self.isPartOf)])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('rdfgraph', URIRef('2')),
+            [(URIRef('10'), self.isPartOf),
+             (URIRef('23'), self.isPartOf),
+             (URIRef('25'), self.isPartOf),
+             ])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('rdfgraph', URIRef('10')),
+            [(URIRef('1'), self.hasPart),
+             (URIRef('2'), self.hasPart),
+             ])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('rdfgraph', URIRef('23')),
+            [(URIRef('2'), self.hasPart)])
+        self.assertEqual(
+            self.rtool.getAllInverseRelationsFor('rdfgraph', URIRef('25')),
+            [(URIRef('2'), self.hasPart)])
+
     def test_removeRelationsFor(self):
         self.assertEqual(
             self.rtool.getRelationsFor('rdfgraph',
@@ -780,7 +869,7 @@ class TestRelationToolRedlandGraph(RedlandGraphTestCase):
             ('[y25]', str(self.isPartOf), '[y2]'),
             ]
         test_graph = self.rtool.getGraph('test_graph')
-        self.assertEqual(test_graph.listAllRelations(), all_relations)
+        self.assertEqual(test_graph.printAllRelations(), all_relations)
 
     def test_parseGraph_string(self):
         self.rtool.addGraph('test_graph', 'Redland Graph', backend='memory')
@@ -824,7 +913,7 @@ class TestRelationToolRedlandGraph(RedlandGraphTestCase):
             ('[x25]', str(self.isPartOf), '[x2]'),
             ]
         test_graph = self.rtool.getGraph('test_graph')
-        self.assertEqual(test_graph.listAllRelations(), all_relations)
+        self.assertEqual(test_graph.printAllRelations(), all_relations)
 
     def test_serializeGraph(self):
         serialized = self.rtool.serializeGraph('rdfgraph')

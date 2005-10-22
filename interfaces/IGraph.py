@@ -78,6 +78,10 @@ class IGraph(Interface.Base):
         """List all relation instances
         """
 
+    def printAllRelations():
+        """List all relation instances string representations
+        """
+
     def hasRelationFor(uid, relation_id):
         """Does the graph have a relation for the given object uid and the
         given relation type?
@@ -126,6 +130,14 @@ class IGraph(Interface.Base):
     def getInverseRelationsFor(uid, relation_id):
         """Get relations for the given object uid and the inverse of the given
         relation type
+        """
+
+    def getAllRelationsFor(uid):
+        """Get the list of all (predicate, object) tuples for given uid
+        """
+
+    def getAllInverseRelationsFor(uid):
+        """Get the list of all (subject, predicate) tuples for given uid
         """
 
     def removeRelationsFor(uid, relation_id):

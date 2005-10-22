@@ -161,6 +161,23 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
             res.extend(new_relations)
         return res
 
+    security.declareProtected(View, 'printAllRelations')
+    def printAllRelations(self):
+        """print all relation instances, return string triples
+        """
+        res = []
+        for rel_id in self.listRelationIds():
+            relation = self._getRelation(rel_id)
+            all_relations = relation.listRelationsFor()
+            # all_relations is a list of items (uid, tuple of related uids)
+            new_relations = []
+            for related in all_relations:
+                uid = related[0]
+                for related_uid in related[1]:
+                    new_relations.append((str(uid), rel_id, str(related_uid)))
+            res.extend(new_relations)
+        return res
+
     security.declareProtected(View, 'hasRelationFor')
     def hasRelationFor(self, uid, relation_id):
         """Does the relation have a relation for the given object uid and the
@@ -281,6 +298,32 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
         relation = self._getRelation(relation_id)
         inverse_relation = relation._getInverseRelation()
         return inverse_relation.getRelationsFor(uid)
+
+    security.declareProtected(View, 'getAllRelationsFor')
+    def getAllRelationsFor(self, uid):
+        """Get the list of all (predicate, object) tuples for given uid
+        """
+        res = []
+        relations = self._getRelations()
+        for relation in relations:
+            related = relation.getRelationsFor(uid)
+            relation_id = relation.getId()
+            tuples = [(relation_id, x) for x in related]
+            res.extend(tuples)
+        return res
+
+    security.declareProtected(View, 'getAllInverseRelationsFor')
+    def getAllInverseRelationsFor(self, uid):
+        """Get the list of all (subject, predicate) tuples for given uid
+        """
+        res = []
+        relations = self._getRelations()
+        for relation in relations:
+            related = relation.getInverseRelationsFor(uid)
+            relation_id = relation.getId()
+            tuples = [(x, relation_id) for x in related]
+            res.extend(tuples)
+        return res
 
     security.declareProtected(View, 'removeRelationsFor')
     def removeRelationsFor(self, uid, relation_id):

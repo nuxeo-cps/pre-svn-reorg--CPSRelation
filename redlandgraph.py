@@ -299,6 +299,25 @@ class RedlandGraph(UniqueObject, PortalFolder):
         related_iter = rdf_graph.find_statements(related_statement)
         while not related_iter.end():
             statement = related_iter.current()
+            triple = (statement.subject,
+                      statement.predicate,
+                      statement.object)
+            items.append(triple)
+            related_iter.next()
+        return items
+
+    security.declareProtected(View, 'printAllRelations')
+    def printAllRelations(self):
+        """Print all existing relation instances
+
+        This may be only useful for test/debug purposes
+        """
+        rdf_graph = self._getGraph()
+        items = []
+        related_statement = Statement(None, None, None)
+        related_iter = rdf_graph.find_statements(related_statement)
+        while not related_iter.end():
+            statement = related_iter.current()
             triple = (str(statement.subject),
                       str(statement.predicate),
                       str(statement.object))
@@ -423,6 +442,36 @@ class RedlandGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getGraph()
         return tuple(rdf_graph.get_sources(relation_id, uid))
+
+    security.declareProtected(View, 'getAllRelationsFor')
+    def getAllRelationsFor(self, uid):
+        """Get the list of all (predicate, object) tuples for given uid
+        """
+        rdf_graph = self._getGraph()
+        res = []
+        # as subject
+        related_statement = Statement(uid, None, None)
+        related_iter = rdf_graph.find_statements(related_statement)
+        while not related_iter.end():
+            statement = related_iter.current()
+            res.append((statement.predicate, statement.object))
+            related_iter.next()
+        return res
+
+    security.declareProtected(View, 'getAllInverseRelationsFor')
+    def getAllInverseRelationsFor(self, uid):
+        """Get the list of all (subject, predicate) tuples for given uid
+        """
+        rdf_graph = self._getGraph()
+        res = []
+        # as object
+        related_statement = Statement(None, None, uid)
+        related_iter = rdf_graph.find_statements(related_statement)
+        while not related_iter.end():
+            statement = related_iter.current()
+            res.append((statement.subject, statement.predicate))
+            related_iter.next()
+        return res
 
     security.declareProtected(View, 'removeRelationsFor')
     def removeRelationsFor(self, uid, relation_id):

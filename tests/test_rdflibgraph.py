@@ -193,6 +193,19 @@ class TestRdflibGraph(RdflibGraphTestCase):
             ]
         self.assertEqual(self.graph.listAllRelations(), all_relations)
 
+    def test_printAllRelations(self):
+        all_relations = [
+            (URIRef('1'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('10')),
+            (URIRef('2'), self.hasPart, URIRef('23')),
+            (URIRef('2'), self.hasPart, URIRef('25')),
+            (URIRef('10'), self.isPartOf, URIRef('1')),
+            (URIRef('10'), self.isPartOf, URIRef('2')),
+            (URIRef('23'), self.isPartOf, URIRef('2')),
+            (URIRef('25'), self.isPartOf, URIRef('2')),
+            ]
+        self.assertEqual(self.graph.printAllRelations(), all_relations)
+
     def test_hasRelationFor(self):
         self.assertEqual(
             self.graph.hasRelationFor(URIRef('1'), self.hasPart),
@@ -342,6 +355,23 @@ class TestRdflibGraph(RdflibGraphTestCase):
         self.assertEqual(
             self.graph.getInverseRelationsFor(URIRef('10'), self.hasPart),
             (URIRef('1'), URIRef('2')))
+
+    def test_getAllRelationsFor(self):
+        self.assertEqual(
+            self.graph.getAllRelationsFor(URIRef('1')),
+            [(self.hasPart, URIRef('10'))])
+        self.assertEqual(
+            self.graph.getAllRelationsFor(URIRef('2')),
+            [(self.hasPart, URIRef('23')),
+             (self.hasPart, URIRef('25')),
+             (self.hasPart, URIRef('10')),
+              ])
+
+    def test_getAllInverseRelationsFor(self):
+        related = self.graph.getAllInverseRelationsFor(URIRef('10'))
+        self.assertEqual(related, [(URIRef('1'), self.hasPart),
+                                   (URIRef('2'), self.hasPart),
+                                   ])
 
     def test_removeRelationsFor(self):
         self.assertEqual(
