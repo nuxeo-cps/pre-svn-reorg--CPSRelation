@@ -137,10 +137,11 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
 
     # XXX AT: Currently requires Redland
     security.declareProtected(View, 'getSerializationGraph')
-    def getSerializationGraph(self, triples):
+    def getSerializationGraph(self, triples=[], serialization=''):
         """Get the graph that will be used for serialization
         """
-        from Products.CPSRelation.redlandgraph import Model, Statement, Storage
+        from Products.CPSRelation.redlandgraph import \
+             Model, Statement, Storage, Parser
         # create an rdf_graph with a memory storage for given purpose
         options = "new='yes',hash-type='memory',dir='.'"
         storage = Storage(storage_name="hashes",
@@ -149,6 +150,11 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         rdf_graph = Model(storage)
         for item in triples:
             rdf_graph.append(Statement(item[0], item[1], item[2]))
+        if serialization:
+            parser = Parser(mime_type="application/rdf+xml")
+            base_uri = "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+            parser.parse_string_into_model(rdf_graph, serialization,
+                                           base_uri=base_uri)
         return rdf_graph
 
     # XXX AT: Currently requires Redland
@@ -161,7 +167,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         """
         ser = self.getSerializer(serializer_id)
         triples = ser.getTriples(object)
-        rdf_graph = self.getSerializationGraph(triples)
+        rdf_graph = self.getSerializationGraph(triples=triples)
         bindings = ser.getBindings()
         return self.serializeGraph(rdf_graph, base=base, bindings=bindings)
 
@@ -173,7 +179,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         Serialize given triples to an rdf/xml string using the optional base
         URI.
         """
-        rdf_graph = self.getSerializationGraph(triples)
+        rdf_graph = self.getSerializationGraph(triples=triples)
         return self.serializeGraph(rdf_graph, base=base, bindings=bindings)
 
     # XXX AT: Currently requires Redland
@@ -203,7 +209,7 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
             triples = ser.getTriples(object_info[0])
             all_triples.extend(triples)
             all_bindings.update(ser.getBindings())
-        rdf_graph = self.getSerializationGraph(all_triples)
+        rdf_graph = self.getSerializationGraph(triples=all_triples)
         return self.serializeGraph(rdf_graph, base=base,
                                    bindings=all_bindings)
 
