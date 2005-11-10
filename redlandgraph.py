@@ -69,7 +69,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
          'select_variable': 'supported_backends',
          'label': "Backend",
          },
-        {'id': 'bindings', 'type': 'text', 'mode': 'w',
+        {'id': 'bindings', 'type': 'text', 'mode': 'r',
          'label': "Namespace bindings",
          },
         # path is relative to the var directory of the Zope instance
