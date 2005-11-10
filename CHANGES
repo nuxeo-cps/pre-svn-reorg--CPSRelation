@@ -1,18 +1,12 @@
 Requires:
 ~~~~~~~~~
-- rdflib version >= 2.2.1
+-
 New features:
 ~~~~~~~~~~~~~
-- Added API to get the list of (predicate, object) tuples for a node,
-  e.g. results of a (node, *, *) query, and the list of (subject, predicate)
-  tuples, e.g results of a (*, *, object) query.
-- Added a printAllRelations method on graphs, to make the difference between
-  a print of all relations, and a dump of all relations using listAllRelations.
-- Object serialization: Added possibility to get a graph from an rdf/xml file,
-  not only from a list of triples.
+-
 Bug fixes:
 ~~~~~~~~~~
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- rdflib graphs: upgraded to latest rdflib versions
+-
