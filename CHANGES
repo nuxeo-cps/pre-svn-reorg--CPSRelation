@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Serialization to string optimization
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

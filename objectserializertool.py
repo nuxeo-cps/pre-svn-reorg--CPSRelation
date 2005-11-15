@@ -28,6 +28,9 @@ objects
 
 from zLOG import LOG, ERROR, DEBUG, INFO
 
+import os
+import tempfile
+
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 
@@ -121,7 +124,8 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         """Serialize triples or graph to an rdf/xml string using the optional
         base URI
 
-        At least one out of triples or graph has to be set.
+        Graph has to be a Redland Model, like getSerializationGraph method
+        could return.
         """
         from Products.CPSRelation.redlandgraph import Serializer
         serializer = Serializer(mime_type="application/rdf+xml")
@@ -132,7 +136,17 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
             # serialized file.
             if prefix != 'rdf':
                 serializer.set_namespace(prefix, uri)
-        res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+        # XXX AT: serializing to string is costly for big graphs ; writing to a
+        # file is more efficient
+        #res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+        fd, file_path = tempfile.mkstemp('rdf')
+        serializer.serialize_model_to_file(file_path, rdf_graph, base_uri=base)
+        os.close(fd)
+        f = open(file_path, 'r')
+        res = f.read()
+        f.flush()
+        f.close()
+        os.unlink(file_path)
         return res
 
     # XXX AT: Currently requires Redland

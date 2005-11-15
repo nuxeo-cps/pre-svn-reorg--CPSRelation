@@ -24,7 +24,9 @@
 
 from zLOG import LOG, DEBUG, INFO
 
+import os
 import os.path
+import tempfile
 import string
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
@@ -218,9 +220,20 @@ class RedlandGraph(UniqueObject, PortalFolder):
         for prefix, uri in self.bindings.items():
             serializer.set_namespace(prefix, uri)
         if destination is None:
-            res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+            # XXX AT: serializing to string is costly for big graphs ; writing to a
+            # file is more efficient
+            #res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+            fd, file_path = tempfile.mkstemp('rdf')
+            serializer.serialize_model_to_file(file_path, rdf_graph, base_uri=base)
+            os.close(fd)
+            f = open(file_path, 'r')
+            res = f.read()
+            f.flush()
+            f.close()
+            os.unlink(file_path)
         else:
-            res = serialize_model_to_file(destination, rdf_graph, base_uri=base)
+            res = serializer.serialize_model_to_file(destination, rdf_graph,
+                                                     base_uri=base)
         return res
 
     security.declareProtected(View, 'listRelationIds')
