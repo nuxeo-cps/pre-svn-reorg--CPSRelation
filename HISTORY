@@ -1,4 +1,21 @@
 *******************************************
+** CPSRelation V1.5.1 [R1 build 2005/11/29-18:15 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 30081
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Serialization to string optimization
+- Better handling of rdflib import errors
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSRelation V1.5.0 [R1 build 2005/11/10-16:12 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 29454
 Requires:
