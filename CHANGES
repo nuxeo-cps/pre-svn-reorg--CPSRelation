@@ -7,6 +7,7 @@ New features:
 Bug fixes:
 ~~~~~~~~~~
 - Serialization to string optimization
+- Better handling of rdflib import errors
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -

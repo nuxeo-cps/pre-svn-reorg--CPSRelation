@@ -41,19 +41,24 @@ from Products.CPSRelation import iobtreerelation
 try:
     from Products.CPSRelation import rdflibgraph
 except ImportError, err:
-    LOG("CPSRelation", INFO,
-        "rdflib is not installed, no RDF feature will be available")
-    print "WARNING: rdflib is not installed, no rdflib feature will be available"
-    if str(err) != 'No module named rdflib':
+    msg = "rdflib is not installed (or no compatible version):" \
+          "no RDF feature will be available"
+    LOG("CPSRelation", INFO, msg)
+    print "WARNING: " + msg
+    err_msgs = [
+        'No module named rdflib',
+        'cannot import name Graph',
+        ]
+    if str(err) not in err_msgs:
         raise
 
 # XXX check that Redland is installed before importing
 try:
     from Products.CPSRelation import redlandgraph
 except ImportError, err:
-    LOG("CPSRelation", INFO,
-        "Redland is not installed, no RDF feature will be available")
-    print "WARNING: Redland is not installed, no Redland feature will be available"
+    msg = "Redland is not installed, no RDF feature will be available"
+    LOG("CPSRelation", INFO, msg)
+    print "WARNING: " + msg
     if str(err) != 'No module named RDF':
         raise
 
