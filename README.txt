@@ -20,10 +20,10 @@ Contents
 Features
 ========
 
-CPSRelation provides features to manage relations between objects.
+CPSRelation provides an API to manage relations between objects.
 
 Interfaces have been defined to be able to use different types of graphs
-storing and managing relations. Currently, graphs supported are:
+for storing and managing relations. Currently, supported graphs are:
 
 - simple IOBTrees managing relations between integer unique identifiers and
   tuples of integer unique identifiers. This is the historical relations
