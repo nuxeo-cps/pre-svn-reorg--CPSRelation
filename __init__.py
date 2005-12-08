@@ -41,13 +41,13 @@ from Products.CPSRelation import iobtreerelation
 try:
     from Products.CPSRelation import rdflibgraph
 except ImportError, err:
-    msg = "rdflib is not installed (or no compatible version):" \
+    msg = "rdflib is not installed (or no compatible version): " \
           "no RDF feature will be available"
     LOG("CPSRelation", INFO, msg)
     print "WARNING: " + msg
     err_msgs = [
         'No module named rdflib',
-        'cannot import name Graph',
+        'cannot import name Graph', # rdflib API changes
         ]
     if str(err) not in err_msgs:
         raise

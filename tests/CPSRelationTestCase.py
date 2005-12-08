@@ -34,9 +34,14 @@ from Products.CPSRelation.relationtool import RelationTool
 try:
     from Products.CPSRelation.rdflibgraph import Namespace, URIRef
 except ImportError, err:
-    print "cannot test rdflib features"
-    if str(err) != 'cannot import name Namespace':
+    err_msgs = [
+        'No module named rdflib',
+        'cannot import name Graph', # rdflib API changes
+        'cannot import name Namespace',
+        ]
+    if str(err) not in err_msgs:
         raise
+    print "cannot test rdflib features"
 else:
     USE_RDFLIB = 1
     RDFLIB_NAMESPACE = Namespace('http://cps-project.org/2005/data/')
@@ -45,9 +50,13 @@ else:
 try:
     from Products.CPSRelation.redlandgraph import Uri, Node, NS
 except ImportError, err:
-    print "cannot test Redland features"
-    if str(err) != 'cannot import name Uri':
+    err_msgs = [
+        'No module named RDF',
+        'cannot import name Uri',
+        ]
+    if str(err) not in err_msgs:
         raise
+    print "cannot test Redland features"
 else:
     USE_REDLAND = 1
     REDLAND_NAMESPACE = NS('http://cps-project.org/2005/data/')
