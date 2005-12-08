@@ -63,7 +63,7 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
 
     # graphs
 
-    security.declareProtected(ManagePortal, 'listGraphsIds')
+    security.declareProtected(ManagePortal, 'listGraphIds')
     def listGraphIds(self):
         """List all the existing graphs
         """
