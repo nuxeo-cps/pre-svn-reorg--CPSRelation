@@ -44,7 +44,6 @@ except ImportError, err:
     msg = "rdflib is not installed (or no compatible version): " \
           "no RDF feature will be available"
     LOG("CPSRelation", INFO, msg)
-    print "WARNING: " + msg
     err_msgs = [
         'No module named rdflib',
         'cannot import name Graph', # rdflib API changes
@@ -58,7 +57,6 @@ try:
 except ImportError, err:
     msg = "Redland is not installed, no RDF feature will be available"
     LOG("CPSRelation", INFO, msg)
-    print "WARNING: " + msg
     if str(err) != 'No module named RDF':
         raise
 
