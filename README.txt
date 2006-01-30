@@ -114,12 +114,18 @@ Packages are:
 Installation for CPSRelation requires the installation of Raptor, Rasqal,
 Redland, and the Redland Python binding.
 
-Tests have been made using versions:
+Tests have been made using following versions, with Python 2.3.5 and 2.4.2:
 
 - raptor-1.4.7
 - rasqal-0.9.10
 - redland-1.0.2.
 - redland-bindings-1.0.2.1
+
+Following Ubuntu packages have also been tested:
+
+- librdf0           1.0.2-2ubuntu1
+- python2.3-librdf  1.0.2.1-1ubuntu1
+- python2.4-librdf  1.0.2.1-1ubuntu1
 
 Please refer to the Redland documentation and installation instructions at
 http://librdf.org/.
