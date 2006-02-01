@@ -262,6 +262,27 @@ class TestRedlandGraph(RedlandGraphTestCase):
         rel = self.makeStringTuple(rel)
         self.assertEqual(rel, ('[2]',))
 
+    def test_deleteRelationsFor_None(self):
+        rel = self.graph.getRelationsFor(Node(Uri('1')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]',))
+        rel = self.graph.getRelationsFor(Node(Uri('2')), self.hasPart)
+        rel = self.makeStringTuple(rel)
+        self.assertEqual(rel, ('[10]', '[23]', '[25]'))
+
+        del_rel = (
+            (Node(Uri('1')), self.hasPart, Node(Uri('10'))),
+            (Node(Uri('2')), self.hasPart, None),
+            )
+        self.graph.deleteRelationsFor(del_rel)
+
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('1')), self.hasPart),
+            ())
+        self.assertEqual(
+            self.graph.getRelationsFor(Node(Uri('2')), self.hasPart),
+            ())
+
     def test_getValueFor(self):
         # 1 --hasPart--> 10
         # 2 --hasPart--> 10, 23, 25

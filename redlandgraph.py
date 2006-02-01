@@ -365,8 +365,8 @@ class RedlandGraph(UniqueObject, PortalFolder):
         Useful when it's costly to access the graph.
         """
         rdf_graph = self._getGraph()
-        for item in triples_list:
-            rdf_graph.append(Statement(item[0], item[1], item[2]))
+        for subj, pred, obj in triples_list:
+            rdf_graph.append(Statement(subj, pred, obj))
 
     security.declareProtected(View, 'deleteRelationFor')
     def deleteRelationFor(self, uid, relation_id, related_uid):
@@ -382,10 +382,16 @@ class RedlandGraph(UniqueObject, PortalFolder):
 
         triples_list items must be like (uid, relation_id, related_uid)
         Useful when it's costly to access the graph.
+
+        If related_uid is None, delete all relations found matching the
+        statement definition.
         """
         rdf_graph = self._getGraph()
-        for item in triples_list:
-            rdf_graph.remove_statement(Statement(item[0], item[1], item[2]))
+        for subj, pred, obj in triples_list:
+            if obj is None:
+                self.removeRelationsFor(subj, obj)
+            else:
+                rdf_graph.remove_statement(Statement(subj, pred, obj))
 
     security.declareProtected(View, 'getValueFor')
     def getValueFor(self, uid, relation_id, related_uid=None,

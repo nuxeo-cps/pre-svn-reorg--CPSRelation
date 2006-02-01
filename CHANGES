@@ -3,7 +3,8 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Redland graph: added possibility to give an object with None value in a list
+  of triples to delete.
 Bug fixes:
 ~~~~~~~~~~
 -
