@@ -45,6 +45,10 @@ else:
     class RedlandGraphTestCase:
         pass
 
+
+CPS_NAMESPACE_URI = "http://cps-project.org/2005/data/"
+
+
 class TestRedlandGraph(RedlandGraphTestCase):
 
     def test_interface(self):
@@ -543,15 +547,79 @@ ORDER BY ?level ?order
 
     def test_query_node(self):
         # tests query with a node value, must be a node with namespace
-        CPS_NAMESPACE_URI = "http://cps-project.org/2005/data/"
         CPS_NAMESPACE = NS(CPS_NAMESPACE_URI)
-        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart, CPS_NAMESPACE['totoro'])
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart,
+                                  CPS_NAMESPACE['totoro'])
 
         query = """
 PREFIX cps: <http://cps-project.org/2005/data/>
 SELECT ?subj
 WHERE {
   ?subj cps:hasPart <totoro> .
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[1]'])
+
+    def test_query_literal(self):
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart,
+                                  Node(literal='text'))
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:hasPart "text"
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[1]'])
+
+    def test_query_literal_language(self):
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart,
+                                  Node(literal='text_lang', language='en'))
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:hasPart "text_lang"@en
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[1]'])
+
+    def test_query_literal_datatype(self):
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart,
+                                  Node(literal='text_dt',
+                                       datatype=Uri(CPS_NAMESPACE_URI)))
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:hasPart "text_dt"^^<http://cps-project.org/2005/data/>
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[1]'])
+
+    # cant find out how to do that with a complete literal :(
+    def test_query_literal_complete(self):
+        literal = Node(literal='literal',
+                       datatype=Uri(CPS_NAMESPACE_URI), language='en')
+        self.graph.addRelationFor(Node(Uri(('1'))), self.hasPart, literal)
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:hasPart ?lit .
+  FILTER REGEX(?lit, "^literal.*")
 }
 """
         results = self.graph.query(query, query_language='sparql',
