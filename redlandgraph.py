@@ -137,7 +137,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
         if self.backend == 'memory':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("_getGraph", DEBUG, "rebuilding memory storage")
+                # WARNING level because content can be lost with memory storage
+                LOG("RedlandGraph._getGraph", WARNING,
+                    "rebuilding memory storage")
                 options = "new='yes',hash-type='memory',dir='.'"
                 storage = Storage(storage_name="hashes",
                                   name=self.id,
@@ -146,7 +148,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         elif self.backend == 'bdb':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("_getGraph", DEBUG, "rebuilding bdb storage")
+                LOG("RedlandGraph._getGraph", DEBUG, "rebuilding bdb storage")
                 # XXX AT: check behaviour with multiple access to BDB
                 dir_path = os.path.join(CLIENT_HOME, self.bdb_path)
                 storage = HashStorage(dir_path, options="hash-type='bdb'")
@@ -154,7 +156,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         elif self.backend == 'mysql':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("_getGraph", DEBUG, "rebuilding mysql storage")
+                LOG("RedlandGraph._getGraph", DEBUG, "rebuilding mysql storage")
                 options = self.mysql_options + ",database='%s'"%self.id
                 try:
                     storage = Storage(storage_name="mysql",
@@ -171,7 +173,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
                         # Try to create table: adding the new option creates
                         # tables, but erases data if tables already exist,
                         # that's why it's done after a first try without it.
-                        LOG("_getGraph", DEBUG, "creating tables")
+                        LOG("RedlandGraph._getGraph", DEBUG, "creating tables")
                         options = "new='yes'," + options
                         storage = Storage(storage_name="mysql",
                                           name=self.id,
