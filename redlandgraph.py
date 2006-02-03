@@ -22,12 +22,12 @@
 """Graph using the Redland RDF Application Framework
 """
 
-from zLOG import LOG, DEBUG, WARNING, INFO
-
 import os
 import os.path
 import tempfile
 import string
+import logging
+
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 from AccessControl import ModuleSecurityInfo
@@ -52,6 +52,8 @@ allow_class(NS)
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.graphdrawer import GraphDrawer
+
+logger = logging.getLogger("CPSRelation.RedlandGraph")
 
 class RedlandGraph(UniqueObject, PortalFolder):
     """Graph using the Redland RDF Application Framework
@@ -138,8 +140,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
             storage = getattr(self, '_v_storage', None)
             if storage is None:
                 # WARNING level because content can be lost with memory storage
-                LOG("RedlandGraph._getGraph", WARNING,
-                    "rebuilding memory storage")
+                logger.warn("_getGraph: rebuilding memory storage")
                 options = "new='yes',hash-type='memory',dir='.'"
                 storage = Storage(storage_name="hashes",
                                   name=self.id,
@@ -148,7 +149,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         elif self.backend == 'bdb':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("RedlandGraph._getGraph", DEBUG, "rebuilding bdb storage")
+                logger.debug("_getGraph: rebuilding bdb storage")
                 # XXX AT: check behaviour with multiple access to BDB
                 dir_path = os.path.join(CLIENT_HOME, self.bdb_path)
                 storage = HashStorage(dir_path, options="hash-type='bdb'")
@@ -156,7 +157,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         elif self.backend == 'mysql':
             storage = getattr(self, '_v_storage', None)
             if storage is None:
-                LOG("RedlandGraph._getGraph", DEBUG, "rebuilding mysql storage")
+                logger.debug("_getGraph: rebuilding mysql storage")
                 options = self.mysql_options + ",database='%s'"%self.id
                 try:
                     storage = Storage(storage_name="mysql",
@@ -173,7 +174,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
                         # Try to create table: adding the new option creates
                         # tables, but erases data if tables already exist,
                         # that's why it's done after a first try without it.
-                        LOG("RedlandGraph._getGraph", DEBUG, "creating tables")
+                        logger.debug("_getGraph: creating mysql tables")
                         options = "new='yes'," + options
                         storage = Storage(storage_name="mysql",
                                           name=self.id,

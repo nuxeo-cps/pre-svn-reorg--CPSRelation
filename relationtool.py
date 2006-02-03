@@ -23,8 +23,6 @@
 """Relation tool to manage graphs holding relations between objects.
 """
 
-from zLOG import LOG, ERROR, DEBUG, INFO
-
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 

@@ -24,11 +24,14 @@
 """
 
 import unittest
+import logging
 
 USE_RDFLIB = 0
 USE_REDLAND = 0
 
 from Products.CPSRelation.relationtool import RelationTool
+
+logger = logging.getLogger("CPSRelation")
 
 # XXX check that rdflib is installed before importing
 try:
@@ -41,7 +44,7 @@ except ImportError, err:
         ]
     if str(err) not in err_msgs:
         raise
-    print "cannot test rdflib features"
+    logger.warn("cannot test rdflib features")
 else:
     USE_RDFLIB = 1
     RDFLIB_NAMESPACE = Namespace('http://cps-project.org/2005/data/')
@@ -56,7 +59,7 @@ except ImportError, err:
         ]
     if str(err) not in err_msgs:
         raise
-    print "cannot test Redland features"
+    logger.warn("cannot test Redland features")
 else:
     USE_REDLAND = 1
     REDLAND_NAMESPACE = NS('http://cps-project.org/2005/data/')

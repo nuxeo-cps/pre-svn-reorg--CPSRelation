@@ -36,7 +36,6 @@ Howto use the CPSRelation installer :
  - then click on the test tab of this external method
 """
 
-from zLOG import LOG, INFO, DEBUG
 
 from Products.CPSInstaller.CPSInstaller import CPSInstaller
 

@@ -26,8 +26,6 @@ A relation holds a IOBTree with object uids as keys and tuples of related
 object uids as values. It also stores the id of its inverse relation.
 """
 
-from zLOG import LOG, DEBUG, INFO
-
 from Globals import InitializeClass, DTMLFile
 from Acquisition import aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo

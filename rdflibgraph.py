@@ -23,8 +23,6 @@
 """Graph using rdflib RDF Application framework
 """
 
-from zLOG import LOG, DEBUG, INFO
-
 import os.path
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo

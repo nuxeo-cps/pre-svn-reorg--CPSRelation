@@ -26,10 +26,9 @@ objects
 
 # XXX Currently requires Serializer from RDF to serialize to RDF/XML files
 
-from zLOG import LOG, ERROR, DEBUG, INFO
-
 import os
 import tempfile
+import logging
 
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
@@ -39,6 +38,8 @@ from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 
 from Products.CPSRelation.objectserializer import ObjectSerializer
+
+logger = logging.getLogger("CPSRelation.ObjectSerializerTool")
 
 class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
     """Object Serializer Tool that provides services to get RDF serializations
@@ -243,13 +244,11 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
         except ImportError, err:
             if str(err) != 'No module named pydot':
                 raise
-            LOG("CPSRelation.graphdrawer", INFO,
-                "pydot could not be found")
+            logger.info("pydot could not be found")
             ok, err = False, 'pydot not found'
         else:
             if pydot.find_graphviz() is None:
-                LOG("CPSRelation.graphdrawer", INFO,
-                    "GraphViz could not be found")
+                logger.info("GraphViz could not be found")
                 ok, err = False, 'GraphViz not found'
         return ok, err
 

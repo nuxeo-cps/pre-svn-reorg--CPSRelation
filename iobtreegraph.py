@@ -23,8 +23,6 @@
 """Graph using IOBtree objects to store relations between integers
 """
 
-from zLOG import LOG, ERROR, DEBUG, INFO
-
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 

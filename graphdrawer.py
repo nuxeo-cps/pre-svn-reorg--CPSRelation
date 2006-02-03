@@ -23,18 +23,19 @@
 Drawer for graphs
 """
 
-from zLOG import LOG, DEBUG, INFO
-
 import string
+import logging
+
 from Globals import InitializeClass
+
+logger = logging.getLogger("CPSRelation.GraphDrawer")
 
 try:
     import pydot
 except ImportError, err:
     if str(err) != 'No module named pydot':
         raise
-    LOG("CPSRelation.graphdrawer", INFO,
-        "pydot could not be found")
+    logger.info("pydot could not be found")
 
 class GraphDrawer:
 
