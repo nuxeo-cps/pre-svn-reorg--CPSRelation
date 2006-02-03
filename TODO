@@ -2,7 +2,7 @@
 CPSRelation TODO
 ================
 
-$Id: $
+$Id$
 
 - add extension profile for setup
 - avoid listing all the graph relations clicking on the graph in ZMI.
