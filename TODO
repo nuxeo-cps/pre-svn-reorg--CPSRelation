@@ -4,6 +4,8 @@ CPSRelation TODO
 
 $Id: $
 
+- add extension profile for setup
+- avoid listing all the graph relations clicking on the graph in ZMI.
 - Concurrency when accessing bdb graphs.
 - Transactions management using external non-transactional storage (add/remove,
   see the CPSCore "before commit hook" mechanism).
