@@ -23,10 +23,6 @@
 """Test IOBTree Graph
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import unittest
 from Interface.Verify import verifyClass
 
@@ -273,6 +269,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestIOBTreeGraph))
     return suite
-
-if __name__ == '__main__':
-    framework()

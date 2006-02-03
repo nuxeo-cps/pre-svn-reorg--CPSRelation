@@ -23,10 +23,6 @@
 """Tests for Object Serializer
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import unittest
 
 from OFS.Folder import Folder
@@ -168,6 +164,3 @@ def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestObjectSerializer))
     return suite
-
-if __name__ == '__main__':
-    framework()

@@ -23,14 +23,10 @@
 """Test Rdflib Graph
 """
 
-from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
-
-import os, sys
-if __name__ == '__main__' and USE_RDFLIB:
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import unittest
 from Interface.Verify import verifyClass
+
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
 
 if USE_RDFLIB:
     from Products.CPSRelation.interfaces.IGraph import IGraph
@@ -416,5 +412,3 @@ def test_suite():
         suite.addTest(unittest.makeSuite(TestRdflibGraph))
     return suite
 
-if __name__ == '__main__':
-    framework()

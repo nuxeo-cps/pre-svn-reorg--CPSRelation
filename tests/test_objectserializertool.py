@@ -23,10 +23,6 @@
 """Tests for Relations Tool
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import unittest
 
 from OFS.Folder import Folder
@@ -329,5 +325,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestObjectSerializerTool))
     return suite
 
-if __name__ == '__main__':
-    framework()

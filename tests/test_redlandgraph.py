@@ -23,14 +23,11 @@
 """Test Redland Graph
 """
 
-from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
-
-import os, sys
-if __name__ == '__main__' and USE_REDLAND:
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
+import os
 import unittest
 from Interface.Verify import verifyClass
+
+from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 
 if USE_REDLAND:
     # XXX if necessary, RDF has a debug mode:
@@ -634,5 +631,3 @@ def test_suite():
         suite.addTest(unittest.makeSuite(TestRedlandGraph))
     return suite
 
-if __name__ == '__main__':
-    framework()

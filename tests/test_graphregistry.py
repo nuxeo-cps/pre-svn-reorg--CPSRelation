@@ -22,10 +22,6 @@
 """Graph registry tests
 """
 
-import os, sys
-if __name__ == '__main__':
-    execfile(os.path.join(sys.path[0], 'framework.py'))
-
 import unittest
 
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
@@ -90,5 +86,3 @@ def test_suite():
     suite.addTest(unittest.makeSuite(TestGraphRegistry))
     return suite
 
-if __name__ == '__main__':
-    framework()
