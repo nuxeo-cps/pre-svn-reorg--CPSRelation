@@ -22,7 +22,7 @@
 """Graph using the Redland RDF Application Framework
 """
 
-from zLOG import LOG, DEBUG, INFO
+from zLOG import LOG, DEBUG, WARNING, INFO
 
 import os
 import os.path
