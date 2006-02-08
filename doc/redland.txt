@@ -46,3 +46,10 @@ Misc development notes using Redland
   serializing to a string.
   Bench with a graph in memory containing ~ 100,000 statements: chose
   between waiting 7 seconds and losing 30 minutes... (!)
+
+- Literal nodes should have both a datatype and a language set, even this is
+  allowed by the API (this is a bug), as problems may occur when querying
+  the graph and as this does not make sense for the RDF concepts.
+
+- DISTINCT has bugs in rasqal 0.9.10 (in redland 1.0.2) that re fixed in
+  0.9.11.

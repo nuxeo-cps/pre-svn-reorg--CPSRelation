@@ -49,6 +49,29 @@ allow_class(Uri)
 allow_class(Node)
 allow_class(NS)
 
+
+# RDF bugfix patches
+
+# see http://bugs.librdf.org/mantis/view.php?id=59
+from RDF import QueryResults, Redland, Node
+
+def make_results_hash(self):
+    results = {}
+    c = Redland.librdf_query_results_get_bindings_count(self._results)
+    for i in range(c):
+        n = Redland.librdf_query_results_get_binding_name(self._results, i)
+        v = Redland.librdf_query_results_get_binding_value(self._results, i)
+        if v is None:
+            results[n] = None
+        else:
+            results[n] = Node(from_object=v)
+    return results
+
+QueryResults.make_results_hash = make_results_hash
+
+# End of RDF patches
+
+
 from Products.CPSRelation.interfaces.IGraph import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.graphdrawer import GraphDrawer
@@ -260,11 +283,16 @@ class RedlandGraph(UniqueObject, PortalFolder):
         rdf_graph = self._getGraph()
         # XXX AT: probably an easier way to do that
         related_statement = Statement(None, None, None)
-        related_iter = rdf_graph.find_statements(related_statement)
-        while not related_iter.end():
-            statement = related_iter.current()
-            rdf_graph.remove_statement(statement)
-            related_iter.next()
+        try:
+            related_iter = rdf_graph.find_statements(related_statement)
+        except Exception, err:
+            if err.__class__.__name__ != 'RedlandError':
+                raise
+        else:
+            while not related_iter.end():
+                statement = related_iter.current()
+                rdf_graph.remove_statement(statement)
+                related_iter.next()
 
     security.declareProtected(View, 'hasRelation')
     def hasRelation(self, relation_id):
