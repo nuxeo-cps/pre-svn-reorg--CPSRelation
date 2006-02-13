@@ -29,6 +29,8 @@ from AccessControl import ClassSecurityInfo
 from AccessControl import ModuleSecurityInfo
 from AccessControl import allow_class
 
+from zope.interface import implements
+
 from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
@@ -53,11 +55,11 @@ from Products.CPSRelation.graphdrawer import GraphDrawer
 class RdflibGraph(UniqueObject, PortalFolder):
     """Graph using rdflib RDF Application framework
     """
-    __implements__ = (IGraph,)
-
     meta_type = 'Rdflib Graph'
 
     security = ClassSecurityInfo()
+
+    implements(IGraph)
 
     #
     # Properties

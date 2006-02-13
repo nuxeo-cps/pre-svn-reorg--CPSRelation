@@ -22,9 +22,9 @@
 """Interface for a tool that deals with different relation graphs
 """
 
-import Interface
+from zope.interface import Interface
 
-class IRelationTool(Interface.Base):
+class IRelationTool(Interface):
     """Interface for a tool that deals with different relation graphs
     """
 

@@ -26,6 +26,8 @@
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 
+from zope.interface import implements
+
 from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
@@ -41,7 +43,7 @@ class IOBTreeGraph(UniqueObject, PortalFolder):
 
     meta_type = 'IOBTree Graph'
 
-    __implements__ = (IGraph,)
+    implements(IGraph)
 
     security = ClassSecurityInfo()
 

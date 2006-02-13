@@ -23,9 +23,9 @@
 """Interface for graphs dealing with several labeled relations
 """
 
-import Interface
+from zope.interface import Interface
 
-class IGraph(Interface.Base):
+class IGraph(Interface):
     """Interface for graphs dealing with several labeled relations
     """
 

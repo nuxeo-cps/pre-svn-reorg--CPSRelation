@@ -26,6 +26,8 @@
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 
+from zope.interface import implements
+
 from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
@@ -40,7 +42,7 @@ class RelationTool(UniqueObject, CMFBTreeFolder):
     id = 'portal_relations'
     meta_type = 'Relation Tool'
 
-    __implements__ = (IRelationTool,)
+    implements(IRelationTool)
 
     security = ClassSecurityInfo()
 

@@ -30,6 +30,8 @@ from Globals import InitializeClass, DTMLFile
 from Acquisition import aq_parent, aq_inner
 from AccessControl import ClassSecurityInfo
 
+from zope.interface import implements
+
 from BTrees.IOBTree import IOBTree
 
 from Products.CMFCore.utils import SimpleItemWithProperties
@@ -46,7 +48,7 @@ class IOBTreeRelation(SimpleItemWithProperties):
 
     meta_type = 'IOBTree Relation'
 
-    __implements__ = (IRelation,)
+    implements(IRelation)
 
     security = ClassSecurityInfo()
 

@@ -26,9 +26,9 @@ Note that some graphs may be already dealing with relations internally (for
 instance, RDF graphs do).
 """
 
-import Interface
+from zope.interface import Interface
 
-class IRelation(Interface.Base):
+class IRelation(Interface):
     """Interface for labeled relations dealing with instances of items to be
     related
     """

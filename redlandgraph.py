@@ -28,6 +28,8 @@ import tempfile
 import string
 import logging
 
+from zope.interface import implements
+
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 from AccessControl import ModuleSecurityInfo
@@ -90,9 +92,9 @@ logger = logging.getLogger("CPSRelation.RedlandGraph")
 class RedlandGraph(UniqueObject, PortalFolder):
     """Graph using the Redland RDF Application Framework
     """
-    __implements__ = (IGraph,)
-
     meta_type = 'Redland Graph'
+
+    implements(IGraph)
 
     security = ClassSecurityInfo()
 
