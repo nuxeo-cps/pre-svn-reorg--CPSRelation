@@ -69,6 +69,15 @@ def make_results_hash(self):
 
 QueryResults.make_results_hash = make_results_hash
 
+# better representation for nodes, ok this is dummy but it helps
+def __repr__(self):
+    old_repr = object.__repr__(self)
+    address = old_repr[len('<RDF.Node object at '):-1]
+    return "<RDF.Node for %s at %s>"%(str(self), address)
+
+Node.__repr__ = __repr__
+
+
 # End of RDF patches
 
 
