@@ -538,7 +538,19 @@ ORDER BY ?level ?order
             ('[my section 2]', '[a subsection22]'),
             ('[subsection31]', '[subsubsection311]'),
             ]
-
+        # FIXME AT: this test breaks using rator 1.4.8, rasqal 0.9.11, redland
+        # 1.0.2 and redland-bindings 1.0.2.
+        had = [
+            ('[root]', '[section1]'),
+            ('[root]', '[my section 2]'),
+            ('[root]', '[section3]'),
+            ('[section3]', '[subsection31]'),
+            ('[my section 2]', '[another subsection21]'),
+            ('[section1]', '[subsection11]'),
+            ('[my section 2]', '[a subsection22]'),
+            ('[section1]', '[subsection12]'),
+            ('[subsection31]', '[subsubsection311]'),
+            ]
         self.assertEqual(results, expected, keep_order=True)
 
 
