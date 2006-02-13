@@ -28,12 +28,16 @@ from Acquisition import aq_inner, aq_parent
 from AccessControl import ClassSecurityInfo
 from AccessControl import getSecurityManager
 
+from zope.interface import implements
+
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import SimpleItemWithProperties
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.Expression import getEngine
 
 from Products.CPSUtil.PropertiesPostProcessor import PropertiesPostProcessor
+
+from Products.CPSRelation.interfaces import IObjectSerializer
 
 class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     """Object Serializer
@@ -42,6 +46,8 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     """
 
     meta_type = "Object Serializer"
+
+    implements(IObjectSerializer)
 
     security = ClassSecurityInfo()
     security.declareObjectProtected(ManagePortal)
@@ -134,4 +140,3 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
 
 
 InitializeClass(ObjectSerializer)
-

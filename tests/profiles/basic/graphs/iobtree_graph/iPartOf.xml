@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<object name="iPartOf" meta_type="IOBTree Relation">
+ <property name="title">is part of</property>
+ <property name="inverse_id">hasPart</property>
+</object>

@@ -28,12 +28,15 @@ import unittest
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 
+from zope.interface.verify import verifyClass
+
 from Products.CMFCore.Expression import Expression
 
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
 
 from Products.CPSRelation.relationtool import RelationTool
+from Products.CPSRelation.interfaces import IObjectSerializerTool
 from Products.CPSRelation.objectserializertool import ObjectSerializerTool
 from Products.CPSRelation.objectserializer import ObjectSerializer
 
@@ -92,6 +95,9 @@ class TestObjectSerializerTool(CPSRelationTestCase):
         del self.serializer
         del self.bindings
         del self.expr
+
+    def test_interface(self):
+        verifyClass(IObjectSerializerTool, ObjectSerializerTool)
 
     def test_creation(self):
         stool = ObjectSerializerTool()

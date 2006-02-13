@@ -1,0 +1,40 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:five="http://namespaces.zope.org/five">
+
+  <adapter
+      factory=".exportimport.RelationToolXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for=".interfaces.IRelationTool.IRelationTool
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+  <adapter
+      factory=".exportimport.GraphXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for=".interfaces.IGraph.IGraph
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+  <adapter
+      factory=".exportimport.RelationXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for=".interfaces.IRelation.IRelation
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+  <adapter
+      factory=".exportimport.ObjectSerializerToolXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for=".interfaces.IObjectSerializerTool
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+  <adapter
+      factory=".exportimport.ObjectSerializerXMLAdapter"
+      provides="Products.GenericSetup.interfaces.IBody"
+      for=".interfaces.IObjectSerializer
+           Products.GenericSetup.interfaces.ISetupEnviron"
+      />
+
+</configure>

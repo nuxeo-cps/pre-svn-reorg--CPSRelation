@@ -3,7 +3,7 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
--
+- Adding default profile and export/import using GenericSetup
 Bug fixes:
 ~~~~~~~~~~
 -

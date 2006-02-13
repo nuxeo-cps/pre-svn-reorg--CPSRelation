@@ -33,10 +33,13 @@ import logging
 from Globals import InitializeClass, DTMLFile
 from AccessControl import ClassSecurityInfo
 
+from zope.interface import implements
+
 from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject, getToolByName
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 
+from Products.CPSRelation.interfaces import IObjectSerializerTool
 from Products.CPSRelation.objectserializer import ObjectSerializer
 
 logger = logging.getLogger("CPSRelation.ObjectSerializerTool")
@@ -50,6 +53,8 @@ class ObjectSerializerTool(UniqueObject, CMFBTreeFolder):
 
     id = 'portal_serializer'
     meta_type = "Object Serializer Tool"
+
+    implements(IObjectSerializerTool)
 
     security = ClassSecurityInfo()
 

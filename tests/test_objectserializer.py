@@ -25,6 +25,8 @@
 
 import unittest
 
+from zope.interface.verify import verifyClass
+
 from OFS.Folder import Folder
 from OFS.SimpleItem import SimpleItem
 
@@ -35,6 +37,7 @@ from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
 
 from Products.CPSRelation.relationtool import RelationTool
+from Products.CPSRelation.interfaces import IObjectSerializer
 from Products.CPSRelation.objectserializer import ObjectSerializer
 
 
@@ -84,6 +87,9 @@ class TestObjectSerializer(CPSRelationTestCase):
         del self.object
         del self.serializer
         del self.expr
+
+    def test_interface(self):
+        verifyClass(IObjectSerializer, ObjectSerializer)
 
     def test_creation_edition(self):
         expr = "python:[(getattr(object, 'id'), 'hasTitle', getattr(object, 'title'))]"

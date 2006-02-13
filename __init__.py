@@ -25,8 +25,13 @@
 
 import logging
 
+from Products.GenericSetup import profile_registry
+from Products.GenericSetup import EXTENSION
+
 from Products.CMFCore.utils import ToolInit
-from Products.CMFCore.permissions import AddPortalContent
+from Products.CMFCore.permissions import AddPortalContent, ManagePortal
+
+from Products.CPSCore.interfaces import ICPSSite
 
 from Products.CPSRelation import relationtool
 from Products.CPSRelation import graphregistry
@@ -38,6 +43,9 @@ from Products.CPSRelation import iobtreegraph
 from Products.CPSRelation import iobtreerelation
 
 logger = logging.getLogger("CPSRelation")
+
+USE_RDFLIB = 0
+USE_REDLAND = 0
 
 # XXX check that rdflib is installed before importing
 try:
@@ -52,6 +60,8 @@ except ImportError, err:
         ]
     if str(err) not in err_msgs:
         raise
+else:
+    USE_RDFLIB = 1
 
 # XXX check that Redland is installed before importing
 try:
@@ -61,6 +71,8 @@ except ImportError, err:
     logger.info(msg)
     if str(err) != 'No module named RDF':
         raise
+else:
+    USE_REDLAND = 1
 
 tools = (
     relationtool.RelationTool,
@@ -73,3 +85,37 @@ def initialize(registrar):
     ToolInit('CPSRelation Tools',
              tools=tools,
              icon='tool.png').initialize(registrar)
+
+    # additional classes, needed for export/import
+    registrar.registerClass(
+        iobtreegraph.IOBTreeGraph,
+        permission=ManagePortal,
+        constructors=(relationtool.RelationTool.addGraph,)
+        )
+    if USE_RDFLIB:
+        registrar.registerClass(
+            rdflibgraph.RdflibGraph,
+            permission=ManagePortal,
+            constructors=(relationtool.RelationTool.addGraph,)
+            )
+    if USE_REDLAND:
+        registrar.registerClass(
+            redlandgraph.RedlandGraph,
+            permission=ManagePortal,
+            constructors=(relationtool.RelationTool.addGraph,)
+            )
+    registrar.registerClass(
+        objectserializer.ObjectSerializer,
+        permission=ManagePortal,
+        constructors=(
+        objectserializertool.ObjectSerializerTool.manage_addSerializer,)
+        )
+
+    profile_registry.registerProfile(
+        'default',
+        'CPS Relation',
+        "Relation product for CPS.",
+        'profiles/default',
+        'CPSRelation',
+        EXTENSION,
+        for_=ICPSSite)
