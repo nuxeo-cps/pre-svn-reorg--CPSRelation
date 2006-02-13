@@ -1,4 +1,20 @@
 *******************************************
+** CPSRelation V1.7.1 [R1 build 2006/02/13-15:43 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 32760
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Adding patches for Redland bugfixes
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Better logs for Redland graphs
+
+*******************************************
 ** CPSRelation V1.7.0 [R1 build 2006/02/01-18:14 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 32507
 Requires:
