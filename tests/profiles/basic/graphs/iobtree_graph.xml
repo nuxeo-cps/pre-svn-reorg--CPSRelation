@@ -1,4 +1,12 @@
 <?xml version="1.0"?>
 <object name="iobtree_graph" meta_type="IOBTree Graph">
- <property name="title"></property>
+ <property name="title">Graph title</property>
+ <relation name="hasPart" meta_type="IOBTree Relation">
+  <property name="title">has part</property>
+  <property name="inverse_id">isPartOf</property>
+ </relation>
+ <relation name="isPartOf" meta_type="IOBTree Relation">
+  <property name="title">is part of</property>
+  <property name="inverse_id">hasPart</property>
+ </relation>
 </object>

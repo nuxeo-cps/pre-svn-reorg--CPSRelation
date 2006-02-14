@@ -107,7 +107,10 @@ class RedlandGraph(UniqueObject, PortalFolder):
          'select_variable': 'supported_backends',
          'label': "Backend",
          },
-        {'id': 'bindings', 'type': 'text', 'mode': 'r',
+        # one binding per line, following the format "key value", for instance:
+        # rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        # exp http://www.example.org/
+        {'id': 'bindings', 'type': 'lines', 'mode': 'w',
          'label': "Namespace bindings",
          },
         # path is relative to the var directory of the Zope instance
@@ -127,7 +130,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         ]
     # default values
     backend = 'memory'
-    bindings = {}
+    bindings = ()
     bdb_path = ''
     mysql_options = ''
 
@@ -135,7 +138,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
     # API
     #
 
-    def __init__(self, id, backend='memory', bindings={}, **kw):
+    def __init__(self, id, backend='memory', bindings=(), **kw):
         """Initialization
 
         kw are passed to be able to set the backend specific parameters
@@ -221,6 +224,18 @@ class RedlandGraph(UniqueObject, PortalFolder):
         graph = Model(storage)
         return graph
 
+    def getBindings(self):
+        """Get defined bindings dictionnary
+        """
+        bindings_dict = {}
+        for binding in self.bindings:
+            sep_index = binding.find(' ')
+            if sep_index != -1:
+                key = binding[:sep_index]
+                value = binding[sep_index+1:]
+                bindings_dict[key] = value
+        return bindings_dict
+
     security.declareProtected(ManagePortal, 'parse')
     def parse(self, source, publicID=None, format="application/rdf+xml"):
         """Parse source into Graph.
@@ -254,7 +269,8 @@ class RedlandGraph(UniqueObject, PortalFolder):
         """
         rdf_graph = self._getGraph()
         serializer = Serializer(mime_type=format)
-        for prefix, uri in self.bindings.items():
+        bindings = self.getBindings()
+        for prefix, uri in bindings.items():
             serializer.set_namespace(prefix, uri)
         if destination is None:
             # XXX AT: serializing to string is costly for big graphs ; writing to a

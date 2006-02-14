@@ -79,6 +79,10 @@ class TestObjectSerializerTool(CPSRelationTestCase):
             'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
             'exp': "http://www.example.org/",
             }
+        self.bindings_tuple = (
+            'rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'exp http://www.example.org/',
+            )
 
         # test object
         kw = {
@@ -94,6 +98,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
         del self.stool
         del self.serializer
         del self.bindings
+        del self.bindings_tuple
         del self.expr
 
     def test_interface(self):
@@ -210,7 +215,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
              getattr(object, 'title')),
             ]"""
             self.serializer.manage_changeProperties(serialization_expr=new_expr,
-                                                    bindings=self.bindings)
+                                                    bindings=self.bindings_tuple)
             expected = """<?xml version="1.0" encoding="utf-8"?>
 <rdf:RDF xmlns:exp="http://www.example.org/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
   <rdf:Description rdf:about="fake_object">
@@ -287,7 +292,7 @@ class TestObjectSerializerTool(CPSRelationTestCase):
              getattr(object, 'title')),
             ]"""
             self.serializer.manage_changeProperties(serialization_expr=new_expr,
-                                                    bindings=self.bindings)
+                                                    bindings=self.bindings_tuple)
             other_expr = """python:[
             (Node(Uri(getattr(object, 'id'))),
              NS('http://www.otherexample.org/')['hasNumber'],

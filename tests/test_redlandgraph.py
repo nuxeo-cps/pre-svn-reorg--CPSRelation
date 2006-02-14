@@ -53,10 +53,10 @@ class TestRedlandGraph(RedlandGraphTestCase):
         verifyClass(IGraph, RedlandGraph)
 
     def test_creation(self):
-        bindings = {
-            "dc": "http://purl.org/dc/elements/1.1/",
-            "cps": "http://cps-project.org/2005/data/",
-            }
+        bindings = (
+            "dc http://purl.org/dc/elements/1.1/",
+            "cps http://cps-project.org/2005/data/",
+            )
         dummy = RedlandGraph('dummy', backend='memory', bindings=bindings)
         self.assertEqual(dummy.getId(), 'dummy')
         self.assertEqual(dummy.meta_type, 'Redland Graph')
@@ -73,6 +73,14 @@ class TestRedlandGraph(RedlandGraphTestCase):
 
     def test__getGraph(self):
         self.assert_(isinstance(self.graph._getGraph(), Model))
+
+    def test_getBindings(self):
+        bindings_dict = {
+            "dc": "http://purl.org/dc/elements/1.1/",
+            "cps": "http://cps-project.org/2005/data/",
+            }
+        self.assertEqual(self.graph.getBindings(), bindings_dict)
+
 
     def test_parse_file(self):
         test_graph = RedlandGraph('dummy', backend='memory')

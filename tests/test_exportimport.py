@@ -61,8 +61,8 @@ class ExportImportTest(ExportImportTestCase):
             'import_steps.xml',
             'graphs.xml',
             'serializers.xml',
-           ]
-        self._checkExportProfile('CPSRelation/profiles/default/',
+            ]
+        self._checkExportProfile('CPSRelation/tests/profiles/default_export/',
                                  toc_list)
 
     def test_basic_import_graphs(self):
@@ -76,12 +76,25 @@ class ExportImportTest(ExportImportTestCase):
         self.assertEquals(list(rtool.objectIds()), ['iobtree_graph'])
         graph = rtool.iobtree_graph
         property_items = [
-            ('title', ''),
+            ('title', 'Graph title'),
             ]
         self.assertEquals(graph.meta_type, 'IOBTree Graph')
         self.assertEquals(graph.propertyItems(), property_items)
         self.assertEquals(graph.listRelationIds(), ['hasPart', 'isPartOf'])
-
+        hasPart = graph._getRelation('hasPart')
+        self.assertEquals(hasPart.meta_type, 'IOBTree Relation')
+        property_items = [
+            ('title', 'has part'),
+            ('inverse_id', 'isPartOf'),
+            ]
+        self.assertEquals(hasPart.propertyItems(), property_items)
+        isPartOf = graph._getRelation('isPartOf')
+        self.assertEquals(isPartOf.meta_type, 'IOBTree Relation')
+        property_items = [
+            ('title', 'is part of'),
+            ('inverse_id', 'hasPart'),
+            ]
+        self.assertEquals(isPartOf.propertyItems(), property_items)
 
     def test_basic_import_serializers(self):
         self.registerProfile('basic', "CPS Relation", "Basic profile",
@@ -94,14 +107,13 @@ class ExportImportTest(ExportImportTestCase):
         self.assertEquals(list(stool.objectIds()), ['test_serializer'])
         serializer = stool.test_serializer
         expr = "python:[(getattr(object, 'id'), 'hasTitle', getattr(object, 'title'))]"
-        bindings = {
-            'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
-            'exp': "http://www.example.org/",
-            }
+        bindings = (
+            'rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'exp http://www.example.org/',
+            )
         property_items = [
             ('serialization_expr', expr),
-            # FIXME change that string into a readable one
-            ('bindings', '\n{\'rdf\': "http://www.w3.org/1999/02/22-rdf-syntax-ns#", \'exp\': "http://www.example.org/",}\n'),
+            ('bindings', bindings)
             ]
         self.assertEquals(serializer.meta_type, 'Object Serializer')
         self.assertEquals(serializer.propertyItems(), property_items)
@@ -137,9 +149,13 @@ class ExportImportTest(ExportImportTestCase):
             self.assertEquals(rtool.meta_type, 'Relation Tool')
             self.assertEquals(list(rtool.objectIds()), ['redland_graph'])
             graph = rtool.redland_graph
+            bindings = (
+                'rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+                'exp http://www.example.org/',
+                )
             property_items = [
                 ('backend', 'mysql'),
-                ('bindings', {}),
+                ('bindings', bindings),
                 ('bdb_path', ''),
                 # FIXME change that string into a readable one
                 ('mysql_options', '"host=\'localhost\',port=3306,user=\'test\',password=\'pass\'"'),

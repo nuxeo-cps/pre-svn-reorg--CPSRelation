@@ -56,12 +56,15 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     _properties = (
         {'id': 'serialization_expr', 'type': 'string', 'mode': 'w',
          'label': 'Serialization expression'},
-        {'id': 'bindings', 'type': 'text', 'mode': 'w',
+        # one binding per line, following the format "key value", for instance:
+        # rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#
+        # exp http://www.example.org/
+        {'id': 'bindings', 'type': 'lines', 'mode': 'w',
          'label': 'Prefix/Uri bindings'},
         )
 
     serialization_expr = ''
-    bindings = {}
+    bindings = ()
 
     _properties_post_process_tales = (
         ('serialization_expr', 'serialization_expr_c'),
@@ -73,7 +76,7 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     # API
     #
 
-    def __init__(self, id, expression='', bindings={}):
+    def __init__(self, id, expression='', bindings=()):
         """Initialization
         """
         self.id = id
@@ -130,7 +133,14 @@ class ObjectSerializer(PropertiesPostProcessor, SimpleItemWithProperties):
     def getBindings(self):
         """Get defined bindings dictionnary
         """
-        return self.bindings
+        bindings_dict = {}
+        for binding in self.bindings:
+            sep_index = binding.find(' ')
+            if sep_index != -1:
+                key = binding[:sep_index]
+                value = binding[sep_index+1:]
+                bindings_dict[key] = value
+        return bindings_dict
 
     #
     # ZMI

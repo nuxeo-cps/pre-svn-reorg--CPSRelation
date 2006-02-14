@@ -150,10 +150,10 @@ class RedlandGraphTestCase(CPSRelationTestCase):
 
     def setUp(self):
         self.rtool = RelationTool()
-        bindings = {
-            "dc": "http://purl.org/dc/elements/1.1/",
-            "cps": "http://cps-project.org/2005/data/",
-            }
+        bindings = (
+            "dc http://purl.org/dc/elements/1.1/",
+            "cps http://cps-project.org/2005/data/",
+            )
         self.rtool.addGraph('rdfgraph', 'Redland Graph', backend='memory',
                             bindings=bindings)
         self.graph = self.rtool.getGraph('rdfgraph')

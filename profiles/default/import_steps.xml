@@ -1,11 +1,5 @@
 <?xml version="1.0"?>
 <import-steps>
- <import-step id="toolset" version="20040630-01"
-              handler="Products.GenericSetup.tool.importToolset"
-              title="Required tools">
-  Create required tools, replacing any of the wrong class, and remove
-  forbidden ones.
- </import-step>
  <import-step id="relation" version="20060213-01"
               handler="Products.CPSRelation.exportimport.importRelationTool"
               title="Relation Tool">
@@ -17,5 +11,11 @@
               title="ObjectSerializer Tool">
   <dependency step="toolset"/>
   Import object serializer tool and serializers.
+ </import-step>
+ <import-step id="toolset" version="20040630-01"
+              handler="Products.GenericSetup.tool.importToolset"
+              title="Required tools">
+  Create required tools, replacing any of the wrong class, and remove
+  forbidden ones.
  </import-step>
 </import-steps>

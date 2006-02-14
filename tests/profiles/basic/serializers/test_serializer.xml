@@ -2,8 +2,8 @@
 <object name="test_serializer" meta_type="Object Serializer">
  <property
     name="serialization_expr">python:[(getattr(object, 'id'), 'hasTitle', getattr(object, 'title'))]</property>
- <property
-    name="bindings">
-  {'rdf': "http://www.w3.org/1999/02/22-rdf-syntax-ns#", 'exp': "http://www.example.org/",}
+ <property name="bindings">
+  <element value="rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#"/>
+  <element value="exp http://www.example.org/"/>
  </property>
 </object>

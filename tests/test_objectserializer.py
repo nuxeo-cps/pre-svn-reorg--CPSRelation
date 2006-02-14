@@ -165,6 +165,18 @@ class TestObjectSerializer(CPSRelationTestCase):
         self.assertEqual(self.serializer.getTriples(self.object),
                          triples)
 
+    def test_getBindings(self):
+        self.assertEqual(self.serializer.getBindings(), {})
+        bindings_tuple = (
+            'rdf http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'exp http://www.example.org/',
+            )
+        self.serializer.manage_changeProperties(bindings=bindings_tuple)
+        bindings_dict = {
+            'rdf': 'http://www.w3.org/1999/02/22-rdf-syntax-ns#',
+            'exp': 'http://www.example.org/',
+            }
+        self.assertEqual(self.serializer.getBindings(), bindings_dict)
 
 def test_suite():
     suite = unittest.TestSuite()
