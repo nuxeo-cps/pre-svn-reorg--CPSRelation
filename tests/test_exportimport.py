@@ -105,7 +105,8 @@ class ExportImportTest(ExportImportTestCase):
             ]
         self.assertEquals(serializer.meta_type, 'Object Serializer')
         self.assertEquals(serializer.propertyItems(), property_items)
-
+        # check that properties have been processed
+        self.assertNotEquals(serializer.serialization_expr_c, None)
 
     def test_basic_export(self):
         self.registerProfile('basic', "CPS Relation", "Basic profile",

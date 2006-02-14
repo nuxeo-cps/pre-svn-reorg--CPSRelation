@@ -31,6 +31,9 @@ from Products.GenericSetup.utils import PropertyManagerHelpers
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import ISetupEnviron
 
+from Products.CPSUtil.PropertiesPostProcessor import (
+    PostProcessingPropertyManagerHelpers)
+
 from Products.CPSRelation.interfaces import IRelationTool
 from Products.CPSRelation.interfaces import IGraph
 from Products.CPSRelation.interfaces import IRelation
@@ -191,7 +194,8 @@ class ObjectSerializerToolXMLAdapter(XMLAdapterBase, ObjectManagerHelpers):
         self._logger.info("ObjectSerializer tool imported.")
 
 
-class ObjectSerializerXMLAdapter(XMLAdapterBase, PropertyManagerHelpers):
+class ObjectSerializerXMLAdapter(XMLAdapterBase,
+                                 PostProcessingPropertyManagerHelpers):
     """XML importer and exporter for an object serializer.
     """
     adapts(IObjectSerializer, ISetupEnviron)
