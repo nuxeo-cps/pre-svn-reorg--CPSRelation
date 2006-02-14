@@ -30,7 +30,7 @@ from zope.interface.verify import verifyClass
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_RDFLIB
 
 if USE_RDFLIB:
-    from Products.CPSRelation.interfaces.IGraph import IGraph
+    from Products.CPSRelation.interfaces import IGraph
     from Products.CPSRelation.rdflibgraph import RdflibGraph
     from Products.CPSRelation.rdflibgraph import Graph, URIRef
     from Products.CPSRelation.tests.CPSRelationTestCase import RdflibGraphTestCase

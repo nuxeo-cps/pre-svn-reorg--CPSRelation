@@ -27,7 +27,7 @@ import unittest
 
 from zope.interface.verify import verifyClass
 
-from Products.CPSRelation.interfaces.IGraph import IGraph
+from Products.CPSRelation.interfaces import IGraph
 from Products.CPSRelation.iobtreegraph import IOBTreeGraph
 from Products.CPSRelation.tests.CPSRelationTestCase import IOBTreeGraphTestCase
 

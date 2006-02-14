@@ -32,7 +32,7 @@ from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.PortalFolder import PortalFolder
 
-from Products.CPSRelation.interfaces.IGraph import IGraph
+from Products.CPSRelation.interfaces import IGraph
 from Products.CPSRelation.iobtreerelation import IOBTreeRelation
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.graphdrawer import GraphDrawer

@@ -31,9 +31,9 @@ from Products.GenericSetup.utils import PropertyManagerHelpers
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import ISetupEnviron
 
-from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
-from Products.CPSRelation.interfaces.IGraph import IGraph
-from Products.CPSRelation.interfaces.IRelation import IRelation
+from Products.CPSRelation.interfaces import IRelationTool
+from Products.CPSRelation.interfaces import IGraph
+from Products.CPSRelation.interfaces import IRelation
 from Products.CPSRelation.interfaces import IObjectSerializerTool
 from Products.CPSRelation.interfaces import IObjectSerializer
 

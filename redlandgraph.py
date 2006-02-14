@@ -83,7 +83,7 @@ Node.__repr__ = __repr__
 # End of RDF patches
 
 
-from Products.CPSRelation.interfaces.IGraph import IGraph
+from Products.CPSRelation.interfaces import IGraph
 from Products.CPSRelation.graphregistry import GraphRegistry
 from Products.CPSRelation.graphdrawer import GraphDrawer
 

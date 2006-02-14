@@ -34,7 +34,7 @@ if USE_REDLAND:
     # XXX if necessary, RDF has a debug mode:
     #from Products.CPSRelation.redlandgraph import RDF
     #RDF.debug(1)
-    from Products.CPSRelation.interfaces.IGraph import IGraph
+    from Products.CPSRelation.interfaces import IGraph
     from Products.CPSRelation.redlandgraph import RedlandGraph, Model
     from Products.CPSRelation.redlandgraph import Node, Uri, NS
     from Products.CPSRelation.tests.CPSRelationTestCase import RedlandGraphTestCase

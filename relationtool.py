@@ -32,7 +32,7 @@ from Products.CMFCore.permissions import ManagePortal, View
 from Products.CMFCore.utils import UniqueObject
 from Products.CMFCore.CMFBTreeFolder import CMFBTreeFolder
 
-from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
+from Products.CPSRelation.interfaces import IRelationTool
 from Products.CPSRelation.graphregistry import GraphRegistry
 
 class RelationTool(UniqueObject, CMFBTreeFolder):

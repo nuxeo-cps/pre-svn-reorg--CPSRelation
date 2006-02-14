@@ -27,6 +27,10 @@
 
 from zope.interface import Interface
 
+from _IRelationTool import IRelationTool
+from _IGraph import IGraph
+from _IRelation import IRelation
+
 class IObjectSerializerTool(Interface):
     """ObjectSerializer Tool.
     """

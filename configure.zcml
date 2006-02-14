@@ -5,21 +5,21 @@
   <adapter
       factory=".exportimport.RelationToolXMLAdapter"
       provides="Products.GenericSetup.interfaces.IBody"
-      for=".interfaces.IRelationTool.IRelationTool
+      for=".interfaces.IRelationTool
            Products.GenericSetup.interfaces.ISetupEnviron"
       />
 
   <adapter
       factory=".exportimport.GraphXMLAdapter"
       provides="Products.GenericSetup.interfaces.IBody"
-      for=".interfaces.IGraph.IGraph
+      for=".interfaces.IGraph
            Products.GenericSetup.interfaces.ISetupEnviron"
       />
 
   <adapter
       factory=".exportimport.RelationXMLAdapter"
       provides="Products.GenericSetup.interfaces.IBody"
-      for=".interfaces.IRelation.IRelation
+      for=".interfaces.IRelation
            Products.GenericSetup.interfaces.ISetupEnviron"
       />
 

@@ -37,7 +37,7 @@ if USE_REDLAND:
     from Products.CPSRelation.redlandgraph import Node, Uri
 
 from Products.CPSRelation.relationtool import RelationTool
-from Products.CPSRelation.interfaces.IRelationTool import IRelationTool
+from Products.CPSRelation.interfaces import IRelationTool
 from Products.CPSRelation.tests.CPSRelationTestCase import IOBTreeGraphTestCase
 from Products.CPSRelation.tests.test_graphregistry import DEFAULT_GRAPH_TYPES
 

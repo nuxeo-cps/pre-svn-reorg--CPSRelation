@@ -37,7 +37,7 @@ from BTrees.IOBTree import IOBTree
 from Products.CMFCore.utils import SimpleItemWithProperties
 from Products.CMFCore.permissions import ManagePortal
 
-from Products.CPSRelation.interfaces.IRelation import IRelation
+from Products.CPSRelation.interfaces import IRelation
 
 class IOBTreeRelation(SimpleItemWithProperties):
     """Relation
