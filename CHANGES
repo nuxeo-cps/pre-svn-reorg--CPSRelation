@@ -3,11 +3,10 @@ Requires:
 -
 New features:
 ~~~~~~~~~~~~~
-- Adding default profile and export/import using GenericSetup
+-
 Bug fixes:
 ~~~~~~~~~~
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
-- Use zope interfaces
-- Use lines for bindings settings in ZMI
+-

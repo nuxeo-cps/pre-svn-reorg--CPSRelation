@@ -1,4 +1,21 @@
 *******************************************
+** CPSRelation V1.8.0 [R1 build 2006/02/14-18:21 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 32841
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+- Adding default profile and export/import using GenericSetup
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Use zope interfaces
+- Use lines for bindings settings in ZMI
+
+*******************************************
 ** CPSRelation V1.7.1 [R1 build 2006/02/13-15:43 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 32760
 Requires:
