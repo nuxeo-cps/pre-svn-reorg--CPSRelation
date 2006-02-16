@@ -22,7 +22,6 @@ from zope.app import zapi
 from zope.component import adapts
 from zope.interface import implements
 
-import Products
 from Products.CMFCore.utils import getToolByName
 from Products.GenericSetup.utils import exportObjects
 from Products.GenericSetup.utils import importObjects
@@ -34,8 +33,8 @@ from Products.GenericSetup.interfaces import INode
 from Products.GenericSetup.interfaces import IBody
 from Products.GenericSetup.interfaces import ISetupEnviron
 
-from Products.CPSUtil.PropertiesPostProcessor import (
-    PostProcessingPropertyManagerHelpers)
+from Products.CPSUtil.PropertiesPostProcessor import \
+     PostProcessingPropertyManagerHelpers
 
 from Products.CPSRelation.interfaces import IRelationTool
 from Products.CPSRelation.interfaces import IGraph

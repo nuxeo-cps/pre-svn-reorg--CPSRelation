@@ -30,8 +30,6 @@ from OFS.SimpleItem import SimpleItem
 
 from zope.interface.verify import verifyClass
 
-from Products.CMFCore.Expression import Expression
-
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
 from Products.CPSRelation.tests.CPSRelationTestCase import CPSRelationTestCase
 

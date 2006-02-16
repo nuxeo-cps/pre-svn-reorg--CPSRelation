@@ -21,8 +21,6 @@
 """
 
 import unittest
-from Acquisition import Implicit, aq_parent, aq_inner
-from OFS.Folder import Folder
 from Testing import ZopeTestCase
 from Products.CPSUtil.testing.genericsetup import ExportImportTestCase
 from Products.CPSRelation.tests.CPSRelationTestCase import USE_REDLAND
