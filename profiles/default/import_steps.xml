@@ -12,6 +12,7 @@
   <dependency step="toolset"/>
   Import object serializer tool and serializers.
  </import-step>
+ <!-- optional declaration of toolset step, only here for tests -->
  <import-step id="toolset" version="20040630-01"
               handler="Products.GenericSetup.tool.importToolset"
               title="Required tools">
