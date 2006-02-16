@@ -43,7 +43,7 @@ from Products.CPSRelation.interfaces import IObjectSerializerTool
 from Products.CPSRelation.interfaces import IObjectSerializer
 
 REL_TOOL = 'portal_relations'
-REL_NAME = 'graphs'
+REL_NAME = 'relations'
 
 SER_TOOL = 'portal_serializer'
 SER_NAME = 'serializers'

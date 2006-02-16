@@ -57,7 +57,7 @@ class ExportImportTest(ExportImportTestCase):
         toc_list = [
             'export_steps.xml',
             'import_steps.xml',
-            'graphs.xml',
+            'relations.xml',
             'serializers.xml',
             ]
         self._checkExportProfile('CPSRelation/tests/profiles/default_export/',
@@ -125,8 +125,8 @@ class ExportImportTest(ExportImportTestCase):
         toc_list = [
             'export_steps.xml',
             'import_steps.xml',
-            'graphs.xml',
-            'graphs/iobtree_graph.xml',
+            'relations.xml',
+            'relations/iobtree_graph.xml',
             'serializers.xml',
             'serializers/test_serializer.xml',
            ]
@@ -168,8 +168,8 @@ class ExportImportTest(ExportImportTestCase):
             toc_list = [
                 'export_steps.xml',
                 'import_steps.xml',
-                'graphs.xml',
-                'graphs/redland_graph.xml',
+                'relations.xml',
+                'relations/redland_graph.xml',
                ]
             self._checkExportProfile('CPSRelation/tests/profiles/redland',
                                      toc_list)
