@@ -23,6 +23,7 @@
 """Test Rdflib Graph
 """
 
+import os
 import unittest
 
 from zope.interface.verify import verifyClass
