@@ -1,4 +1,20 @@
 *******************************************
+** CPSRelation V1.9.0 [R1 build 2006/03/03-17:29 by ben]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 33855
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Changing the profile keyword 'graphs' into 'relations'
+
+*******************************************
 ** CPSRelation V1.8.0 [R1 build 2006/02/14-18:21 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 32841
 Requires:
