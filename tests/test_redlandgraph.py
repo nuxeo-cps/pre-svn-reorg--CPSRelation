@@ -145,12 +145,60 @@ class TestRedlandGraph(RedlandGraphTestCase):
 
     def test_serialize(self):
         serialized = self.graph.serialize()
-        # not possible to test xml rendering, it changes every time...
-        start = """<?xml version="1.0" encoding="utf-8"?>
-<rdf:RDF xmlns:cps="http://cps-project.org/2005/data/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">"""
-        self.assert_(serialized.startswith(start))
-        end = "</rdf:RDF>\n"
-        self.assert_(serialized.endswith(end))
+        expected_serialization = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:cps="http://cps-project.org/2005/data/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="25">
+    <cps:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="1">
+    <cps:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <cps:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="10">
+    <cps:isPartOf rdf:resource="1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="2">
+    <cps:hasPart rdf:resource="25"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="2">
+    <cps:hasPart rdf:resource="23"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="2">
+    <cps:hasPart rdf:resource="10"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="23">
+    <cps:isPartOf rdf:resource="2"/>
+  </rdf:Description>
+</rdf:RDF>
+"""
+        self.assertEquals(serialized, expected_serialization)
+
+    def test_serialize_newline(self):
+        # this is a test for a Redland bug that does not convert new lines
+        # correctly in some versions
+        self.rtool.addGraph('rdfgraph_nl', 'Redland Graph', backend='memory',
+                            bindings=self.bindings)
+        graph = self.rtool.getGraph('rdfgraph_nl')
+        # use hasPart even it makes no sense
+        graph.addRelationFor(Node(Uri('1')), self.hasPart, Node(literal='hello\r\nhowdy?'))
+        graph.addRelationFor(Node(Uri('2')), self.hasPart, Node(literal='hello\nagain'))
+
+        expected = """<?xml version="1.0" encoding="utf-8"?>
+<rdf:RDF xmlns:cps="http://cps-project.org/2005/data/" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <rdf:Description rdf:about="1">
+    <cps:hasPart>hello&#xD;
+howdy?</cps:hasPart>
+  </rdf:Description>
+  <rdf:Description rdf:about="2">
+    <cps:hasPart>hello
+again</cps:hasPart>
+  </rdf:Description>
+</rdf:RDF>
+"""
+        self.assertEquals(graph.serialize(), expected)
+
 
     def test_listRelationIds(self):
         self.assertEqual(self.graph.listRelationIds(),
