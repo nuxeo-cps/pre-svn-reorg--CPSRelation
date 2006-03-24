@@ -36,30 +36,19 @@ Howto use the CPSRelation installer :
  - then click on the test tab of this external method
 """
 
+from Products.CMFCore.utils import getToolByName
 
-from Products.CPSInstaller.CPSInstaller import CPSInstaller
+profile_ids = (
+    'CPSRelation:default',
+    )
 
-class CPSRelationInstaller(CPSInstaller):
-
-    def install(self):
-        self.log("### Starting CPSRelation install ###")
-        self.setupRelationTool()
-        self.setupObjectSerializerTool()
-        self.log("### End of specific CPSRelation install ###")
-
-    def setupRelationTool(self):
-        self.log("Checking Relation Tool")
-        self.verifyTool('portal_relations',
-                        'CPSRelation',
-                        'Relation Tool')
-
-    def setupObjectSerializerTool(self):
-        self.log("Checking Serializer Tool")
-        self.verifyTool('portal_serializer',
-                        'CPSRelation',
-                        'Object Serializer Tool')
-
-def install(self):
-    installer = CPSRelationInstaller(self, 'CPSRelation')
-    installer.install()
-    return installer.logResult()
+def install(self, REQUEST):
+    # run extension profiles in given order
+    setup_tool = getToolByName(self, 'portal_setup')
+    for profile_id in profile_ids:
+        setup_tool.importProfile('profile-' + profile_id)
+    msg = 'Install done'
+    if REQUEST is not None:
+        url = REQUEST.URL0 + '/manage_main?manage_tabs_message=' + msg
+        REQUEST.RESPONSE.redirect(url)
+    return msg

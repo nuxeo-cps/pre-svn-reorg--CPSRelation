@@ -9,4 +9,5 @@ Bug fixes:
 -
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
--
+- Installer does not use CPSInstaller anymore, it calls the setup tool and
+  imports the extension profile.
