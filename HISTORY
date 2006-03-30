@@ -1,4 +1,21 @@
 *******************************************
+** CPSRelation V1.9.2 [R1 build 2006/03/30-02:11 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 34814
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+-
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+- Installer does not use CPSInstaller anymore, it calls the setup tool and
+  imports the extension profile.
+
+*******************************************
 ** CPSRelation V1.9.1 [R1 build 2006/03/08-15:38 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 34170
 Requires:
