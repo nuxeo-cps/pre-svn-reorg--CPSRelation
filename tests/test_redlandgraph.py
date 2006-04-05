@@ -719,6 +719,13 @@ WHERE {
         results = [str(x['subj']) for x in results]
         self.assertEqual(results, ['[10]', '[23]', '[25]'])
 
+        # add a blank relation for '10'
+        self.graph.addRelationFor(Node(Uri('10')), self.hasPart, '')
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[23]', '[25]'])
+
 
 def test_suite():
     suite = unittest.TestSuite()
