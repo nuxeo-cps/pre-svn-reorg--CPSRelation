@@ -694,6 +694,32 @@ WHERE {
         self.assertEqual(results, ['[1]'])
 
 
+    def test_query_negative(self):
+        # test query meaning "all nodes that dont have that other relation",
+        # here test all nodes that dont have any children (e.g. leaves)
+        # XXX need to be able to match on some nodes, so add another existing
+        # relation for each node...
+        pred = REDLAND_NAMESPACE['dummy']
+        for node_id in ['1', '2', '10', '23', '25']:
+            self.graph.addRelationFor(Node(Uri(node_id)),
+                                      pred, 'hihi')
+
+        # XXX the dot before FILTER is needed, otherwise Redland crashes.
+        query = """
+PREFIX cps: <http://cps-project.org/2005/data/>
+SELECT ?subj
+WHERE {
+  ?subj cps:dummy ?dum .
+  OPTIONAL {?subj cps:hasPart ?obj} .
+  FILTER (!BOUND(?obj))
+}
+"""
+        results = self.graph.query(query, query_language='sparql',
+                                   base_uri=Uri(CPS_NAMESPACE_URI))
+        results = [str(x['subj']) for x in results]
+        self.assertEqual(results, ['[10]', '[23]', '[25]'])
+
+
 def test_suite():
     suite = unittest.TestSuite()
     if USE_REDLAND:
