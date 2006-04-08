@@ -271,6 +271,9 @@ class RedlandGraph(UniqueObject, PortalFolder):
         serializer = Serializer(mime_type=format)
         bindings = self.getBindings()
         for prefix, uri in bindings.items():
+            # redland bug
+            if prefix == 'rdf':
+                continue
             serializer.set_namespace(prefix, uri)
         if destination is None:
             # XXX AT: serializing to string is costly for big graphs ; writing to a

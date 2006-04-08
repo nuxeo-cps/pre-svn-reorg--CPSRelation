@@ -6,7 +6,7 @@ New features:
 -
 Bug fixes:
 ~~~~~~~~~~
--
+- Avoid duplication of rdf binding in Redland graphs
 New internal features:
 ~~~~~~~~~~~~~~~~~~~~~~
 -
