@@ -608,7 +608,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
     # ZMI
     #
 
-    manage_options = (
+    manage_options = (PortalFolder.manage_options[2],) + (
         {'label': "Relations",
          'action': 'manage_editRelations'
          },
@@ -618,7 +618,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
         {'label': "Overview",
          'action': 'overview'
          },
-        ) + PortalFolder.manage_options[2:]
+        ) + PortalFolder.manage_options[3:]
 
     security.declareProtected(ManagePortal, 'manage_editRelations')
     manage_editRelations = DTMLFile('zmi/rdfgraph_content', globals())
