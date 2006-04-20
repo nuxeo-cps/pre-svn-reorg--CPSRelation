@@ -84,7 +84,7 @@ class GraphDrawer:
         dot_graph = self._getDotGraph()
         if format not in dot_graph.formats:
             ok = False
-            result = 'format %s not supported'%(format,)
+            result = 'format %s not supported' % (format,)
         else:
             ok = True
             result = dot_graph.create(prog='dot', format=format)

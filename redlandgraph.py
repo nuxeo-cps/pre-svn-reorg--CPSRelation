@@ -75,7 +75,7 @@ QueryResults.make_results_hash = make_results_hash
 def __repr__(self):
     old_repr = object.__repr__(self)
     address = old_repr[len('<RDF.Node object at '):-1]
-    return "<RDF.Node for %s at %s>"%(str(self), address)
+    return "<RDF.Node for %s at %s>" % (str(self), address)
 
 Node.__repr__ = __repr__
 
@@ -164,7 +164,8 @@ class RedlandGraph(UniqueObject, PortalFolder):
             mysql_options = kw.get('mysql_options')
             if not mysql_options:
                 raise ValueError("Graph %s cannot be created with mysql "
-                                 "backend if no mysql_options are specified" %(id,))
+                                 "backend if no mysql_options are specified" 
+                                 % (id,))
             else:
                 self.mysql_options = mysql_options
         self.bindings = bindings
@@ -276,11 +277,13 @@ class RedlandGraph(UniqueObject, PortalFolder):
                 continue
             serializer.set_namespace(prefix, uri)
         if destination is None:
-            # XXX AT: serializing to string is costly for big graphs ; writing to a
-            # file is more efficient
-            #res = serializer.serialize_model_to_string(rdf_graph, base_uri=base)
+            # XXX AT: serializing to string is costly for big graphs ; writing
+            # to a file is more efficient
+            #res = serializer.serialize_model_to_string(rdf_graph, 
+            #                                           base_uri=base)
             fd, file_path = tempfile.mkstemp('rdf')
-            serializer.serialize_model_to_file(file_path, rdf_graph, base_uri=base)
+            serializer.serialize_model_to_file(file_path, rdf_graph, 
+                                               base_uri=base)
             os.close(fd)
             f = open(file_path, 'r')
             res = f.read()
