@@ -1,4 +1,20 @@
 *******************************************
+** CPSRelation V1.9.4 [R1 build 2006/04/24-15:16 by anahide]
+** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 44891
+Requires:
+~~~~~~~~~
+-
+New features:
+~~~~~~~~~~~~~
+-
+Bug fixes:
+~~~~~~~~~~
+- Present the graph properties as first tab in ZMI.
+New internal features:
+~~~~~~~~~~~~~~~~~~~~~~
+-
+
+*******************************************
 ** CPSRelation V1.9.3 [R1 build 2006/04/08-13:47 by anahide]
 ** SVN URL: https://svn.nuxeo.org/pub/CPSRelation/trunk Revision: 35009
 Requires:
