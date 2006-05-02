@@ -164,7 +164,7 @@ class RedlandGraph(UniqueObject, PortalFolder):
             mysql_options = kw.get('mysql_options')
             if not mysql_options:
                 raise ValueError("Graph %s cannot be created with mysql "
-                                 "backend if no mysql_options are specified" 
+                                 "backend if no mysql_options are specified"
                                  % (id,))
             else:
                 self.mysql_options = mysql_options
@@ -279,10 +279,10 @@ class RedlandGraph(UniqueObject, PortalFolder):
         if destination is None:
             # XXX AT: serializing to string is costly for big graphs ; writing
             # to a file is more efficient
-            #res = serializer.serialize_model_to_string(rdf_graph, 
+            #res = serializer.serialize_model_to_string(rdf_graph,
             #                                           base_uri=base)
             fd, file_path = tempfile.mkstemp('rdf')
-            serializer.serialize_model_to_file(file_path, rdf_graph, 
+            serializer.serialize_model_to_file(file_path, rdf_graph,
                                                base_uri=base)
             os.close(fd)
             f = open(file_path, 'r')
